@@ -22,6 +22,7 @@ class RouterListener
 
     public function onRequest(object $event, string $eventName)
     {
-
+        $request = $event->getRequest();
+        dd($request);
     }
 }

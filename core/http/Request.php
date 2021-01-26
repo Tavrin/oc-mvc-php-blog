@@ -44,6 +44,11 @@ class Request
     public $content;
 
     /**
+     * @var
+     */
+    public $pathInfo;
+
+    /**
      * Request constructor.
      * @param array $query
      * @param array $request
@@ -61,6 +66,8 @@ class Request
         $this->cookies = $cookies;
         $this->files = $files;
         $this->server = $server;
+        $this->pathInfo = null;
+
     }
 
     /**
@@ -74,5 +81,25 @@ class Request
     private static function getGlobals(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null): self
     {
         return new static($query, $request, $attributes, $cookies, $files, $server, $content);
+    }
+
+    public function getPathInfo()
+    {
+        if (null === $this->pathInfo) {
+            $this->pathInfo = $this->setPathInfo();
+        }
+
+        return $this->pathInfo;
+    }
+
+    public function setPathInfo()
+    {
+        if ($this->server['PATH_INFO']) {
+            $pathInfo = $this->server['PATH_INFO'];
+        } else {
+            $pathInfo = $this->server['REQUEST_URI'];
+        }
+
+        return $pathInfo;
     }
 }
