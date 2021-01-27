@@ -94,11 +94,12 @@ class Request
 
     public function setPathInfo()
     {
-        if ($this->server['PATH_INFO']) {
+        if (false === empty($this->server['PATH_INFO'])) {
             $pathInfo = $this->server['PATH_INFO'];
         } else {
             $pathInfo = $this->server['REQUEST_URI'];
         }
+
 
         return $pathInfo;
     }

@@ -4,6 +4,9 @@
 namespace App\core\event\listeners;
 
 use App\Core\Event\Dispatcher;
+use App\core\event\events\RequestEvent;
+use App\core\routing\Router;
+use http\Message\Body;
 
 class RouterListener
 {
@@ -11,6 +14,16 @@ class RouterListener
      * @var Dispatcher
      */
     public $dispatcher;
+
+    /**
+     * @var Router
+     */
+    public $router;
+
+    public function __construct()
+    {
+        $this->router = new Router();
+    }
 
     public function setListener(string $eventName, $method, Dispatcher $dispatcher)
     {
@@ -20,9 +33,10 @@ class RouterListener
 
     }
 
-    public function onRequest(object $event, string $eventName)
+    public function onRequest(RequestEvent $event, string $eventName)
     {
         $request = $event->getRequest();
-        dd($request);
+        $this->router->match($request);
+
     }
 }
