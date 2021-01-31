@@ -36,7 +36,9 @@ class RouterListener
     public function onRequest(RequestEvent $event, string $eventName)
     {
         $request = $event->getRequest();
-        $this->router->match($request);
 
+        $params =  $this->router->match($request);
+
+        $request->addAttribute($params);
     }
 }

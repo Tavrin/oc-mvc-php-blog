@@ -1,0 +1,29 @@
+[
+  {
+    "route" : "index",
+    "path" : "/",
+    "controller": "App\\src\\Controller\\IndexController::indexAction"
+  },
+  {
+    "route" : "blog_index",
+    "path" : "/blog",
+    "controller": "App\\src\\Controller\\IndexController::indexAction"
+  },
+  {
+    "route" : "blog_show",
+    "path" : "/blog/{slug}",
+    "controller": "App\\src\\Controller\\IndexController::showAction"
+  },
+  {
+    "route": "fakeRoute",
+    "path": "/fakePath/{id}/{slug}"
+  },
+  {
+    "route": "fakeRouteEncore",
+    "path": "/fakepath/test"
+  },
+  {
+    "route": "test_route",
+    "path": "/testpath/test"
+  }
+]

@@ -48,6 +48,8 @@ class Request
      */
     public $pathInfo;
 
+    public $controller;
+
     /**
      * Request constructor.
      * @param array $query
@@ -67,6 +69,7 @@ class Request
         $this->files = $files;
         $this->server = $server;
         $this->pathInfo = null;
+        $this->controller = null;
 
     }
 
@@ -102,5 +105,41 @@ class Request
 
 
         return $pathInfo;
+    }
+
+    public function setController(array $controller)
+    {
+        if (empty($controller['route']) || empty($controller['path']) || empty($controller['controller'])) {
+            return false;
+        }
+        $this->controller = $controller ;
+    }
+
+    public function getController()
+    {
+        if (!empty($controller = $this->controller)) {
+            return $controller;
+        }
+        return false;
+    }
+
+    public function setAttribute(string $key, $value)
+    {
+        $this->attributes[$key] = $value;
+    }
+
+    public function addAttribute(array $attributes = [])
+    {
+        $this->attributes = array_replace($this->attributes, $attributes);
+    }
+
+    public function getAttribute(string $key)
+    {
+        return \array_key_exists($key, $this->attributes) ? $this->attributes[$key] : null;
+    }
+
+    public function hasAttribute(string $key):bool
+    {
+        return \array_key_exists($key, $this->attributes);
     }
 }

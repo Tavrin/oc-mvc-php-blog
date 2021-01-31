@@ -34,8 +34,6 @@ class ListenerService
             $this->instantiatedClasses[$key]['callbackMethod'] = $listener['callbackMethod'];
             $this->instantiatedClasses[$key]['eventName'] = $listener['eventName'];
         }
-
-        dump($this->instantiatedClasses);
     }
 
     public function setListeners()
