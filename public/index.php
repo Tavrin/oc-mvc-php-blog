@@ -4,9 +4,9 @@ use App\core\Kernel;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 
-require dirname(__DIR__).'/vendor/autoload.php';
-
 define('ROOT_DIR', dirname(__DIR__));
+
+require dirname(__DIR__) . '/vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();

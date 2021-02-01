@@ -42,7 +42,6 @@ class Kernel
     public function __construct()
     {
         $this->setServices();
-
     }
 
     public function setServices()
@@ -70,12 +69,12 @@ class Kernel
     public function route(Request $request):Response
     {
         $event = new RequestEvent($this, $request);
-        $this->dispatcher->dispatch($event,EventNames::REQUEST);
+        $this->dispatcher->dispatch($event, EventNames::REQUEST);
 
         $controller = $this->controllerResolver->getController($request);
 
         $event = new ControllerEvent($this, $controller);
-        $this->dispatcher->dispatch($event,EventNames::CONTROLLER);
+        $this->dispatcher->dispatch($event, EventNames::CONTROLLER);
 
         $arguments = $this->argumentResolver->getArguments($request, $controller);
 
@@ -84,5 +83,4 @@ class Kernel
 
         return $response;
     }
-
 }

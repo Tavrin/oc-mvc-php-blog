@@ -10,5 +10,5 @@ class EventNames
 
     public const RESPONSE = 'app.response';
 
-    public  const CONTROLLER = 'app.controller';
+    public const CONTROLLER = 'app.controller';
 }

@@ -45,5 +45,4 @@ class ListenerService
             $class->setListener($eventName, $callback, $this->dispatcher);
         }
     }
-
 }

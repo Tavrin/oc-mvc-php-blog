@@ -25,15 +25,15 @@ class Router
         $this->pathInfo = $this->sanitizePath($pathInfo);
         $parsedRoutes = JsonParser::parseFile(self::ROUTER_CONFIG);
 
-        $explodedPath['url'] = explode('/',trim($this->pathInfo, '/'));
-        $explodedPath['url'] = array_map('strtolower',$explodedPath['url']);
+        $explodedPath['url'] = explode('/', trim($this->pathInfo, '/'));
+        $explodedPath['url'] = array_map('strtolower', $explodedPath['url']);
         $count['url'] = count($explodedPath['url']);
 
         foreach ($parsedRoutes as $route) {
             $slugs = [];
 
-            $explodedPath['route'] = explode('/',trim($route['path'], '/'));
-            $explodedPath['route'] = array_map('strtolower',$explodedPath['route']);
+            $explodedPath['route'] = explode('/', trim($route['path'], '/'));
+            $explodedPath['route'] = array_map('strtolower', $explodedPath['route']);
 
             $count['route'] = count($explodedPath['route']);
 
@@ -43,8 +43,8 @@ class Router
 
             foreach ($explodedPath['url'] as $key => $explodedUrl) {
                 $explodedRoute = $explodedPath['route'][$key];
-                if (preg_match('/{(.*?)}/',$explodedRoute, $match)) {
-                    $slugs[$match[1]]= $explodedUrl;
+                if (preg_match('/{(.*?)}/', $explodedRoute, $match)) {
+                    $slugs[$match[1]] = $explodedUrl;
                     continue;
                 } elseif ($explodedUrl !== $explodedRoute) {
                     continue 2;

@@ -13,11 +13,10 @@ class Dispatcher
         $listeners = $this->getListeners($eventName);
 
         foreach ($listeners as $listener) {
-            $className = new $listener[0];
+            $className = $listener[0];
             $methodeName = $listener[1];
             $className->$methodeName($event, $eventName);
         }
-
     }
 
     public function addListener(array $listener, string $eventName)

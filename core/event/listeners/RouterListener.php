@@ -27,10 +27,9 @@ class RouterListener
 
     public function setListener(string $eventName, $method, Dispatcher $dispatcher)
     {
-        $listenerData[] = __CLASS__;
+        $listenerData[] = $this;
         $listenerData[] = $method;
         $dispatcher->addListener($listenerData, $eventName);
-
     }
 
     public function onRequest(RequestEvent $event, string $eventName)

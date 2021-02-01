@@ -7,7 +7,6 @@ use App\core\controller\resolvers\RequestAttributeResolver;
 use App\core\controller\resolvers\RequestResolver;
 use App\Core\Http\Request;
 
-
 class ArgumentsResolver
 {
     private $argumentResolvers;
@@ -28,7 +27,6 @@ class ArgumentsResolver
 
                 $params[] = $resolver->setValue($request, $argument);
                 break;
-
             }
         }
 
@@ -42,15 +40,13 @@ class ArgumentsResolver
         if (\is_array($controller)) {
             $reflection = new \ReflectionMethod($controller[0], $controller[1]);
 
-            foreach ($reflection->getParameters() as $key=>$parameter)
-            {
+            foreach ($reflection->getParameters() as $key => $parameter) {
                 $arguments[$key]['name'] = $parameter->getName();
-                $arguments[$key]['type'] = $parameter->getType() ? $parameter->getType()->getName(): null;
+                $arguments[$key]['type'] = $parameter->getType() ? $parameter->getType()->getName() : null ;
                 $arguments[$key]['hasDefaultValue'] = $parameter->isDefaultValueAvailable();
-                $arguments[$key]['defaultValue'] = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue(): null;
+                $arguments[$key]['defaultValue'] = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null ;
                 $arguments[$key]['isNullable'] = $parameter->allowsNull();
             }
-
         }
 
         return $arguments;

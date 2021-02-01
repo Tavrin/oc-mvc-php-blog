@@ -70,7 +70,6 @@ class Request
         $this->server = $server;
         $this->pathInfo = null;
         $this->controller = null;
-
     }
 
     /**
