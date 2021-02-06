@@ -61,7 +61,20 @@ class Router
             return $params;
         }
 
-        throw new \RuntimeException(dump('Mauvaise route'));
+        throw new \RuntimeException(sprintf('Mauvaise route'), 404);
+    }
+
+    public static function matchError(\Throwable $e, Request $request)
+    {
+        $parsedRoutes = JsonParser::parseFile(self::ROUTER_CONFIG);
+
+        foreach ($parsedRoutes as $route) {
+            if ($route['route'] === 'error') {
+                return $route['controller'];
+            }
+        }
+
+        return  sprintf('No error page');
     }
 
     private function sanitizePath(string $pathInfo)
