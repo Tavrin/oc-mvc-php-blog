@@ -12,8 +12,12 @@ class ListenerService
         ['class' => 'App\core\event\listeners\FakeListener', 'callbackMethod' => 'onResponse', 'eventName' =>  EventNames::RESPONSE]
         ];
 
-    protected $instanciatedClasses;
 
+    protected $instantiatedClasses;
+
+    /**
+     * @var Dispatcher
+     */
     protected $dispatcher;
 
     public function __construct(Dispatcher $dispatcher)
@@ -25,23 +29,20 @@ class ListenerService
     public function instanciateClasses()
     {
         foreach ($this->listeners as $key => $listener) {
-            $instanciatedClass = new $listener['class'];
-            $this->instanciatedClasses[$key]['class'] = $instanciatedClass;
-            $this->instanciatedClasses[$key]['callbackMethod'] = $listener['callbackMethod'];
-            $this->instanciatedClasses[$key]['eventName'] = $listener['eventName'];
+            $instantiatedClass = new $listener['class'];
+            $this->instantiatedClasses[$key]['class'] = $instantiatedClass;
+            $this->instantiatedClasses[$key]['callbackMethod'] = $listener['callbackMethod'];
+            $this->instantiatedClasses[$key]['eventName'] = $listener['eventName'];
         }
-
-        dump($this->instanciatedClasses);
     }
 
     public function setListeners()
     {
-        foreach ($this->instanciatedClasses as $listener) {
+        foreach ($this->instantiatedClasses as $listener) {
             $class = $listener['class'];
             $callback = $listener['callbackMethod'];
             $eventName = $listener['eventName'];
             $class->setListener($eventName, $callback, $this->dispatcher);
         }
     }
-
 }

@@ -17,11 +17,9 @@ class FakeListener
         $listenerData[] = __CLASS__;
         $listenerData[] = $method;
         $dispatcher->addListener($listenerData, $eventName);
-
     }
 
     public function onResponse(object $event, string $eventName)
     {
-
     }
 }
