@@ -18,7 +18,7 @@ class ControllerResolver
         return $instanciatedController;
     }
 
-    protected function createController(string $controllerPath)
+    public static function createController(string $controllerPath)
     {
         [$class, $method] = explode('::', $controllerPath, 2);
         $class = new $class();

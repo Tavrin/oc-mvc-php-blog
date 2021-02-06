@@ -25,5 +25,9 @@
   {
     "route": "test_route",
     "path": "/testpath/test"
+  },
+  {
+    "route": "error",
+    "controller": "App\\src\\Controller\\ErrorController::indexAction"
   }
 ]

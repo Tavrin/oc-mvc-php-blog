@@ -44,7 +44,7 @@ class Request
     public $content;
 
     /**
-     * @var
+     * @var string
      */
     public $pathInfo;
 
@@ -97,9 +97,9 @@ class Request
     public function setPathInfo()
     {
         if (false === empty($this->server['PATH_INFO'])) {
-            $pathInfo = $this->server['PATH_INFO'];
+            $pathInfo = htmlspecialchars($this->server['PATH_INFO']);
         } else {
-            $pathInfo = $this->server['REQUEST_URI'];
+            $pathInfo = htmlspecialchars($this->server['REQUEST_URI']);
         }
 
 

@@ -20,7 +20,7 @@ class Controller
     protected function render(string $template = null, array $parameters = [], Response $response = null): Response
     {
         if (empty($this->twig) || empty($template)) {
-            dd("false");
+            throw new \RuntimeException(sprintf('Erreur serveur'), 500);
         }
 
         if (null === $response) {

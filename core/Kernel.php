@@ -11,6 +11,7 @@ use App\core\event\events\RequestEvent;
 use App\core\event\events\ControllerEvent;
 use App\core\controller\ControllerResolver;
 use App\core\controller\ArgumentsResolver;
+use App\core\routing\Router;
 
 
 /**
@@ -65,6 +66,19 @@ class Kernel
 
     /**
      * @param Request $request
+     * @return Response
+     */
+    public function handleRequest(Request $request)
+    {
+        try {
+            return $this->route($request);
+        } catch (\Exception $e) {
+            return $this->throwResponse($e, $request);
+        }
+    }
+    /**
+     * @param Request $request
+     * @return Response
      */
     public function route(Request $request):Response
     {
@@ -82,5 +96,16 @@ class Kernel
         $response = $controller(...$arguments);
 
         return $response;
+    }
+
+    public function throwResponse(\Throwable $e, Request $request): Response
+    {
+        $controller = Router::matchError($e, $request);
+
+        $response = ControllerResolver::createController($controller);
+        $message = $e->getMessage();
+        $code = $e->getCode();
+
+        return $response($message, $code);
     }
 }
