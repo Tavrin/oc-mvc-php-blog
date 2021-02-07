@@ -2,6 +2,8 @@
 
 namespace App\core;
 
+use App\core\database\DatabaseResolver;
+use App\core\database\EntityManager;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Event\Dispatcher;
@@ -12,6 +14,7 @@ use App\core\event\events\ControllerEvent;
 use App\core\controller\ControllerResolver;
 use App\core\controller\ArgumentsResolver;
 use App\core\routing\Router;
+use App\core\utils\JsonParser;
 
 
 /**
@@ -36,6 +39,11 @@ class Kernel
     protected $controllerResolver;
 
     /**
+     * @var EntityManager
+     */
+    public $entityManager;
+
+    /**
      * @var ArgumentsResolver
      */
     protected $argumentResolver;
@@ -54,9 +62,14 @@ class Kernel
         $dispatcher = $this->dispatcher;
         $this->listenerService = new ListenerService($dispatcher);
         $this->listenerService->setListeners();
-
-        $this->controllerResolver = new ControllerResolver();
+        $this->entityManager = DatabaseResolver::instanciateManager();
+        $this->controllerResolver = new ControllerResolver($this->entityManager);
         $this->argumentResolver = new ArgumentsResolver();
+    }
+
+    private function setDatabase()
+    {
+
     }
 
     public function setDispatcher()
@@ -102,7 +115,7 @@ class Kernel
     {
         $controller = Router::matchError($e, $request);
 
-        $response = ControllerResolver::createController($controller);
+        $response = $this->controllerResolver->getController($controller);
         $message = $e->getMessage();
         $code = $e->getCode();
 

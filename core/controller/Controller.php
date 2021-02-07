@@ -3,6 +3,8 @@
 
 namespace App\core\controller;
 
+use App\core\database\EntityManager;
+use phpDocumentor\Reflection\Types\This;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use App\Core\Http\Response;
@@ -12,8 +14,14 @@ class Controller
     protected const TEMPLATES_DIR = ROOT_DIR . '/templates/';
     protected $twig;
 
-    public function __construct()
+    /**
+     * @var EntityManager
+     */
+    protected  $entityManager;
+
+    public function __construct(EntityManager $entityManager)
     {
+        $this->entityManager = $entityManager;
         $loader = new FilesystemLoader(self::TEMPLATES_DIR);
         $this->twig = new Environment($loader);
     }
@@ -31,5 +39,10 @@ class Controller
         $response->setContent($content);
 
         return $response;
+    }
+
+    protected function getManager(): EntityManager
+    {
+        return $this->entityManager;
     }
 }

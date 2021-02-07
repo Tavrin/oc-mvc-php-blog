@@ -3,10 +3,21 @@
 
 namespace App\core\controller;
 
+use App\core\database\EntityManager;
 use App\Core\Http\Request;
 
 class ControllerResolver
 {
+    /**
+     * @var EntityManager
+     */
+    public $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     public function getController(Request $request)
     {
         if (!$controllerPath = $request->getAttribute('controller')) {
@@ -18,10 +29,11 @@ class ControllerResolver
         return $instanciatedController;
     }
 
-    public static function createController(string $controllerPath)
+    public function createController(string $controllerPath)
     {
+        $entityManager = $this->entityManager;
         [$class, $method] = explode('::', $controllerPath, 2);
-        $class = new $class();
+        $class = new $class($entityManager);
 
         return $controller = [$class, $method];
     }
