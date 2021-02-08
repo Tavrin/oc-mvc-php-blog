@@ -115,7 +115,7 @@ class Kernel
     {
         $controller = Router::matchError($e, $request);
 
-        $response = $this->controllerResolver->getController($controller);
+        $response = $this->controllerResolver->createController($controller);
         $message = $e->getMessage();
         $code = $e->getCode();
 

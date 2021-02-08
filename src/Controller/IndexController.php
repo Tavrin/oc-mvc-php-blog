@@ -11,6 +11,8 @@ class IndexController extends Controller
 {
     public function indexAction(Request $request)
     {
+
+        dump($this->entityManager->getConnection());
         return $this->render('test.html.twig',[
             'title' => "Twig Title modifié"
         ]);

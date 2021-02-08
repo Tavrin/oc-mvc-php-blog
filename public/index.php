@@ -7,7 +7,7 @@ define('ROOT_DIR', dirname(__DIR__));
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(ROOT_DIR);
+$dotenv = Dotenv\Dotenv::createImmutable(ROOT_DIR, '.env.local');
 
 $dotenv->load();
 
