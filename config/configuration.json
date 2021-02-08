@@ -1,0 +1,6 @@
+{
+  "database" :
+  {
+    "url" : "$_ENV['DATABASE_URL']"
+  }
+}
