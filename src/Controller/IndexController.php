@@ -12,7 +12,11 @@ class IndexController extends Controller
     public function indexAction(Request $request)
     {
 
-        dump($this->entityManager->getConnection());
+        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM pofsd');
+
+         $query->execute();
+       $result = $query->fetchAll();
+        dump($result);
         return $this->render('test.html.twig',[
             'title' => "Twig Title modifié"
         ]);

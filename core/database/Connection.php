@@ -18,14 +18,14 @@ class Connection extends PDO
         parent::__construct($dsn, (string) $user, (string) $password);
     }
 
-    public function query($statement, $mode = PDO::ATTR_DEFAULT_FETCH_MODE, $arg3 = null, array $ctorargs = null)
+    public function query($statement)
     {
-        $statement = parent::query($statement, $mode, $arg3, $ctorargs);
+        $statement = parent::query($statement);
 
         return $statement;
     }
 
-    public function prepare($query, $options = null)
+    public function prepare($query, $options = array())
     {
         $statement = parent::prepare($query, $options);
 
