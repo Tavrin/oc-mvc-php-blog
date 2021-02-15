@@ -59,12 +59,16 @@ class Kernel
             $this->setDispatcher();
         }
 
+
         $dispatcher = $this->dispatcher;
         $this->listenerService = new ListenerService($dispatcher);
         $this->listenerService->setListeners();
-        $this->entityManager = DatabaseResolver::instanciateManager();
-        $this->controllerResolver = new ControllerResolver($this->entityManager);
         $this->argumentResolver = new ArgumentsResolver();
+
+        $this->entityManager = DatabaseResolver::instanciateManager();
+        $this->controllerResolver = new ControllerResolver();
+
+
     }
 
     private function setDatabase()
@@ -98,7 +102,7 @@ class Kernel
         $event = new RequestEvent($this, $request);
         $this->dispatcher->dispatch($event, EventNames::REQUEST);
 
-        $controller = $this->controllerResolver->getController($request);
+        $controller = $this->controllerResolver->getController($request, $this->entityManager);
 
         $event = new ControllerEvent($this, $controller);
         $this->dispatcher->dispatch($event, EventNames::CONTROLLER);
@@ -111,14 +115,12 @@ class Kernel
         return $response;
     }
 
-    public function throwResponse(\Throwable $e, Request $request): Response
+    public function throwResponse(\Throwable $e): Response
     {
-        $controller = Router::matchError($e, $request);
-
-        $response = $this->controllerResolver->createController($controller);
+        $controller = Router::matchError($e);
+        $response = ControllerResolver::createController($controller);
         $message = $e->getMessage();
         $code = $e->getCode();
-
-        return $response($message, $code);
+         return $response($e, $message, $code);
     }
 }

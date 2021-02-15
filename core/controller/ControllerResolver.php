@@ -11,27 +11,30 @@ class ControllerResolver
     /**
      * @var EntityManager
      */
-    public $entityManager;
+    public $entityManager = null;
 
-    public function __construct(EntityManager $entityManager)
+    public function __construct()
     {
-        $this->entityManager = $entityManager;
     }
 
-    public function getController(Request $request)
+    public function getController(Request $request, EntityManager $entityManager)
     {
         if (!$controllerPath = $request->getAttribute('controller')) {
             return false;
         }
 
-        $instanciatedController = $this->createController($controllerPath);
+        $instanciatedController = self::createController($controllerPath, $entityManager);
 
         return $instanciatedController;
     }
 
-    public function createController(string $controllerPath)
+    /**
+     * @param string $controllerPath
+     * @param EntityManager $entityManager
+     * @return array
+     */
+    public static function createController(string $controllerPath, EntityManager $entityManager = null):array
     {
-        $entityManager = $this->entityManager;
         [$class, $method] = explode('::', $controllerPath, 2);
         $class = new $class($entityManager);
 

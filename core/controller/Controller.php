@@ -19,7 +19,7 @@ class Controller
      */
     protected  $entityManager;
 
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager = null)
     {
         $this->entityManager = $entityManager;
         $loader = new FilesystemLoader(self::TEMPLATES_DIR);

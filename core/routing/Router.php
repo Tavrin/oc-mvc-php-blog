@@ -64,7 +64,7 @@ class Router
         throw new \RuntimeException(sprintf('Mauvaise route'), 404);
     }
 
-    public static function matchError(\Throwable $e, Request $request)
+    public static function matchError(\Throwable $e)
     {
         $parsedRoutes = JsonParser::parseFile(self::ROUTER_CONFIG);
 
