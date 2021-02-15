@@ -15,6 +15,8 @@ use App\core\controller\ControllerResolver;
 use App\core\controller\ArgumentsResolver;
 use App\core\routing\Router;
 use App\core\utils\JsonParser;
+use http\Exception\RuntimeException;
+use function PHPUnit\Framework\throwException;
 
 
 /**
@@ -111,6 +113,10 @@ class Kernel
 
        /* $this->argumentResolver->getArguments($request, $controller); */
         $response = $controller(...$arguments);
+
+        if (!$response instanceof Response) {
+            throw new \RuntimeException(sprintf('Mauvaise réponse'), 500);
+        }
 
         return $response;
     }
