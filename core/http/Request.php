@@ -44,6 +44,13 @@ class Request
     public $content;
 
     /**
+     * @var string
+     */
+    public $pathInfo;
+
+    public $controller;
+
+    /**
      * Request constructor.
      * @param array $query
      * @param array $request
@@ -61,6 +68,8 @@ class Request
         $this->cookies = $cookies;
         $this->files = $files;
         $this->server = $server;
+        $this->pathInfo = null;
+        $this->controller = null;
     }
 
     /**
@@ -74,5 +83,62 @@ class Request
     private static function getGlobals(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null): self
     {
         return new static($query, $request, $attributes, $cookies, $files, $server, $content);
+    }
+
+    public function getPathInfo()
+    {
+        if (null === $this->pathInfo) {
+            $this->pathInfo = $this->setPathInfo();
+        }
+
+        return $this->pathInfo;
+    }
+
+    public function setPathInfo()
+    {
+        if (false === empty($this->server['PATH_INFO'])) {
+            $pathInfo = htmlspecialchars($this->server['PATH_INFO']);
+        } else {
+            $pathInfo = htmlspecialchars($this->server['REQUEST_URI']);
+        }
+
+
+        return $pathInfo;
+    }
+
+    public function setController(array $controller)
+    {
+        if (empty($controller['route']) || empty($controller['path']) || empty($controller['controller'])) {
+            return false;
+        }
+        $this->controller = $controller ;
+    }
+
+    public function getController()
+    {
+        if (!empty($controller = $this->controller)) {
+            return $controller;
+        }
+        return false;
+    }
+
+    public function setAttribute(string $key, $value)
+    {
+        $this->attributes[$key] = $value;
+    }
+
+    public function addAttribute(array $attributes = [])
+    {
+        $this->attributes = array_replace($this->attributes, $attributes);
+    }
+
+    public function getAttribute(string $key)
+    {
+        return \array_key_exists($key, $this->attributes) ? $this->attributes[$key] : null;
+    }
+
+    public function hasAttribute(string $key):bool
+    {
+        return \array_key_exists($key, $this->attributes);
     }
 }

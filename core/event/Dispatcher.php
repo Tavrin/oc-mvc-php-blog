@@ -10,12 +10,32 @@ class Dispatcher
 
     public function dispatch(object $event, string $eventName = null)
     {
-        dump($event);
-        dump($eventName);
+        $listeners = $this->getListeners($eventName);
+
+        foreach ($listeners as $listener) {
+            $className = $listener[0];
+            $methodeName = $listener[1];
+            $className->$methodeName($event, $eventName);
+        }
     }
 
-    public function addListener($listener, string $eventName)
+    public function addListener(array $listener, string $eventName)
     {
         $this->listeners[$eventName][] = $listener;
+    }
+
+    public function getListeners(string $eventName = null)
+    {
+        if (null === $eventName || empty($this->listeners[$eventName])) {
+            return [];
+        }
+
+        $listenersList = [];
+
+        foreach ($this->listeners[$eventName] as $listener) {
+            $listenersList[] = $listener;
+        }
+
+        return $listenersList;
     }
 }
