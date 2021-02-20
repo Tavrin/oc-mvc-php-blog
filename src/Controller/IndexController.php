@@ -13,7 +13,9 @@ class IndexController extends Controller
     {
         $content['title'] = 'Homepage';
 
-
+        return $this->render('pages/home.html.twig',[
+            'content' => $content
+        ]);
     }
 
     public function showAction(Request $request, $slug)
