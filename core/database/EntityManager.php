@@ -3,7 +3,8 @@
 
 namespace App\core\database;
 
-use App\core\database\Connection;
+
+use PDO;
 
 class EntityManager
 {
@@ -25,5 +26,20 @@ class EntityManager
     public function getConnection()
     {
         return $this->connection;
+    }
+
+    public function findAll(string $entity)
+    {
+        $query = $this->getConnection()->prepare('SELECT * FROM ' . $entity);
+        $query->execute();
+        return $query->fetchAll();
+
+    }
+
+    public function findBy(string $entity, string $row, string $criteria, array $order = null, int $limit = null)
+    {
+        $query = $this->getConnection()->prepare('SELECT * FROM ' . $entity . ' WHERE ' . $row . '= :criteria');
+        $query->execute([':criteria'=>$criteria]);
+        return $query->fetchAll();
     }
 }

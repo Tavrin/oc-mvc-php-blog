@@ -23,7 +23,16 @@ class Controller
     {
         $this->entityManager = $entityManager;
         $loader = new FilesystemLoader(self::TEMPLATES_DIR);
-        $this->twig = new Environment($loader);
+        if (isset($_ENV['ENV']) && $_ENV['ENV'] === 'dev') {
+            $this->twig = new Environment($loader, [
+                'debug' => true
+            ]);
+            $this->twig->addExtension(new \Twig\Extension\DebugExtension());
+        } else {
+            $this->twig = new Environment($loader, [
+                'debug' => true
+            ]);
+        }
     }
     protected function render(string $template = null, array $parameters = [], Response $response = null): Response
     {

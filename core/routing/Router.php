@@ -43,6 +43,15 @@ class Router
 
             foreach ($explodedPath['url'] as $key => $explodedUrl) {
                 $explodedRoute = $explodedPath['route'][$key];
+                if ($explodedRoute === '') {
+                    $breadcrumbs['path'] = '/';
+                    $breadcrumbs['name'] = 'accueil';
+                } else {
+                    $breadcrumbs['path'] = '/' . $explodedRoute;
+                    $breadcrumbs['name'] = $explodedRoute;
+                }
+
+                $params['breadcrumb'][] = $breadcrumbs;
                 if (preg_match('/{(.*?)}/', $explodedRoute, $match)) {
                     $slugs[$match[1]] = $explodedUrl;
                     continue;
