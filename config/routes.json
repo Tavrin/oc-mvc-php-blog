@@ -28,6 +28,7 @@
   },
   {
     "route": "error",
+    "path": "/error",
     "controller": "App\\src\\Controller\\ErrorController::indexAction"
   }
 ]

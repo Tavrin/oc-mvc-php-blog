@@ -9,28 +9,23 @@ use App\Core\Http\Request;
 class ControllerResolver
 {
     /**
-     * @var EntityManager
+     * @param Request $request
+     * @param EntityManager|null $entityManager
+     * @return array|false
      */
-    public $entityManager = null;
-
-    public function __construct()
-    {
-    }
-
-    public function getController(Request $request, EntityManager $entityManager)
+    public function getController(Request $request, EntityManager $entityManager = null)
     {
         if (!$controllerPath = $request->getAttribute('controller')) {
             return false;
         }
 
-        $instanciatedController = self::createController($controllerPath, $entityManager);
+        return self::createController($controllerPath, $entityManager);
 
-        return $instanciatedController;
     }
 
     /**
      * @param string $controllerPath
-     * @param EntityManager $entityManager
+     * @param EntityManager|null $entityManager
      * @return array
      */
     public static function createController(string $controllerPath, EntityManager $entityManager = null):array

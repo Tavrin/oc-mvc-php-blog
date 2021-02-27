@@ -9,7 +9,11 @@ class BlogController extends Controller
 {
     public function indexAction(Request $request)
     {
-        dd($this->entityManager->findBy('post', 'id', '45687'));
+        $post = $this->entityManager->findBy('post', 'title', 'test postsss');
+        if (empty($post)) {
+            $this->get404();
+        }
+        dd($post);
         $content = [];
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
         $this->entityManager->findAll('post');

@@ -30,7 +30,7 @@ class Controller
             $this->twig->addExtension(new \Twig\Extension\DebugExtension());
         } else {
             $this->twig = new Environment($loader, [
-                'debug' => true
+                'debug' => false
             ]);
         }
     }
@@ -53,5 +53,11 @@ class Controller
     protected function getManager(): EntityManager
     {
         return $this->entityManager;
+    }
+
+    protected function get404()
+    {
+        header("location:/error");
+        exit();
     }
 }
