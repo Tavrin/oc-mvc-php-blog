@@ -49,6 +49,10 @@ class Request
     public $pathInfo;
 
     public $controller;
+    /**
+     * @var string
+     */
+    protected $method;
 
     /**
      * Request constructor.
@@ -70,6 +74,7 @@ class Request
         $this->server = $server;
         $this->pathInfo = null;
         $this->controller = null;
+        $this->method = null;
     }
 
     /**
@@ -85,7 +90,10 @@ class Request
         return new static($query, $request, $attributes, $cookies, $files, $server, $content);
     }
 
-    public function getPathInfo()
+    /**
+     * @return string
+     */
+    public function getPathInfo(): string
     {
         if (null === $this->pathInfo) {
             $this->pathInfo = $this->setPathInfo();
@@ -94,7 +102,10 @@ class Request
         return $this->pathInfo;
     }
 
-    public function setPathInfo()
+    /**
+     * @return string
+     */
+    public function setPathInfo(): string
     {
         if (false === empty($this->server['PATH_INFO'])) {
             $pathInfo = htmlspecialchars($this->server['PATH_INFO']);
@@ -140,5 +151,17 @@ class Request
     public function hasAttribute(string $key):bool
     {
         return \array_key_exists($key, $this->attributes);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        if (empty($this->method)) {
+            $this->method = $this->server['REQUEST_METHOD'];
+        }
+
+        return $this->method;
     }
 }
