@@ -501,6 +501,10 @@ h1 {
     max-height: 100%;
 }
 
+.mh-80vh {
+    min-height: 80vh;
+}
+
 /* FLEX */
 
 .d-f {

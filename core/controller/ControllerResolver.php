@@ -13,25 +13,26 @@ class ControllerResolver
      * @param EntityManager|null $entityManager
      * @return array|false
      */
-    public function getController(Request $request, EntityManager $entityManager = null)
+    public function getController(Request $request, ?EntityManager $entityManager = null)
     {
         if (!$controllerPath = $request->getAttribute('controller')) {
             return false;
         }
 
-        return self::createController($controllerPath, $entityManager);
+        return self::createController($controllerPath, $request, $entityManager);
 
     }
 
     /**
      * @param string $controllerPath
+     * @param Request|null $request
      * @param EntityManager|null $entityManager
      * @return array
      */
-    public static function createController(string $controllerPath, EntityManager $entityManager = null):array
+    public static function createController(string $controllerPath, Request $request = null,EntityManager $entityManager = null):array
     {
         [$class, $method] = explode('::', $controllerPath, 2);
-        $class = new $class($entityManager);
+        $class = new $class($request, $entityManager);
 
         return $controller = [$class, $method];
     }

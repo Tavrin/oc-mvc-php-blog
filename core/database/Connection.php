@@ -20,7 +20,7 @@ class Connection extends PDO
         try {
            return parent::__construct($dsn, (string) $user, (string) $password);
         } catch (\PDOException $e) {
-           return $e;
+            throw $e;
         }
     }
 

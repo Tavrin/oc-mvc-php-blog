@@ -4,21 +4,20 @@ namespace App\src\Controller;
 
 use App\core\controller\Controller;
 use App\Core\Http\Request;
+use http\Exception\RuntimeException;
 
 class BlogController extends Controller
 {
     public function indexAction(Request $request)
     {
-        $post = $this->entityManager->findBy('post', 'title', 'test postsss');
-        if (empty($post)) {
-            $this->get404();
-        }
-        dd($post);
+
         $content = [];
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
-        $this->entityManager->findAll('post');
+        if (empty($post = $this->getManager()->findAll('post'))) {
+            throw new \RuntimeException("pas d'article de blog trouvé","500");
+        }
         return $this->render('blog/index.html.twig',[
-            'content' => $content ? $content:null
+            'content' => $post
         ]);
     }
 }

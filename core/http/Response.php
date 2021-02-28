@@ -6,7 +6,7 @@ namespace App\Core\Http;
 
 class Response
 {
-    protected $content;
+    public $content;
 
     public function setContent(string $content)
     {
