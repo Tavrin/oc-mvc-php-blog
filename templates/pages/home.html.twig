@@ -1,0 +1,103 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block main %}
+    <main>
+        <div class="mw-70 m-auto mt-3 mb-3 d-f fd-c">
+            <section id="home-presentation" class="d-f jc-c m-auto pt-3 pb-3 mb-3">
+                <div class="ta-l fb-50">
+                    <h1 class="fw-600 fs-3-5 lh-3c5">Bonjour,<br> moi c'est Etienne Doux, bienvenue sur mon blog</h1>
+                    <h5 class="mt-0-5">Web backend / frontend / gamedev / design / digital art</h5>
+                    <div class="m-auto ta-c d-f jc-c mt-3">
+                        <a href="https://tavrin.io">
+                            <button class="m-0-5 button-bb-wc br-5 fw-600">Portfolio</button>
+                        </a>
+                        <a href="#">
+                            <button class="m-0-5 button-bb-wc br-5 fw-600">Mon CV</button>
+                        </a>
+                    </div>
+                </div>
+                <div class="ta-c fb-50">
+                    <img src="/assets/img/photo-etienne.jpg" class="mw-50 h-a br-50">
+                </div>
+            </section>
+            <section id="home-articles" class=" m-auto pt-3">
+                <div class="ta-c">
+                    <h1 class="fw-600">Derniers articles</h1>
+                </div>
+                <div class="d-f fd-r flex-w grid-3 jc-sb mt-1 pb-3">
+                    <div>
+                        <img src="http://via.placeholder.com/376x220" alt="">
+                        <p class="pt-1 pb-1 fs-1c3 fw-700">
+                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
+                            Lorem ipsum texte de l'article etc
+                        </p>
+                    </div>
+                    <div>
+                        <img src="http://via.placeholder.com/376x220" alt="">
+                        <p class="pt-1 pb-1 fs-1c3 fw-700">
+                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
+                            Lorem ipsum texte de l'article etc
+                        </p>
+                    </div>
+                    <div>
+                        <img src="http://via.placeholder.com/376x220" alt="">
+                        <p class="pt-1 pb-1 fs-1c3 fw-700">
+                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
+                            Lorem ipsum texte de l'article etc
+                        </p>
+                    </div>
+                    <div>
+                        <img src="http://via.placeholder.com/376x220" alt="">
+                        <p class="pt-1 pb-1 fs-1c3 fw-700">
+                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
+                            Lorem ipsum texte de l'article etc
+                        </p>
+                    </div>
+                    <div>
+                        <img src="http://via.placeholder.com/376x220" alt="">
+                        <p class="pt-1 pb-1 fs-1c3 fw-700">
+                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
+                            Lorem ipsum texte de l'article etc
+                        </p>
+                    </div>
+                    <div>
+                        <img src="http://via.placeholder.com/376x220" alt="">
+                        <p class="pt-1 pb-1 fs-1c3 fw-700">
+                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
+                            Lorem ipsum texte de l'article etc
+                        </p>
+                    </div>
+                    <div>
+                        <img src="http://via.placeholder.com/376x220" alt="">
+                        <p class="pt-1 pb-1 fs-1c3 fw-700">
+                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
+                            Lorem ipsum texte de l'article etc
+                        </p>
+                    </div>
+                    <div>
+                        <img src="http://via.placeholder.com/376x220" alt="">
+                        <p class="pt-1 pb-1 fs-1c3 fw-700">
+                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
+                            Lorem ipsum texte de l'article etc
+                        </p>
+                    </div>
+                    <div>
+                        <img src="http://via.placeholder.com/376x220" alt="">
+                        <p class="pt-1 pb-1 fs-1c3 fw-700">
+                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
+                            Lorem ipsum texte de l'article etc
+                        </p>
+                    </div>
+                </div>
+                <div class="ta-c mb-3">
+                    <a href="/blog"> Voir tous les articles</a>
+                </div>
+            </section>
+            <section id="home-contact">
+                <div  class="m-auto mw-70">
+                    {% include 'forms/contact.html.twig' %}
+                </div>
+            </section>
+        </div>
+    </main>
+{% endblock %}

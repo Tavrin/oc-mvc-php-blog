@@ -4,7 +4,7 @@
 namespace App\core\controller;
 
 use App\core\database\EntityManager;
-use phpDocumentor\Reflection\Types\This;
+use App\Core\Http\Request;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use App\Core\Http\Response;
@@ -12,18 +12,33 @@ use App\Core\Http\Response;
 class Controller
 {
     protected const TEMPLATES_DIR = ROOT_DIR . '/templates/';
+
     protected $twig;
 
-    /**
-     * @var EntityManager
-     */
-    protected  $entityManager;
+    private $entityManager;
 
-    public function __construct(EntityManager $entityManager)
+    /**
+     * @var Request
+     */
+    protected $request;
+
+    public $renderContent = null;
+
+    public function __construct(Request $request = null, EntityManager $entityManager = null)
     {
+        $this->request = $request;
         $this->entityManager = $entityManager;
         $loader = new FilesystemLoader(self::TEMPLATES_DIR);
-        $this->twig = new Environment($loader);
+        if (isset($_ENV['ENV']) && $_ENV['ENV'] === 'dev') {
+            $this->twig = new Environment($loader, [
+                'debug' => true
+            ]);
+            $this->twig->addExtension(new \Twig\Extension\DebugExtension());
+        } else {
+            $this->twig = new Environment($loader, [
+                'debug' => false
+            ]);
+        }
     }
     protected function render(string $template = null, array $parameters = [], Response $response = null): Response
     {
@@ -34,15 +49,35 @@ class Controller
         if (null === $response) {
             $response = new Response();
         }
+        $this->setControllerContent($template, $parameters);
 
-        $content = $this->twig->render($template, $parameters);
-        $response->setContent($content);
+        $response->setContent($this->renderContent);
 
         return $response;
     }
 
+    public function setControllerContent($template, $parameters)
+    {
+        $this->renderContent = $this->twig->render($template, $parameters);
+    }
+
+    public function getControllerConter()
+    {
+        return $this->renderContent;
+    }
+
     protected function getManager(): EntityManager
     {
-        return $this->entityManager;
+        if (!empty($this->entityManager)) {
+            return $this->entityManager;
+        } else {
+            throw new \RuntimeException("Entity manager is of type : " . gettype($this->entityManager) . " and is called for this controller: " . $this->request->getAttribute('controller'), 500);
+        }
+    }
+
+    protected function get404()
+    {
+        header("location:/error");
+        exit();
     }
 }

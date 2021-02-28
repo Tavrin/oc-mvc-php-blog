@@ -3,6 +3,7 @@
 
 namespace App\core\database;
 
+use App\core\Kernel;
 use PDO;
 
 class Connection extends PDO
@@ -15,7 +16,12 @@ class Connection extends PDO
     public function __construct(string $dsn, string $user, string $password, array $params)
     {
         $this->params = $params;
-        parent::__construct($dsn, (string) $user, (string) $password);
+
+        try {
+           return parent::__construct($dsn, (string) $user, (string) $password);
+        } catch (\PDOException $e) {
+            throw $e;
+        }
     }
 
     public function query($statement)

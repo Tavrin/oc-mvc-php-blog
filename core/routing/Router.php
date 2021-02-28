@@ -43,6 +43,15 @@ class Router
 
             foreach ($explodedPath['url'] as $key => $explodedUrl) {
                 $explodedRoute = $explodedPath['route'][$key];
+                if ($explodedRoute === '') {
+                    $breadcrumbs['path'] = '/';
+                    $breadcrumbs['name'] = 'accueil';
+                } else {
+                    $breadcrumbs['path'] = '/' . $explodedRoute;
+                    $breadcrumbs['name'] = $explodedRoute;
+                }
+
+                $params['breadcrumb'][] = $breadcrumbs;
                 if (preg_match('/{(.*?)}/', $explodedRoute, $match)) {
                     $slugs[$match[1]] = $explodedUrl;
                     continue;
@@ -64,7 +73,7 @@ class Router
         throw new \RuntimeException(sprintf('Mauvaise route'), 404);
     }
 
-    public static function matchError(\Throwable $e, Request $request)
+    public static function matchError(\Throwable $e)
     {
         $parsedRoutes = JsonParser::parseFile(self::ROUTER_CONFIG);
 

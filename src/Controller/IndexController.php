@@ -11,14 +11,10 @@ class IndexController extends Controller
 {
     public function indexAction(Request $request)
     {
+        $content['title'] = 'Homepage';
 
-        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM pofsd');
-
-         $query->execute();
-       $result = $query->fetchAll();
-        dump($result);
-        return $this->render('test.html.twig',[
-            'title' => "Twig Title modifié"
+        return $this->render('pages/home.html.twig',[
+            'content' => $content
         ]);
     }
 

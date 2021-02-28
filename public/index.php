@@ -15,3 +15,4 @@ $kernel = new Kernel();
 $request = Request::create();
 $response = $kernel->handleRequest($request);
 $response->send();
+exit();

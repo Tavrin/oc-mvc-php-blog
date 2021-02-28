@@ -33,7 +33,12 @@ class ArgumentsResolver
         return $params;
     }
 
-    private function createArguments(array $controller)
+    /**
+     * @param array $controller
+     * @return array
+     * @throws \ReflectionException
+     */
+    private function createArguments(array $controller): array
     {
         $arguments = [];
 
@@ -52,7 +57,10 @@ class ArgumentsResolver
         return $arguments;
     }
 
-    private function setResolvers()
+    /**
+     * @return array
+     */
+    private function setResolvers(): array
     {
         return [
             new RequestAttributeResolver(),

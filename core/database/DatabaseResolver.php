@@ -9,10 +9,12 @@ use App\core\database\EntityManager;
 
 class DatabaseResolver
 {
-    public static function instanciateManager(): EntityManager
+    public static function instantiateManager(): ?EntityManager
     {
         $url = self::getDatabaseUrl();
-
+        if (empty($url)) {
+            return null;
+        }
         return new EntityManager($url);
     }
 
