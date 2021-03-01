@@ -44,4 +44,12 @@ class Connection extends PDO
 
         return $result;
     }
+
+    public function delete($table, $conditions)
+    {
+        $statement = $this->prepare('DELETE FROM' . $table . 'WHERE' . implode(' AND ', $conditions));
+
+        return $this->exec($statement);
+
+    }
 }

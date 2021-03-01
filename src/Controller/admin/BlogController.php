@@ -4,6 +4,8 @@
 namespace App\src\Controller\admin;
 
 use App\core\controller\Controller;
+use App\Core\Http\Request;
+use App\src\Entity\Post;
 
 class BlogController extends Controller
 {
@@ -17,9 +19,9 @@ class BlogController extends Controller
 
     }
 
-    public function newAction()
+    public function newAction(Request $request)
     {
-
+        $post = new Post();
     }
 
     public function editAction()

@@ -9,16 +9,22 @@ class Response
     /**
      * @var string
      */
-    protected $content;
+    protected string $content;
 
     /**
      * @var int
      */
-    protected $statusCode;
+    protected int $statusCode;
+
+    /**
+     * @var string
+     */
+    protected string $statusText;
 
     public function __construct(?string $content = '', int $status = 200)
     {
         $this->setContent($content);
+        $this->setStatusCode($status);
     }
 
     /**
@@ -39,12 +45,20 @@ class Response
 
     /**
      * @param int $code
-     * @return $this
+     * @param null $statusText
+     * @return object
      */
-    public function setStatusCode(int $code): object
+    public function setStatusCode(int $code, $statusText = null): object
     {
         $this->statusCode = $code;
 
+        if (!empty($statusText)) {
+            $this->statusText = $statusText;
+        } elseif (isset(StatustTexts::TEXTS[$code])) {
+            $this->statusText = StatustTexts::TEXTS[$code];
+        } else {
+            $this->statusText = 'Unknown Status';
+        }
         return $this;
     }
 
@@ -55,6 +69,7 @@ class Response
 
     public function send(): Response
     {
+        $this->sendHeaders();
         $this->sendContent();
 
         return $this;
@@ -64,6 +79,18 @@ class Response
     {
         echo $this->content;
 
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function sendHeaders(): Response
+    {
+        if (headers_sent()) {
+            return $this;
+        }
+        header(sprintf('HTTP/1.1  %s %s', $this->statusCode, $this->statusText), true, $this->statusCode);
         return $this;
     }
 }

@@ -130,9 +130,8 @@ class Kernel
         $message = $e->getMessage();
         $code = $e->getCode();
         $controllerResponse = $controller($e, $message, $code);
-        $response = new Response();
-        $response->setContent($controllerResponse->content);
-        $response->send();
+        $code === 404 ? $controllerResponse->setStatusCode(404):$controllerResponse->setStatusCode(500);
+        $controllerResponse->send();
         exit();
     }
 }

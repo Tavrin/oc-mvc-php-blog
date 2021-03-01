@@ -4,6 +4,7 @@
 namespace App\core\database;
 
 
+use App\core\utils\JsonParser;
 use PDO;
 
 class EntityManager
@@ -12,6 +13,13 @@ class EntityManager
      * @var Connection
      */
     private $connection;
+
+    /**
+     * @var array
+     */
+    private $entityData;
+
+    public const ENTITY_DATA_DIR = ROOT_DIR . '/config/entities/';
 
     public function __construct(string $url)
     {
@@ -23,23 +31,40 @@ class EntityManager
         return Driver::getConnection($url);
     }
 
-    public function getConnection()
+    public function getConnection(): Connection
     {
         return $this->connection;
     }
 
-    public function findAll(string $entity)
+    /**
+     * @param string $entityName
+     * @return array|null
+     */
+    public function getEntityData(string $entityName): ?array
     {
-        $query = $this->getConnection()->prepare('SELECT * FROM ' . $entity);
-        $query->execute();
-        return $query->fetchAll();
+        if (isset ($this->entityData[$entityName])) {
+            return $this->entityData[$entityName];
+        }
+
+        $currentFile = self::ENTITY_DATA_DIR . $entityName . '.json';
+
+        if (file_exists($currentFile)) {
+            $entityData = JsonParser::parseFile($currentFile);
+            $this->entityData[$entityName] = $entityData;
+            return $entityData;
+        }
+
+        return null;
+    }
+
+    public function save($entity)
+    {
 
     }
 
-    public function findBy(string $entity, string $row, string $criteria, array $order = null, int $limit = null)
+    public function remove($entity)
     {
-        $query = $this->getConnection()->prepare('SELECT * FROM ' . $entity . ' WHERE ' . $row . '= :criteria');
-        $query->execute([':criteria'=>$criteria]);
-        return $query->fetchAll();
+        $entity;
+
     }
 }

@@ -1,0 +1,69 @@
+{
+    "repository" : "App\\src\\Repository\\PostRepository",
+    "entity" : "App\\src\\Entity\\Post",
+    "table" : "post",
+    "id" :
+    {
+      "type" : "integer"
+    },
+    "fields" :
+    {
+        "title" :
+            {
+              "fieldName" : "title",
+              "type": "string"
+            },
+        "header" :
+            {
+              "fieldName" : "header",
+              "type": "text"
+            },
+        "content" :
+            {
+              "fieldName" : "content",
+              "type": "text"
+            },
+        "readmore" :
+            {
+              "fieldName" : "readmore",
+              "type": "json"
+            },
+        "metaTitle" :
+            {
+              "fieldName" : "meta_title",
+              "type": "string"
+            },
+        "metaDescription" :
+            {
+              "fieldName" : "meta_description",
+              "type": "string"
+            },
+        "listingText" :
+            {
+              "fieldName" : "listing_text",
+              "type": "string"
+            },
+        "slug" :
+            {
+              "fieldName" : "slug",
+              "type": "string"
+            },
+        "author" :
+            {
+              "fieldName" : "user_id",
+              "type": "association",
+              "associatedEntity": "user",
+              "class": "App\\src\\Repository\\UserRepository"
+            },
+        "publishedAt" :
+            {
+              "fieldName" : "created_at",
+              "type": "datetime"
+            },
+        "updatedAt" :
+            {
+            "fieldName" : "updated_at",
+            "type": "datetime"
+            }
+    }
+}
