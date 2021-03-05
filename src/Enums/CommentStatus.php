@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\src\Enums;
+namespace App\Enums;
 
 
 class CommentStatus

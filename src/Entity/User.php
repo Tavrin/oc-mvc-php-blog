@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\src\Entity;
+namespace App\Entity;
 
 
 class User
@@ -68,6 +68,11 @@ class User
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id)
+    {
+        $this->id = $id;
     }
 
     public function getFirstName(): string

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\core\http;
+namespace Core\http;
 
 
 class StatustTexts

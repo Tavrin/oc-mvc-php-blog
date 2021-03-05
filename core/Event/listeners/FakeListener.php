@@ -1,9 +1,9 @@
 <?php
 
 
-namespace App\core\event\listeners;
+namespace Core\Event\listeners;
 
-use App\Core\Event\Dispatcher;
+use Core\Event\Dispatcher;
 
 class FakeListener
 {

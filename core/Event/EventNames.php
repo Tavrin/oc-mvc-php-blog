@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\core\event;
+namespace Core\Event;
 
 
 class EventNames

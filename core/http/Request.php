@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Http;
+namespace Core\http;
 
 /**
  * Class Request
@@ -9,34 +9,34 @@ namespace App\Core\Http;
 class Request
 {
     /**
-     * @var
+     * @var array
      */
-    public $request;
+    public array $request;
 
     /**
-     * @var
+     * @var array
      */
-    public $query;
+    public array $query;
 
     /**
-     * @var
+     * @var array
      */
-    public $attributes;
+    public array $attributes;
 
     /**
-     * @var
+     * @var array
      */
-    public $cookies;
+    public array $cookies;
 
     /**
-     * @var
+     * @var array
      */
-    public $files;
+    public array $files;
 
     /**
-     * @var
+     * @var array
      */
-    public $server;
+    public array $server;
 
     /**
      * @var
@@ -44,15 +44,15 @@ class Request
     public $content;
 
     /**
-     * @var string
+     * @var ?string
      */
-    public $pathInfo;
+    public ?string $pathInfo;
 
     public $controller;
     /**
-     * @var string
+     * @var ?string
      */
-    protected $method;
+    protected ?string $method;
 
     /**
      * Request constructor.
@@ -123,6 +123,7 @@ class Request
             return false;
         }
         $this->controller = $controller ;
+        return true;
     }
 
     public function getController()

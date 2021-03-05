@@ -1,13 +1,13 @@
 <?php
 
 
-namespace App\core\event\events;
+namespace Core\Event\Events;
 
-use App\core\Kernel;
+use Core\Kernel;
 
 class ControllerEvent
 {
-    private $kernel;
+    private Kernel $kernel;
     private $controller;
 
     public function __construct(Kernel $kernel, $controller)

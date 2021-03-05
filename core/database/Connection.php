@@ -1,9 +1,9 @@
 <?php
 
 
-namespace App\core\database;
+namespace Core\database;
 
-use App\core\Kernel;
+use Core\Kernel;
 use PDO;
 
 class Connection extends PDO

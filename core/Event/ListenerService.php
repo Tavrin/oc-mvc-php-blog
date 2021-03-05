@@ -1,15 +1,13 @@
 <?php
 
-namespace App\core\event;
-
-use App\core\event\listeners\RouterListener;
+namespace Core\Event;
 
 class ListenerService
 {
 
-    public $listeners = [
-        ['class' => 'App\core\event\listeners\RouterListener', 'callbackMethod' => 'onRequest', 'eventName' => EventNames::REQUEST],
-        ['class' => 'App\core\event\listeners\FakeListener', 'callbackMethod' => 'onResponse', 'eventName' =>  EventNames::RESPONSE]
+    public array $listeners = [
+        ['class' => 'Core\Event\listeners\RouterListener', 'callbackMethod' => 'onRequest', 'eventName' => EventNames::REQUEST],
+        ['class' => 'Core\Event\listeners\FakeListener', 'callbackMethod' => 'onResponse', 'eventName' =>  EventNames::RESPONSE]
         ];
 
 
@@ -18,15 +16,15 @@ class ListenerService
     /**
      * @var Dispatcher
      */
-    protected $dispatcher;
+    protected Dispatcher $dispatcher;
 
     public function __construct(Dispatcher $dispatcher)
     {
         $this->dispatcher = $dispatcher;
-        $this->instanciateClasses();
+        $this->instantiateClasses();
     }
 
-    public function instanciateClasses()
+    public function instantiateClasses()
     {
         foreach ($this->listeners as $key => $listener) {
             $instantiatedClass = new $listener['class'];

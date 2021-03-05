@@ -1,6 +1,6 @@
 {
-    "repository" : "App\\src\\Repository\\PostRepository",
-    "entity" : "App\\src\\Entity\\Post",
+    "repository" : "App\\Repository\\PostRepository",
+    "entity" : "App\\Entity\\Post",
     "table" : "post",
     "id" :
     {
@@ -53,7 +53,7 @@
               "fieldName" : "user_id",
               "type": "association",
               "associatedEntity": "user",
-              "class": "App\\src\\Repository\\UserRepository"
+              "repository": "App\\Repository\\UserRepository"
             },
         "publishedAt" :
             {

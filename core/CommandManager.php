@@ -1,16 +1,16 @@
 <?php
 
 
-namespace App\core;
+namespace Core;
 
 require dirname(__DIR__) . '\vendor\autoload.php';
 
-use App\core\utils\JsonParser;
+use Core\utils\JsonParser;
 
 class CommandManager
 {
-    private $commandList = [];
-    private $argumentsList = [];
+    private array $commandList = [];
+    private array $argumentsList = [];
 
     public function __construct($command, $arguments)
     {

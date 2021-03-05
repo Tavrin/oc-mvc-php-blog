@@ -1,10 +1,10 @@
 <?php
 
 
-namespace App\src\Controller;
+namespace App\Controller;
 
-use App\core\controller\Controller;
-use App\Core\Http\Response;
+use Core\controller\Controller;
+use Core\http\Response;
 
 
 class ErrorController extends Controller

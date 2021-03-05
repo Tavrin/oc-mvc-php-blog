@@ -1,10 +1,10 @@
 <?php
 
 
-namespace App\src\Repository;
+namespace App\Repository;
 
-use App\core\database\EntityManager;
-use App\core\database\Repository;
+use Core\database\EntityManager;
+use Core\database\Repository;
 
 class UserRepository extends Repository
 {

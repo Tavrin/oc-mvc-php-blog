@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\src\Entity;
+namespace App\Entity;
 
 class Post
 {

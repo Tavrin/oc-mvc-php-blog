@@ -1,10 +1,10 @@
 <?php
 
 
-namespace App\src\Entity;
+namespace App\Entity;
 
 
-use App\src\Enums\CommentStatus;
+use App\Enums\CommentStatus;
 
 class Comment
 {

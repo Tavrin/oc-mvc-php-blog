@@ -14,7 +14,10 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": ""
+            "App\\": "src/",
+            "Core\\": "core/"
         }
-    }
+    },
+    "name": "mvc-framework/mvc-blog",
+    "description": "A framework and blog cms made for an OpenClassrooms project"
 }

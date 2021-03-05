@@ -1,15 +1,15 @@
 <?php
 
 
-namespace App\core\event\events;
+namespace Core\Event\Events;
 
-use App\core\Kernel;
-use App\Core\Http\Request;
+use Core\Kernel;
+use Core\http\Request;
 
 class RequestEvent
 {
-    private $kernel;
-    private $request;
+    private Kernel $kernel;
+    private Request $request;
 
     /**
      * RequestEvent constructor.
@@ -25,7 +25,7 @@ class RequestEvent
     /**
      * @return Kernel
      */
-    public function getKernel()
+    public function getKernel(): Kernel
     {
         return $this->kernel;
     }
@@ -33,7 +33,7 @@ class RequestEvent
     /**
      * @return Request
      */
-    public function getRequest()
+    public function getRequest(): Request
     {
         return $this->request;
     }

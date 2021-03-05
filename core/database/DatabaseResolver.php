@@ -1,11 +1,11 @@
 <?php
 
 
-namespace App\core\database;
+namespace Core\database;
 
 
-use App\core\utils\JsonParser;
-use App\core\database\EntityManager;
+use Core\utils\JsonParser;
+use Core\database\EntityManager;
 
 class DatabaseResolver
 {

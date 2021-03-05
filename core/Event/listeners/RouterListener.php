@@ -1,24 +1,23 @@
 <?php
 
 
-namespace App\core\event\listeners;
+namespace Core\Event\listeners;
 
-use App\Core\Event\Dispatcher;
-use App\core\event\events\RequestEvent;
-use App\core\routing\Router;
-use http\Message\Body;
+use Core\Event\Dispatcher;
+use Core\Event\Events\RequestEvent;
+use Core\routing\Router;
 
 class RouterListener
 {
     /**
      * @var Dispatcher
      */
-    public $dispatcher;
+    public Dispatcher $dispatcher;
 
     /**
      * @var Router
      */
-    public $router;
+    public Router $router;
 
     public function __construct()
     {

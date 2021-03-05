@@ -2,17 +2,17 @@
   {
     "route" : "index",
     "path" : "/",
-    "controller": "App\\src\\Controller\\IndexController::indexAction"
+    "controller": "App\\Controller\\IndexController::indexAction"
   },
   {
     "route" : "blog_index",
     "path" : "/blog",
-    "controller": "App\\src\\Controller\\BlogController::indexAction"
+    "controller": "App\\Controller\\BlogController::indexAction"
   },
   {
     "route" : "blog_show",
     "path" : "/blog/{category}",
-    "controller": "App\\src\\Controller\\BlogController::categoryAction"
+    "controller": "App\\Controller\\BlogController::categoryAction"
   },
   {
     "route": "fakeRoute",
@@ -29,6 +29,6 @@
   {
     "route": "error",
     "path": "/error",
-    "controller": "App\\src\\Controller\\ErrorController::indexAction"
+    "controller": "App\\Controller\\ErrorController::indexAction"
   }
 ]

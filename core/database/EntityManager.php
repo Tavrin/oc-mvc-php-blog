@@ -1,10 +1,10 @@
 <?php
 
 
-namespace App\core\database;
+namespace Core\database;
 
 
-use App\core\utils\JsonParser;
+use Core\utils\JsonParser;
 use PDO;
 
 class EntityManager
@@ -12,12 +12,12 @@ class EntityManager
     /**
      * @var Connection
      */
-    private $connection;
+    private Connection $connection;
 
     /**
      * @var array
      */
-    private $entityData;
+    private array $entityData;
 
     public const ENTITY_DATA_DIR = ROOT_DIR . '/config/entities/';
 
@@ -42,15 +42,17 @@ class EntityManager
      */
     public function getEntityData(string $entityName): ?array
     {
+
         if (isset ($this->entityData[$entityName])) {
             return $this->entityData[$entityName];
         }
-
         $currentFile = self::ENTITY_DATA_DIR . $entityName . '.json';
 
         if (file_exists($currentFile)) {
             $entityData = JsonParser::parseFile($currentFile);
             $this->entityData[$entityName] = $entityData;
+            dump($this->entityData);
+
             return $entityData;
         }
 

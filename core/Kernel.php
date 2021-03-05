@@ -1,22 +1,20 @@
 <?php
 
-namespace App\core;
+namespace Core;
 
-use App\core\database\DatabaseResolver;
-use App\core\database\EntityManager;
-use App\Core\Http\Request;
-use App\Core\Http\Response;
-use App\Core\Event\Dispatcher;
-use App\core\event\EventNames;
-use App\core\event\ListenerService;
-use App\core\event\events\RequestEvent;
-use App\core\event\events\ControllerEvent;
-use App\core\controller\ControllerResolver;
-use App\core\controller\ArgumentsResolver;
-use App\core\routing\Router;
-use App\core\utils\JsonParser;
-use http\Exception\RuntimeException;
-use function PHPUnit\Framework\throwException;
+use Core\database\DatabaseResolver;
+use Core\database\EntityManager;
+use Core\http\Request;
+use Core\http\Response;
+use Core\Event\Dispatcher;
+use Core\Event\EventNames;
+use Core\Event\ListenerService;
+use Core\Event\Events\RequestEvent;
+use Core\Event\Events\ControllerEvent;
+use Core\controller\ControllerResolver;
+use Core\controller\ArgumentsResolver;
+use Core\routing\Router;
+use Core\utils\JsonParser;
 
 
 /**
@@ -26,29 +24,26 @@ use function PHPUnit\Framework\throwException;
 class Kernel
 {
     /**
-     * @var Dispatcher
+     * @var ?Dispatcher
      */
-    protected $dispatcher;
+    protected ?Dispatcher $dispatcher = null;
 
     /**
      * @var ListenerService
      */
-    protected $listenerService;
+    protected ListenerService $listenerService;
 
     /**
      * @var ControllerResolver
      */
-    protected $controllerResolver;
+    protected ControllerResolver $controllerResolver;
 
-    /**
-     * @var EntityManager
-     */
-    public $entityManager = null;
+    public ?EntityManager $entityManager = null;
 
     /**
      * @var ArgumentsResolver
      */
-    protected $argumentResolver;
+    protected ArgumentsResolver $argumentResolver;
 
     public function __construct()
     {

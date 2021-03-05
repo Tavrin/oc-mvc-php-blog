@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\core\commands;
+namespace Core\commands;
 
 
 abstract class Command

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\core\database;
+namespace Core\database;
 
 
 abstract class Repository
@@ -30,13 +30,13 @@ abstract class Repository
     {
         $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityName . ' WHERE ' . $row . ' = :criteria');
         $query->execute([':criteria'=>$criteria]);
-        return $query->fetchAll();
+        $results = $query->fetchAll();
+        return $this->hydrateEntity($results);
     }
 
     public function findOneBy(string $row, string $criteria)
     {
-        $results = $this->findBy($row, $criteria, null,1);
-        return $this->hydrateEntity($results);
+        return $this->findBy($row, $criteria, null,1);
     }
 
     public function hydrateEntity(array $results)
@@ -49,6 +49,15 @@ abstract class Repository
             foreach ($this->entityData['fields'] as $key => $field) {
                 $method = "set" . ucfirst($key);
 
+                $r = new \ReflectionMethod($entities[$entityKey], $method);
+                $params = $r->getParameters();
+                foreach ($params as $param) {
+                    //$param is an instance of ReflectionParameter
+                    $type = $param->getType()->getName();
+                    dump($type);
+                    dump('------');
+                }
+
                 if (!empty($result[$field['fieldName']])) {
                     if ($field['type'] === 'datetime') {
                         $fieldData = new \DateTime($result[$field['fieldName']]);
@@ -57,10 +66,11 @@ abstract class Repository
                     }
 
                     if ($field['type'] == 'association') {
-                        $repository = new $field['class'];
-                        /* dd($repository->findAll($field['fieldName'])); */
-                        $test = $repository->findBy('id', $result[$field['fieldName']]);
-                        dd($test);
+                        $repository = $field['repository'];
+                        $repository = new $repository($this->entityManager);
+                        $associatedEntity = $repository->findBy('id', $result[$field['fieldName']]);
+                        $entities[$entityKey]->$method($associatedEntity[0]);
+                        continue;
                     }
 
                     $entities[$entityKey]->$method($result[$field['fieldName']]);
@@ -72,7 +82,7 @@ abstract class Repository
         return $entities;
     }
 
-    public function findAll()
+    public function findAll(): array
     {
         $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityName);
         $query->execute();

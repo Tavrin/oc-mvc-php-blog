@@ -1,10 +1,10 @@
 <?php
 
 
-namespace App\src\Repository;
+namespace App\Repository;
 
 
-use App\core\database\Repository;
+use Core\database\Repository;
 
 class CommentRepository extends Repository
 {

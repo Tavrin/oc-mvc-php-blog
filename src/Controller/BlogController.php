@@ -1,10 +1,10 @@
 <?php
 
-namespace App\src\Controller;
+namespace App\Controller;
 
-use App\core\controller\Controller;
-use App\Core\Http\Request;
-use App\src\Repository\PostRepository;
+use Core\controller\Controller;
+use Core\http\Request;
+use App\Repository\PostRepository;
 
 class BlogController extends Controller
 {
@@ -12,14 +12,14 @@ class BlogController extends Controller
     {
         $em = $this->getManager();
         $posts = new PostRepository($em);
-
-        $content = [];
+        $post = $posts->findOneBy('id',45687 );
+        $content['post'] = $post[0];
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
         if (empty($post = $posts->findAll())) {
             throw new \RuntimeException("pas d'article de blog trouvé","500");
         }
         return $this->render('blog/index.html.twig',[
-            'content' => $post
+            'content' => $content
         ]);
     }
 }

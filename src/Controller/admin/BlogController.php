@@ -1,11 +1,11 @@
 <?php
 
 
-namespace App\src\Controller\admin;
+namespace App\Controller\admin;
 
-use App\core\controller\Controller;
-use App\Core\Http\Request;
-use App\src\Entity\Post;
+use Core\controller\Controller;
+use Core\http\Request;
+use App\Entity\Post;
 
 class BlogController extends Controller
 {
