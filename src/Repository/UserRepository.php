@@ -10,6 +10,6 @@ class UserRepository extends Repository
 {
     public function __construct(?EntityManager $entityManager = null)
     {
-        parent::__construct($entityManager, "User");
+        parent::__construct($entityManager, "user");
     }
 }

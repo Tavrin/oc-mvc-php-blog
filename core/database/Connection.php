@@ -18,7 +18,7 @@ class Connection extends PDO
         $this->params = $params;
 
         try {
-           return parent::__construct($dsn, (string) $user, (string) $password);
+           return parent::__construct($dsn, (string) $user, (string) $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
         } catch (\PDOException $e) {
             throw $e;
         }
@@ -27,7 +27,6 @@ class Connection extends PDO
     public function query($statement)
     {
         $statement = parent::query($statement);
-
         return $statement;
     }
 

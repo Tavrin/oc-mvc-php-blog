@@ -12,16 +12,17 @@ class ErrorController extends Controller
     /**
      * @param \Exception|null $e
      * @param string|null $message
-     * @param int|null $code
+     * @param null $code
      * @return Response
      */
-    public function indexAction(\Exception $e = null, string $message = null, int $code = null):Response
+    public function indexAction(\Exception $e = null, string $message = null,  $code = null):Response
     {
         $content['title'] = "Page d'erreur";
 
         if (isset($_ENV['ENV']) && $_ENV['ENV'] === 'dev') {
             $content['code'] = $code;
             $content['message'] = $message;
+            dump($content);
 
             return $this->render('error.html.twig',[
                 'content' => $content

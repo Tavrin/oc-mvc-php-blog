@@ -65,6 +65,11 @@ class Post
          */
     private $updatedAt;
 
+    /**
+     * @var bool
+     */
+    private $status;
+
     public function __construct()
     {
         $this->publishedAt = new \DateTime();
@@ -80,7 +85,7 @@ class Post
         $this->id = $id;
     }
 
-    public function getTitle(): string
+    public function getTitle(): ?string
     {
         return $this->title;
     }
@@ -90,7 +95,7 @@ class Post
         $this->title = $title;
     }
 
-    public function getHeader(): string
+    public function getHeader(): ?string
     {
         return $this->header;
     }
@@ -100,7 +105,7 @@ class Post
         $this->header = $header;
     }
 
-    public function getContent(): string
+    public function getContent(): ?string
     {
         return $this->content;
     }
@@ -110,7 +115,7 @@ class Post
         $this->content = $content;
     }
 
-    public function getReadmore(): array
+    public function getReadmore(): ?array
     {
         return $this->readmore;
     }
@@ -120,7 +125,7 @@ class Post
         $this->readmore = $readMore;
     }
 
-    public function getMetaTitle(): string
+    public function getMetaTitle(): ?string
     {
         return $this->metaTitle;
     }
@@ -130,7 +135,7 @@ class Post
         $this->metaTitle = $metaTitle;
     }
 
-    public function getMetaDescription(): string
+    public function getMetaDescription(): ?string
     {
         return $this->metaDescription;
     }
@@ -140,7 +145,7 @@ class Post
         $this->metaDescription = $metaDescription;
     }
 
-    public function getListingText(): string
+    public function getListingText(): ?string
     {
         return $this->listingText;
     }
@@ -150,7 +155,7 @@ class Post
         $this->listingText = $listingText;
     }
 
-    public function getSlug(): string
+    public function getSlug(): ?string
     {
         return $this->slug;
     }
@@ -180,7 +185,7 @@ class Post
         $this->publishedAt = $publishedAt;
     }
 
-    public function getUpdatedAt(): \DateTime
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
@@ -188,5 +193,15 @@ class Post
     public function setUpdatedAt(\DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    public function getStatus(): ?bool
+    {
+        return $this->status;
+    }
+
+    public function setStatus(bool $status)
+    {
+        $this->status = $status;
     }
 }

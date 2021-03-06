@@ -62,8 +62,13 @@
             },
         "updatedAt" :
             {
-            "fieldName" : "updated_at",
-            "type": "datetime"
+              "fieldName" : "updated_at",
+              "type": "datetime"
+            },
+        "status" :
+            {
+              "fieldName": "status",
+              "type": "tinyInt"
             }
     }
 }

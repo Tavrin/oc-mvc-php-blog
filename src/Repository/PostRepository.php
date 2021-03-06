@@ -11,6 +11,6 @@ class PostRepository extends Repository
 {
     public function __construct(?EntityManager $entityManager = null)
     {
-        parent::__construct($entityManager, "Post");
+        parent::__construct($entityManager, "post");
     }
 }

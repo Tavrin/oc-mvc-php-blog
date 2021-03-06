@@ -28,7 +28,7 @@ abstract class Repository
 
     public function findBy(string $row, string $criteria, array $order = null, int $limit = null): array
     {
-        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityName . ' WHERE ' . $row . ' = :criteria');
+        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData['table'] . ' WHERE ' . $row . ' = :criteria');
         $query->execute([':criteria'=>$criteria]);
         $results = $query->fetchAll();
         return $this->hydrateEntity($results);
@@ -36,7 +36,8 @@ abstract class Repository
 
     public function findOneBy(string $row, string $criteria)
     {
-        return $this->findBy($row, $criteria, null,1);
+        $result = $this->findBy($row, $criteria, null,1);
+        return $result[0];
     }
 
     public function hydrateEntity(array $results)
@@ -47,6 +48,7 @@ abstract class Repository
             $entities[$entityKey]->setId($result['id']) ;
 
             foreach ($this->entityData['fields'] as $key => $field) {
+                $insertData = $result[$field['fieldName']];
                 $method = "set" . ucfirst($key);
 
                 $r = new \ReflectionMethod($entities[$entityKey], $method);
@@ -54,13 +56,11 @@ abstract class Repository
                 foreach ($params as $param) {
                     //$param is an instance of ReflectionParameter
                     $type = $param->getType()->getName();
-                    dump($type);
-                    dump('------');
                 }
 
                 if (!empty($result[$field['fieldName']])) {
                     if ($field['type'] === 'datetime') {
-                        $fieldData = new \DateTime($result[$field['fieldName']]);
+                        $fieldData = new \DateTime($insertData);
                         $entities[$entityKey]->$method($fieldData);
                         continue;
                     }
@@ -68,12 +68,18 @@ abstract class Repository
                     if ($field['type'] == 'association') {
                         $repository = $field['repository'];
                         $repository = new $repository($this->entityManager);
-                        $associatedEntity = $repository->findBy('id', $result[$field['fieldName']]);
+                        $associatedEntity = $repository->findBy('id', $insertData);
                         $entities[$entityKey]->$method($associatedEntity[0]);
                         continue;
                     }
 
-                    $entities[$entityKey]->$method($result[$field['fieldName']]);
+                    if ($field['type'] == 'json') {
+                        $decodedData = json_decode($insertData);
+                        $entities[$entityKey]->$method($decodedData);
+                        continue;
+                    }
+
+                    $entities[$entityKey]->$method($insertData);
                 }
 
             }
@@ -84,9 +90,10 @@ abstract class Repository
 
     public function findAll(): array
     {
-        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityName);
+        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData['table']);
         $query->execute();
-        return $query->fetchAll();
+        $results = $query->fetchAll();
+        return $this->hydrateEntity($results);
 
     }
 
