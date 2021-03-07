@@ -11,11 +11,14 @@ class HelloWorldCommand extends Command
         $this->setName('HelloWorld')
             ->setAlias('hlw')
             ->setDescription('écrit Hello World')
-            ->addArgument('test');
+            ->addArgument('test', 'ne sert à rien')
+            ->addArgument('testa', )
+            ->addArgument('testo', 'lkfsjdfslfk' );
+
     }
 
     public function execute()
     {
-        echo "Hello World";
+        echo "Hello World" . PHP_EOL;
     }
 }

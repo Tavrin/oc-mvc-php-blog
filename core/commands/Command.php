@@ -3,6 +3,8 @@
 
 namespace Core\commands;
 
+define('ROOT_DIR', dirname(__DIR__) . '/../');
+
 
 abstract class Command
 {
@@ -10,6 +12,7 @@ abstract class Command
     protected ?string $alias;
     protected ?string $description;
     protected array $arguments;
+    protected array $options;
 
     /**
      * Command constructor.
@@ -42,7 +45,7 @@ abstract class Command
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -51,7 +54,7 @@ abstract class Command
      * @param string $alias
      * @return $this
      */
-    public function setAlias(string $alias)
+    public function setAlias(string $alias): Command
     {
         $this->alias = $alias;
 
@@ -77,17 +80,25 @@ abstract class Command
         return $this;
     }
 
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
     /**
      * @param string $argument
+     * @param string|null $description
      * @return $this|false
      */
-    public function addArgument(string $argument)
+    public function addArgument(string $argument, string $description = null)
     {
         if (in_array($argument, $this->arguments)) {
             return false;
         }
+        $argumentData['name'] = $argument;
+        $argumentData['description'] = $description?? null;
 
-        array_push($this->arguments, $argument);
+        $this->arguments[$argument] = $argumentData;
         return $this;
     }
 

@@ -65,6 +65,22 @@ class EntityManager
         return null;
     }
 
+    public static function getAllEntityData(): array
+    {
+        $entityData = [];
+        foreach (glob(self::ENTITY_DATA_DIR . '*') as $currentFile)
+        {
+            if(is_dir($currentFile)) {
+                continue;
+            }
+
+            $parsedData = JsonParser::parseFile($currentFile);
+            $entityData[$parsedData['table']] = $parsedData;
+        }
+
+        return $entityData;
+    }
+
     /**
      * @param object $entity
      */
@@ -133,7 +149,7 @@ class EntityManager
                 continue;
             }
 
-            if (EntityEnums::TYPE_TINYINT === $metadata[EntityEnums::FIELD_TYPE] && EntityEnums::TYPE_BOOL === gettype($boolValue = $entity->$currentGetMethod())) {
+            if (EntityEnums::TYPE_BOOL === $metadata[EntityEnums::FIELD_TYPE] && EntityEnums::TYPE_BOOL === gettype($boolValue = $entity->$currentGetMethod())) {
                 true === $boolValue ? $insertedData[":{$currentField}"] = 1 : $insertedData[":{$currentField}"] = 0;
                 continue;
             }

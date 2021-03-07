@@ -75,7 +75,7 @@
         "status" :
             {
               "fieldName": "status",
-              "type": "tinyInt"
+              "type": "bool"
             }
     }
 }

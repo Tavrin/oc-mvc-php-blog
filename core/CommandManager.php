@@ -3,12 +3,13 @@
 
 namespace Core;
 
-require dirname(__DIR__) . '\vendor\autoload.php';
+require dirname(__DIR__) . '/vendor/autoload.php';
 
 use Core\utils\JsonParser;
 
 class CommandManager
 {
+    public const HELP_ARGUMENT = 'help';
     private array $commandList = [];
     private array $argumentsList = [];
 
@@ -45,38 +46,69 @@ class CommandManager
 
     private function runCommand(string $command)
     {
-        if(!key_exists($command, $this->commandList)) {
-            echo "Cette commande n'existe pas";
-            return;
+        if (self::HELP_ARGUMENT === $command) {
+            $this->sendHelp();
         }
-        $class = $this->commandList[$command];
+
+        $foundCommand = null;
+        foreach ($this->commandList as $currentCommand) {
+            if ($command === $currentCommand->getName() || $command === $currentCommand->getAlias()) {
+                $foundCommand = $currentCommand;
+                break;
+            }
+        }
+
+        if (null === $foundCommand) {
+            echo 'Command not found' . PHP_EOL;
+            exit();
+        }
+
         foreach ($this->argumentsList as $argument => $value) {
-            if (!$class->hasArgument($argument)) {
+            if (!$foundCommand->hasArgument($argument)) {
                 echo 'cet argument n\'existe pas: ' . $argument;
                 return;
             }
         }
 
-        $class->run($this->argumentsList);
+        $foundCommand->run($this->argumentsList);
+    }
+
+    private function sendHelp()
+    {
+        echo 'The available commands are :' . PHP_EOL . '----------------------------' . PHP_EOL;
+
+        foreach ($this->commandList as $command) {
+            echo $command->getName() . ' :' . PHP_EOL;
+            echo 'alias : ' . ($command->getAlias()??'') . PHP_EOL;
+            echo 'description : ' . ($command->getDescription()??'') . PHP_EOL;
+            if (empty($arguments = $command->getArguments())) {
+                continue;
+            }
+
+            echo 'arguments :' . PHP_EOL;
+            foreach ($arguments as $argument) {
+                echo '- ' . $argument['name'];
+                echo  (' : ' . $argument['description']?? null) . PHP_EOL ;
+            }
+
+            echo PHP_EOL;
+        }
+
+        exit();
     }
 }
 
 if (php_sapi_name() == 'cli') {
-    if (!empty($argv[1])) {
-        $commandName = $argv[1];
-        $arguments = [];
-        foreach ($argv as $key => $arg) {
-            if ($key < 2) {
-                continue;
-            }
 
-            $arguments[] = $arg;
+    isset($argv[1]) ? $commandName = $argv[1]:$commandName = CommandManager::HELP_ARGUMENT;
+    $arguments = [];
+    foreach ($argv as $key => $arg) {
+        if ($key < 2) {
+            continue;
         }
 
-        $manager = new CommandManager($commandName, $arguments);
-
-    } else {
-        return printf('Pas de commande fournie');
+        $arguments[] = $arg;
     }
 
+    $manager = new CommandManager($commandName, $arguments);
 }

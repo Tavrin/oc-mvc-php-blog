@@ -1,6 +1,12 @@
-[
-  {
-    "name" : "HelloWorld",
-    "class" : "App\\core\\commands\\HelloWorldCommand"
-  }
-]
+{
+    "HelloWorld":
+    {
+        "name": "HelloWorld",
+        "class": "Core\\commands\\HelloWorldCommand"
+    },
+    "CreateEntity":
+    {
+      "name": "CreateEntity",
+      "class": "Core\\commands\\CreateEntity"
+    }
+}
