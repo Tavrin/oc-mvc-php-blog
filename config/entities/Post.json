@@ -55,6 +55,13 @@
               "associatedEntity": "user",
               "repository": "App\\Repository\\UserRepository"
             },
+        "category" :
+            {
+              "fieldName" : "category_id",
+              "type": "association",
+              "associatedEntity": "category",
+              "repository": "App\\Repository\\CategoryRepository"
+            },
         "publishedAt" :
             {
               "fieldName" : "created_at",

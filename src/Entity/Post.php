@@ -56,13 +56,18 @@ class Post
     private $author;
 
     /**
+     * @var Category
+     */
+    private $category;
+
+    /**
      * @var \DateTime
      */
     private $publishedAt;
 
-        /**
-         * @var \DateTime
-         */
+    /**
+     * @var \DateTime
+     */
     private $updatedAt;
 
     /**
@@ -173,6 +178,16 @@ class Post
     public function setAuthor(User $author)
     {
         $this->author = $author;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(Category $category)
+    {
+        $this->category = $category;
     }
 
     public function getPublishedAt(): \DateTime

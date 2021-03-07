@@ -28,7 +28,7 @@ abstract class Repository
 
     public function findBy(string $row, string $criteria, array $order = null, int $limit = null): array
     {
-        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData['table'] . ' WHERE ' . $row . ' = :criteria');
+        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData[EntityEnums::TABLE_NAME] . ' WHERE ' . $row . ' = :criteria');
         $query->execute([':criteria'=>$criteria]);
         $results = $query->fetchAll();
         return $this->hydrateEntity($results);
@@ -37,18 +37,21 @@ abstract class Repository
     public function findOneBy(string $row, string $criteria)
     {
         $result = $this->findBy($row, $criteria, null,1);
+        if (empty($result)) {
+            return null;
+        }
         return $result[0];
     }
 
-    public function hydrateEntity(array $results)
+    public function hydrateEntity(array $results): array
     {
         $entities = [];
         foreach ($results as $entityKey => $result) {
-            $entities[$entityKey] = new $this->entityData['entity'];
-            $entities[$entityKey]->setId($result['id']) ;
+            $entities[$entityKey] = new $this->entityData[EntityEnums::ENTITY_CLASS];
+            $entities[$entityKey]->setId($result[EntityEnums::ID_FIELD_NAME]) ;
 
-            foreach ($this->entityData['fields'] as $key => $field) {
-                $insertData = $result[$field['fieldName']];
+            foreach ($this->entityData[EntityEnums::FIELDS_CATEGORY] as $key => $field) {
+                $insertData = $result[$field[EntityEnums::FIELD_NAME]];
                 $method = "set" . ucfirst($key);
 
                 $r = new \ReflectionMethod($entities[$entityKey], $method);
@@ -58,22 +61,22 @@ abstract class Repository
                     $type = $param->getType()->getName();
                 }
 
-                if (!empty($result[$field['fieldName']])) {
-                    if ($field['type'] === 'datetime') {
+                if (!empty($result[$field[EntityEnums::FIELD_NAME]])) {
+                    if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_DATE) {
                         $fieldData = new \DateTime($insertData);
                         $entities[$entityKey]->$method($fieldData);
                         continue;
                     }
 
-                    if ($field['type'] == 'association') {
-                        $repository = $field['repository'];
+                    if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_ASSOCIATION) {
+                        $repository = $field[EntityEnums::ENTITY_REPOSITORY];
                         $repository = new $repository($this->entityManager);
-                        $associatedEntity = $repository->findBy('id', $insertData);
+                        $associatedEntity = $repository->findBy(EntityEnums::ID_FIELD_NAME, $insertData);
                         $entities[$entityKey]->$method($associatedEntity[0]);
                         continue;
                     }
 
-                    if ($field['type'] == 'json') {
+                    if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_JSON) {
                         $decodedData = json_decode($insertData);
                         $entities[$entityKey]->$method($decodedData);
                         continue;
@@ -88,9 +91,9 @@ abstract class Repository
         return $entities;
     }
 
-    public function findAll(): array
+    public function findAll($orderBy = null): array
     {
-        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData['table']);
+        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData[EntityEnums::TABLE_NAME]);
         $query->execute();
         $results = $query->fetchAll();
         return $this->hydrateEntity($results);

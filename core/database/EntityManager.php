@@ -5,6 +5,7 @@ namespace Core\database;
 
 
 use Core\utils\JsonParser;
+use http\Exception\RuntimeException;
 use PDO;
 
 class EntityManager
@@ -64,6 +65,9 @@ class EntityManager
         return null;
     }
 
+    /**
+     * @param object $entity
+     */
     public function save(object $entity)
     {
         $entityData = $this->getEntityData(substr(strrchr(get_class($entity), '\\'), 1));
@@ -72,10 +76,18 @@ class EntityManager
         $this->preparedStatements[] = $preparedStatement;
     }
 
+    /**
+     * @param $entity
+     */
     public function remove($entity)
     {
-        $entity;
+        if (! is_object($entity)) {
+            throw new \InvalidArgumentException('EntityManager->remove() Wrong Entity type given : ' . gettype($entity), 500);
+        }
+        $entityData = $this->getEntityData(substr(strrchr(get_class($entity), '\\'), 1));
 
+        $preparedStatement = $this->prepareDelete($entityData, $entity);
+        $this->preparedStatements[] = $preparedStatement;
     }
 
     /**
@@ -108,30 +120,30 @@ class EntityManager
         $insertedData = [];
         $placeholders = '';
 
-        foreach ($entityData['fields'] as $attribute => $metadata)
+        foreach ($entityData[EntityEnums::FIELDS_CATEGORY] as $attribute => $metadata)
         {
-            $method = "get" . ucfirst($attribute);
-            $currentField = $metadata['fieldName'];
+            $currentGetMethod = "get" . ucfirst($attribute);
+            $currentField = $metadata[EntityEnums::FIELD_NAME];
             $placeholders .= ":{$currentField}, ";
             $rows .= "{$currentField}, ";
 
-            if ('datetime' === $metadata['type']) {
-                $date = $entity->$method() ? date('Y-m-d H:i:s',$entity->$method()->getTimestamp()): null;
+            if (EntityEnums::TYPE_DATE === $metadata[EntityEnums::FIELD_TYPE]) {
+                $date = $entity->$currentGetMethod() ? date(EntityEnums::DEFAULT_DATE_FORMAT, $entity->$currentGetMethod()->getTimestamp()): null;
                 $insertedData[":{$currentField}"] = $date;
                 continue;
             }
 
-            if ('tinyInt' === $metadata['type'] && 'boolean' === gettype($boolValue = $entity->$method())) {
+            if (EntityEnums::TYPE_TINYINT === $metadata[EntityEnums::FIELD_TYPE] && EntityEnums::TYPE_BOOL === gettype($boolValue = $entity->$currentGetMethod())) {
                 true === $boolValue ? $insertedData[":{$currentField}"] = 1 : $insertedData[":{$currentField}"] = 0;
                 continue;
             }
 
-            if ('association' === $metadata['type']) {
-                $insertedData[":{$currentField}"] = $entity->$method()->getId();
+            if (EntityEnums::TYPE_ASSOCIATION === $metadata[EntityEnums::FIELD_TYPE]) {
+                $insertedData[":{$currentField}"] = $entity->$currentGetMethod()->getId();
                 continue;
             }
 
-            $data = $entity->$method()?:null;
+            $data = $entity->$currentGetMethod()?:null;
             $insertedData[":{$currentField}"] = $data;
         }
 
@@ -147,9 +159,16 @@ class EntityManager
 
         }
 
-        $statement['prepare'] = 'INSERT INTO ' . $entityData['table'] . " ({$rows}) VALUES ($placeholders)";
+        $statement['prepare'] = 'INSERT INTO ' . $entityData[EntityEnums::TABLE_NAME] . " ({$rows}) VALUES ($placeholders)";
         $statement['execute'] = $insertedData;
 
+        return $statement;
+    }
+
+    private function prepareDelete(array $entityData, object $entity): array
+    {
+        $statement['prepare'] = 'DELETE FROM ' . $entityData[EntityEnums::TABLE_NAME] . ' WHERE id = :id';
+        $statement['execute'] = [':id'=>$entity->getId()];
         return $statement;
     }
 }
