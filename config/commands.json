@@ -1,6 +1,22 @@
-[
-  {
-    "name" : "HelloWorld",
-    "class" : "App\\core\\commands\\HelloWorldCommand"
-  }
-]
+{
+    "HelloWorld":
+    {
+        "name": "HelloWorld",
+        "class": "Core\\commands\\HelloWorldCommand"
+    },
+    "CreateEntity":
+    {
+      "name": "CreateEntity",
+      "class": "Core\\commands\\CreateEntityCommand"
+    },
+    "CreateController":
+    {
+      "name": "CreateController",
+      "class": "Core\\commands\\CreateControllerCommand"
+    },
+    "Migrate":
+    {
+      "name": "ExecuteMigration",
+      "class": "Core\\commands\\MigrateCommand"
+    }
+}

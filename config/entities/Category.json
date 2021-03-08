@@ -1,0 +1,32 @@
+{
+    "repository" : "App\\Repository\\CategoryRepository",
+    "entity" : "App\\Entity\\Category",
+    "table" : "category",
+    "id" :
+    {
+        "type" : "integer"
+    },
+    "fields" :
+    {
+        "name" :
+            {
+                "fieldName" : "name",
+                "type": "string"
+            },
+        "description" :
+            {
+                "fieldName" : "description",
+                "type": "text"
+            },
+        "publishedAt" :
+            {
+                "fieldName" : "created_at",
+                "type": "datetime"
+            },
+        "updatedAt" :
+            {
+                "fieldName" : "updated_at",
+                "type": "datetime"
+            }
+    }
+}

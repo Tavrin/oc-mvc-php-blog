@@ -4,12 +4,12 @@
 namespace App\Tests;
 
 use PHPUnit\Framework\TestCase;
-use App\core\Kernel;
-use App\Core\Http\Request;
-use App\Core\Event\Dispatcher;
-use App\core\event\EventNames;
-use App\core\event\ListenerService;
-use App\core\event\events\RequestEvent;
+use Core\Kernel;
+use Core\http\Request;
+use Core\Event\Dispatcher;
+use Core\event\EventNames;
+use Core\event\ListenerService;
+use Core\Event\Events\RequestEvent;
 
 class KernelTest extends TestCase
 {

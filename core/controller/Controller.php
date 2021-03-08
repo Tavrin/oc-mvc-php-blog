@@ -1,13 +1,13 @@
 <?php
 
 
-namespace App\core\controller;
+namespace Core\controller;
 
-use App\core\database\EntityManager;
-use App\Core\Http\Request;
+use Core\database\EntityManager;
+use Core\http\Request;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
-use App\Core\Http\Response;
+use Core\http\Response;
 
 class Controller
 {

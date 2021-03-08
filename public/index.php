@@ -1,7 +1,7 @@
 <?php
 
-use App\core\Kernel;
-use App\Core\Http\Request;
+use Core\Kernel;
+use Core\http\Request;
 
 define('ROOT_DIR', dirname(__DIR__));
 

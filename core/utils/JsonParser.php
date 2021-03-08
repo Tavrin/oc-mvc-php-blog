@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\core\utils;
+namespace Core\utils;
 
 
 class JsonParser

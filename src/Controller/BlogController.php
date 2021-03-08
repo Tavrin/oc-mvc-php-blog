@@ -1,23 +1,30 @@
 <?php
 
-namespace App\src\Controller;
+namespace App\Controller;
 
-use App\core\controller\Controller;
-use App\Core\Http\Request;
-use http\Exception\RuntimeException;
+use App\Entity\Post;
+use Core\controller\Controller;
+use Core\database\EntityManager;
+use Core\http\Request;
+use App\Repository\PostRepository;
+use Core\http\Response;
 
 class BlogController extends Controller
 {
-    public function indexAction(Request $request)
+    public function indexAction(Request $request): Response
     {
+        $em = $this->getManager();
+        $post = new PostRepository($em);
+        $posts = $post->findAll();
 
-        $content = [];
+        $content['posts'] = $posts;
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
-        if (empty($post = $this->getManager()->findAll('post'))) {
+        if (empty($posts)) {
             throw new \RuntimeException("pas d'article de blog trouvé","500");
         }
+
         return $this->render('blog/index.html.twig',[
-            'content' => $post
+            'content' => $content
         ]);
     }
 }

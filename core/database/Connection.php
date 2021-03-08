@@ -1,9 +1,9 @@
 <?php
 
 
-namespace App\core\database;
+namespace Core\database;
 
-use App\core\Kernel;
+use Core\Kernel;
 use PDO;
 
 class Connection extends PDO
@@ -18,7 +18,7 @@ class Connection extends PDO
         $this->params = $params;
 
         try {
-           return parent::__construct($dsn, (string) $user, (string) $password);
+           return parent::__construct($dsn, (string) $user, (string) $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
         } catch (\PDOException $e) {
             throw $e;
         }
@@ -26,9 +26,12 @@ class Connection extends PDO
 
     public function query($statement)
     {
-        $statement = parent::query($statement);
-
-        return $statement;
+        try {
+            $statement = parent::query($statement);
+            return $statement;
+        } catch (\RuntimeException $e) {
+            return $e;
+        }
     }
 
     public function prepare($query, $options = array())
@@ -43,5 +46,13 @@ class Connection extends PDO
         $result = parent::exec($statement);
 
         return $result;
+    }
+
+    public function delete($table, $conditions)
+    {
+        $statement = $this->prepare('DELETE FROM' . $table . 'WHERE' . implode(' AND ', $conditions));
+
+        return $this->exec($statement);
+
     }
 }

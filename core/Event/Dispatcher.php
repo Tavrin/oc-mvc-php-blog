@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Core\Event;
+namespace Core\Event;
 
 
 class Dispatcher
@@ -24,7 +24,7 @@ class Dispatcher
         $this->listeners[$eventName][] = $listener;
     }
 
-    public function getListeners(string $eventName = null)
+    public function getListeners(string $eventName = null): array
     {
         if (null === $eventName || empty($this->listeners[$eventName])) {
             return [];

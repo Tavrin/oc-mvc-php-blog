@@ -1,10 +1,10 @@
 <?php
 
 
-namespace App\core\routing;
+namespace Core\routing;
 
-use App\Core\Http\Request;
-use App\core\utils\JsonParser;
+use Core\http\Request;
+use Core\utils\JsonParser;
 use http\Exception;
 
 class Router

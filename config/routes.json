@@ -1,34 +1,34 @@
 [
-  {
-    "route" : "index",
-    "path" : "/",
-    "controller": "App\\src\\Controller\\IndexController::indexAction"
-  },
-  {
-    "route" : "blog_index",
-    "path" : "/blog",
-    "controller": "App\\src\\Controller\\BlogController::indexAction"
-  },
-  {
-    "route" : "blog_show",
-    "path" : "/blog/{category}",
-    "controller": "App\\src\\Controller\\BlogController::categoryAction"
-  },
-  {
-    "route": "fakeRoute",
-    "path": "/fakePath/{id}/{slug}"
-  },
-  {
-    "route": "fakeRouteEncore",
-    "path": "/fakepath/test"
-  },
-  {
-    "route": "test_route",
-    "path": "/testpath/test"
-  },
-  {
-    "route": "error",
-    "path": "/error",
-    "controller": "App\\src\\Controller\\ErrorController::indexAction"
-  }
+    {
+        "route": "index",
+        "path": "\/",
+        "controller": "App\\Controller\\IndexController::indexAction"
+    },
+    {
+        "route": "blog_index",
+        "path": "\/blog",
+        "controller": "App\\Controller\\BlogController::indexAction"
+    },
+    {
+        "route": "blog_show",
+        "path": "\/blog\/{category}",
+        "controller": "App\\Controller\\BlogController::categoryAction"
+    },
+    {
+        "route": "fakeRoute",
+        "path": "\/fakePath\/{id}\/{slug}"
+    },
+    {
+        "route": "fakeRouteEncore",
+        "path": "\/fakepath\/test"
+    },
+    {
+        "route": "test_route",
+        "path": "\/testpath\/test"
+    },
+    {
+        "route": "error",
+        "path": "\/error",
+        "controller": "App\\Controller\\ErrorController::indexAction"
+    }
 ]

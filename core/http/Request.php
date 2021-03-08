@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Http;
+namespace Core\http;
 
 /**
  * Class Request
@@ -9,34 +9,34 @@ namespace App\Core\Http;
 class Request
 {
     /**
-     * @var
+     * @var array
      */
-    public $request;
+    public array $request;
 
     /**
-     * @var
+     * @var array
      */
-    public $query;
+    public array $query;
 
     /**
-     * @var
+     * @var array
      */
-    public $attributes;
+    public array $attributes;
 
     /**
-     * @var
+     * @var array
      */
-    public $cookies;
+    public array $cookies;
 
     /**
-     * @var
+     * @var array
      */
-    public $files;
+    public array $files;
 
     /**
-     * @var
+     * @var array
      */
-    public $server;
+    public array $server;
 
     /**
      * @var
@@ -44,11 +44,15 @@ class Request
     public $content;
 
     /**
-     * @var string
+     * @var ?string
      */
-    public $pathInfo;
+    public ?string $pathInfo;
 
     public $controller;
+    /**
+     * @var ?string
+     */
+    protected ?string $method;
 
     /**
      * Request constructor.
@@ -70,6 +74,7 @@ class Request
         $this->server = $server;
         $this->pathInfo = null;
         $this->controller = null;
+        $this->method = null;
     }
 
     /**
@@ -85,7 +90,10 @@ class Request
         return new static($query, $request, $attributes, $cookies, $files, $server, $content);
     }
 
-    public function getPathInfo()
+    /**
+     * @return string
+     */
+    public function getPathInfo(): string
     {
         if (null === $this->pathInfo) {
             $this->pathInfo = $this->setPathInfo();
@@ -94,7 +102,10 @@ class Request
         return $this->pathInfo;
     }
 
-    public function setPathInfo()
+    /**
+     * @return string
+     */
+    public function setPathInfo(): string
     {
         if (false === empty($this->server['PATH_INFO'])) {
             $pathInfo = htmlspecialchars($this->server['PATH_INFO']);
@@ -112,6 +123,7 @@ class Request
             return false;
         }
         $this->controller = $controller ;
+        return true;
     }
 
     public function getController()
@@ -140,5 +152,17 @@ class Request
     public function hasAttribute(string $key):bool
     {
         return \array_key_exists($key, $this->attributes);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        if (empty($this->method)) {
+            $this->method = $this->server['REQUEST_METHOD'];
+        }
+
+        return $this->method;
     }
 }

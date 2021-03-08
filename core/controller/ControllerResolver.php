@@ -1,10 +1,10 @@
 <?php
 
 
-namespace App\core\controller;
+namespace Core\controller;
 
-use App\core\database\EntityManager;
-use App\Core\Http\Request;
+use Core\database\EntityManager;
+use Core\http\Request;
 
 class ControllerResolver
 {

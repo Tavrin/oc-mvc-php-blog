@@ -1,12 +1,12 @@
 <?php
 
-namespace App\core\database;
+namespace Core\database;
 
-use App\core\database\Connection;
+use Core\database\Connection;
 
 class Driver
 {
-    public static function getConnection(string $url)
+    public static function getConnection(string $url): Connection
     {
         $params = self::parseUrl($url);
 
@@ -16,9 +16,9 @@ class Driver
         return new Connection($dsn, $user, $password, $params);
     }
 
-    private static function parseUrl(string $url)
+    private static function parseUrl(string $url): array
     {
-
+        $params = [];
         assert(is_string($url));
 
         $url = parse_url($url);
