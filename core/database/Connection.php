@@ -26,8 +26,12 @@ class Connection extends PDO
 
     public function query($statement)
     {
-        $statement = parent::query($statement);
-        return $statement;
+        try {
+            $statement = parent::query($statement);
+            return $statement;
+        } catch (\RuntimeException $e) {
+            return $e;
+        }
     }
 
     public function prepare($query, $options = array())

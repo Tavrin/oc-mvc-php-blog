@@ -95,15 +95,22 @@ class CommandManager
             echo $command->getName() . ' :' . PHP_EOL;
             echo 'alias : ' . ($command->getAlias()??'') . PHP_EOL;
             echo 'description : ' . ($command->getDescription()??'') . PHP_EOL;
-            if (empty($arguments = $command->getArguments())) {
-                continue;
+            if (!empty($arguments = $command->getArguments())) {
+                echo 'arguments :' . PHP_EOL;
+                foreach ($arguments as $argument) {
+                    echo '- ' . $argument['name'];
+                    echo  (' : ' . $argument['description']?? null) . PHP_EOL ;
+                }
             }
 
-            echo 'arguments :' . PHP_EOL;
-            foreach ($arguments as $argument) {
-                echo '- ' . $argument['name'];
-                echo  (' : ' . $argument['description']?? null) . PHP_EOL ;
+            if (!empty($options = $command->getOptions())) {
+                echo 'options :' . PHP_EOL;
+                foreach ($options as $option) {
+                    echo '- ' . $option['name'];
+                    echo  (' : ' . $option['description']?? null) . PHP_EOL ;
+                }
             }
+
 
             echo PHP_EOL;
         }

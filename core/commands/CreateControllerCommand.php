@@ -27,8 +27,8 @@ class CreateControllerCommand extends Command
         $this->setName('CreateController')
             ->setAlias('create:c')
             ->setDescription('Crée un controller')
-            ->addArgument('subfolder')
-            ->addOption('setroute');
+            ->addArgument('subfolder', 'Specifies a subfolder inside Controller in which to insert the new controller.')
+            ->addOption('setroute', 'Specifies that a new route has to be created in the routes config file in conjunction with the controller');
     }
 
     public function execute()

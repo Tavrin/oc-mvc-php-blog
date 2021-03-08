@@ -161,6 +161,14 @@ abstract class Command
         return isset($this->options[$option]);
     }
 
+    /**
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
     public function run()
     {
         $this->execute();

@@ -13,5 +13,10 @@
     {
       "name": "CreateController",
       "class": "Core\\commands\\CreateControllerCommand"
+    },
+    "Migrate":
+    {
+      "name": "ExecuteMigration",
+      "class": "Core\\commands\\MigrateCommand"
     }
 }

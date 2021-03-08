@@ -4,6 +4,7 @@
 namespace Core\commands;
 
 
+use Core\database\EntityEnums;
 use Core\database\EntityManager;
 
 class CreateEntityCommand extends Command
@@ -16,7 +17,8 @@ class CreateEntityCommand extends Command
     {
         $this->setName('CreateEntity')
             ->setAlias('create:e')
-            ->setDescription('Crée une entité');
+            ->setDescription('Crée une entité')
+            ->addOption('newtable', 'creates a migration file of the entity, ready to be inserted into the database');
     }
 
     public function execute()
@@ -30,6 +32,10 @@ class CreateEntityCommand extends Command
         $this->createEntityFile($newData);
         $this->createJsonFile($newData);
         $this->createRepoFile($newData);
+
+        if ($this->options['newtable']['value'] === true) {
+            $this->createMigrationFile($newData);
+        }
 
         echo 'entity ' . $newData['name'] . '\'s config, entity and repository files are created' . PHP_EOL;
         exit();
@@ -103,9 +109,15 @@ class CreateEntityCommand extends Command
                 $newEntity['fields'][$currentField['name']]['repository'] = $entityData[$line]['repository'];
                 $newEntity['fields'][$currentField['name']]['entity'] = $entityData[$line]['entity'];
                 $newEntity['hasAssociations'] = true;
-
-
             }
+
+            echo 'Nullable(true/false) : ';
+            $line = $this->getInput();
+            if (empty($line)) {
+                break;
+            }
+
+            $newEntity['fields'][$currentField['name']]['nullable'] = $line;
             echo '-------------------------------------' . PHP_EOL;
         }
 
@@ -228,6 +240,55 @@ class ' . $newData['name'] . 'Repository extends Repository
         $data .= '}';
 
         $result = file_put_contents(self::ENTITY_DIR . ucfirst($newData['name']) . '.php', $data);
+
+        if (false === $result) {
+            echo 'An error happened during the Entity file creation, exiting.' . PHP_EOL;
+            exit();
+        } else {
+            echo 'Entity file successfully saved.' . PHP_EOL;
+        }
+    }
+
+    private function createMigrationFile(array $newData)
+    {
+        $doubleLine = PHP_EOL . PHP_EOL;
+        $timestamp = new \DateTime();
+        $timestamp = $timestamp->getTimestamp();
+        $migrationTitle = 'Version' . $timestamp;
+
+        $query = 'CREATE TABLE ' . $newData['table'] . ' (id INT AUTO_INCREMENT NOT NULL, ';
+
+        $foreign = '';
+        foreach ($newData['fields'] as $fieldName => $field) {
+            $fieldName = $field['fieldName'];
+            if (isset(EntityEnums::TYPE_CONVERSION[$field['type']])) {
+                $type = EntityEnums::TYPE_CONVERSION[$field['type']];
+            } else {
+                $type = strtoupper($field['type']);
+            }
+
+            if ('association' == $field['type']) {
+                $foreign .= 'FOREIGN KEY (' . $fieldName . ') REFERENCES ' . $field['associatedEntity'] . ' (id),';
+            }
+
+           true == $field['nullable'] ? $nullable = 'NULL' : $nullable = 'NOT NULL';
+            $query .= $fieldName . ' ' . $type . ' ' . $nullable . ',';
+        }
+
+        $query .= $foreign . ' PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB';
+
+        $data = '<?php' . $doubleLine .
+            'namespace Migrations;' . $doubleLine .
+            'use Core\database\Migration;' . $doubleLine .
+            'class ' . $migrationTitle . ' extends Migration' . PHP_EOL .
+            '{' . PHP_EOL .
+            '    public function getSQL()' . PHP_EOL .
+            '    {' . PHP_EOL .
+            '        return $this->query(\'' . $query .'\');' . PHP_EOL .
+            '    }' . PHP_EOL .
+            '}';
+
+        $result = file_put_contents(ROOT_DIR . '/migrations/'. $migrationTitle . '.php', $data);
 
         if (false === $result) {
             echo 'An error happened during the Entity file creation, exiting.' . PHP_EOL;

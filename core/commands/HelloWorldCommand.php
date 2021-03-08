@@ -10,11 +10,7 @@ class HelloWorldCommand extends Command
     {
         $this->setName('HelloWorld')
             ->setAlias('hlw')
-            ->setDescription('écrit Hello World')
-            ->addArgument('test', 'ne sert à rien')
-            ->addArgument('testa', )
-            ->addArgument('testo', 'lkfsjdfslfk' );
-
+            ->setDescription('écrit Hello World');
     }
 
     public function execute()

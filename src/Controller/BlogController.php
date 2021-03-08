@@ -7,15 +7,16 @@ use Core\controller\Controller;
 use Core\database\EntityManager;
 use Core\http\Request;
 use App\Repository\PostRepository;
+use Core\http\Response;
 
 class BlogController extends Controller
 {
-    public function indexAction(Request $request)
+    public function indexAction(Request $request): Response
     {
-        EntityManager::getAllEntityData();
         $em = $this->getManager();
-        $postRepo = new PostRepository($em);
-        $posts = $postRepo->findAll();
+        $post = new PostRepository($em);
+        $posts = $post->findAll();
+        dd($posts);
 
         $content['posts'] = $posts;
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');

@@ -5,8 +5,6 @@ namespace Core\database;
 
 
 use Core\utils\JsonParser;
-use http\Exception\RuntimeException;
-use PDO;
 
 class EntityManager
 {
@@ -88,7 +86,18 @@ class EntityManager
     {
         $entityData = $this->getEntityData(substr(strrchr(get_class($entity), '\\'), 1));
 
-        $preparedStatement = $this->prepareInsert($entityData, $entity);
+        $preparedStatement = $this->prepareInsert($entityData, $entity, 'insert');
+        $this->preparedStatements[] = $preparedStatement;
+    }
+
+    /**
+     * @param object $entity
+     */
+    public function update(object $entity)
+    {
+        $entityData = $this->getEntityData(substr(strrchr(get_class($entity), '\\'), 1));
+
+        $preparedStatement = $this->prepareInsert($entityData, $entity, 'update');
         $this->preparedStatements[] = $preparedStatement;
     }
 
@@ -128,9 +137,10 @@ class EntityManager
     /**
      * @param array $entityData
      * @param object $entity
+     * @param string $operation
      * @return array
      */
-    private function prepareInsert(array $entityData, object $entity): array
+    private function prepareInsert(array $entityData, object $entity, string $operation): array
     {
         $rows = '';
         $insertedData = [];
@@ -140,12 +150,24 @@ class EntityManager
         {
             $currentGetMethod = "get" . ucfirst($attribute);
             $currentField = $metadata[EntityEnums::FIELD_NAME];
-            $placeholders .= ":{$currentField}, ";
-            $rows .= "{$currentField}, ";
+
+            if ( 'insert' === $operation) {
+                $placeholders .= ":{$currentField}, ";
+                $rows .= "{$currentField}, ";
+            }
+
+            if('update' === $operation) {
+                $rows .= "{$currentField} = :{$currentField} , ";
+            }
 
             if (EntityEnums::TYPE_DATE === $metadata[EntityEnums::FIELD_TYPE]) {
                 $date = $entity->$currentGetMethod() ? date(EntityEnums::DEFAULT_DATE_FORMAT, $entity->$currentGetMethod()->getTimestamp()): null;
                 $insertedData[":{$currentField}"] = $date;
+                continue;
+            }
+
+            if (EntityEnums::TYPE_JSON === $metadata[EntityEnums::FIELD_TYPE]) {
+                $insertedData[":{$currentField}"] = json_encode($entity->$currentGetMethod())?:null;
                 continue;
             }
 
@@ -175,7 +197,16 @@ class EntityManager
 
         }
 
-        $statement['prepare'] = 'INSERT INTO ' . $entityData[EntityEnums::TABLE_NAME] . " ({$rows}) VALUES ($placeholders)";
+
+        if ('insert' === $operation) {
+            $statement['prepare'] = 'INSERT INTO ' . $entityData[EntityEnums::TABLE_NAME] . " ({$rows}) VALUES ($placeholders)";
+        }
+
+        if('update' === $operation) {
+            $statement['prepare'] = 'UPDATE ' . $entityData[EntityEnums::TABLE_NAME] . " SET $rows WHERE id = :id";
+        }
+
+        $insertedData[':id'] = $entity->getId();
         $statement['execute'] = $insertedData;
 
         return $statement;

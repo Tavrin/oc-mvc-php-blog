@@ -19,4 +19,14 @@ class EntityEnums
     public const ID_FIELD_NAME = 'id';
     public const FIELDS_CATEGORY = 'fields';
     public const DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
+
+    public const TYPE_CONVERSION = [
+        'int' => 'INT',
+        'bool' => 'TINYINT(1)',
+        'string' => 'VARCHAR(255)',
+        'text' => 'LONGTEXT',
+        'datetime' => 'DATETIME',
+        'array' => 'JSON',
+        'association' => 'INT'
+    ];
 }
