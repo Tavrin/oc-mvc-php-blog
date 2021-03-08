@@ -12,6 +12,7 @@ class CommandManager
     public const HELP_ARGUMENT = 'help';
     private array $commandList = [];
     private array $argumentsList = [];
+    private array $optionsList = [];
 
     public function __construct($command, $arguments)
     {
@@ -23,7 +24,7 @@ class CommandManager
     private function initialize(array $arguments): void
     {
         $this->addCommands();
-        $this->addArguments($arguments);
+        $this->addParams($arguments);
     }
 
     private function addCommands(): void
@@ -35,11 +36,16 @@ class CommandManager
         }
     }
 
-    private function addArguments(array $arguments): void
+    private function addParams(array $arguments): void
     {
         foreach ($arguments as $arg) {
             if (preg_match("#(.+?)=(.+)#", $arg, $parsedArgs)) {
                 $this->argumentsList[$parsedArgs[1]] = $parsedArgs[2];
+            } elseif (preg_match("#--(.+)#", $arg, $parsedArgs)) {
+                $this->optionsList[$parsedArgs[1]] = true;
+            } else {
+                echo 'Wrong argument or option : ' . $arg . PHP_EOL;
+                exit();
             }
         }
     }
@@ -65,11 +71,19 @@ class CommandManager
 
         foreach ($this->argumentsList as $argument => $value) {
             if (!$foundCommand->hasArgument($argument)) {
-                echo 'cet argument n\'existe pas: ' . $argument;
-                return;
+                echo 'This argument does not exist : ' . $argument . PHP_EOL;
+                exit();
             }
         }
 
+        foreach ($this->optionsList as $option => $value) {
+            if (!$foundCommand->hasOption($option)) {
+                echo 'This option does not exist : ' . $option . PHP_EOL;
+                exit();
+            }
+        }
+
+        $foundCommand->setParemValues($this->argumentsList, $this->optionsList);
         $foundCommand->run($this->argumentsList);
     }
 

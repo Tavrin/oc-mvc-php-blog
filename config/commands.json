@@ -7,6 +7,11 @@
     "CreateEntity":
     {
       "name": "CreateEntity",
-      "class": "Core\\commands\\CreateEntity"
+      "class": "Core\\commands\\CreateEntityCommand"
+    },
+    "CreateController":
+    {
+      "name": "CreateController",
+      "class": "Core\\commands\\CreateControllerCommand"
     }
 }

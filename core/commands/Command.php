@@ -8,6 +8,7 @@ define('ROOT_DIR', dirname(__DIR__) . '/../');
 
 abstract class Command
 {
+    protected const BREAK_KEYWORD = 'stop';
     protected ?string $name;
     protected ?string $alias;
     protected ?string $description;
@@ -20,6 +21,7 @@ abstract class Command
     public function __construct()
     {
         $this->arguments = [];
+        $this->options = [];
         $this->name = null;
         $this->alias = null;
         $this->description = null;
@@ -97,9 +99,39 @@ abstract class Command
         }
         $argumentData['name'] = $argument;
         $argumentData['description'] = $description?? null;
+        $argumentData['value'] = null;
 
         $this->arguments[$argument] = $argumentData;
         return $this;
+    }
+
+    public function addOption(string $option, string $description = null)
+    {
+        if (in_array($option, $this->options)) {
+            return false;
+        }
+        $optionData['name'] = $option;
+        $optionData['description'] = $description?? null;
+        $optionData['value'] = null;
+
+        $this->options[$option] = $optionData;
+        return $this;
+    }
+
+
+    public function setParemValues(array $arguments = null, array $options = null)
+    {
+        if (!empty($arguments)) {
+            foreach ($arguments as $name => $argument) {
+                $this->arguments[$name]['value'] = $argument;
+            }
+        }
+
+        if (!empty($options)) {
+            foreach ($options as $name => $option) {
+                $this->options[$name]['value'] = $option;
+            }
+        }
     }
 
     /**
@@ -110,9 +142,23 @@ abstract class Command
         return $this->arguments;
     }
 
-    public function hasArgument(string $argument)
+    /**
+     * @param string $argument
+     * @return mixed
+     */
+    public function getArgument(string $argument)
     {
-        return in_array($argument, $this->arguments);
+        return $this->arguments[$argument];
+    }
+
+    public function hasArgument(string $argument): bool
+    {
+        return isset($this->arguments[$argument]);
+    }
+
+    public function hasOption(string $option): bool
+    {
+        return isset($this->options[$option]);
     }
 
     public function run()
@@ -120,7 +166,20 @@ abstract class Command
         $this->execute();
     }
 
+
     protected function execute()
     {
+    }
+
+
+    protected function getInput(bool $noLower = false): ?string
+    {
+        $line = trim(fgets(STDIN)); // reads one line from STDIN
+        if (empty($line) || self::BREAK_KEYWORD === $line) {
+            return null;
+        }
+
+        false === $noLower ? $line = lcfirst($line) : true;
+        return $line;
     }
 }

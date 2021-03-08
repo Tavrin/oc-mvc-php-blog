@@ -13,7 +13,6 @@ class BlogController extends Controller
     public function indexAction(Request $request)
     {
         EntityManager::getAllEntityData();
-        exit();
         $em = $this->getManager();
         $postRepo = new PostRepository($em);
         $posts = $postRepo->findAll();

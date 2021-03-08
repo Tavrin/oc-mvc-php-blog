@@ -6,9 +6,8 @@ namespace Core\commands;
 
 use Core\database\EntityManager;
 
-class CreateEntity extends Command
+class CreateEntityCommand extends Command
 {
-    protected const BREAK_KEYWORD = 'stop';
     protected const ENTITY_CONFIG_DIR = ROOT_DIR . '/config/entities/';
     protected const ENTITY_REPO_DIR = ROOT_DIR . '/src/Repository/';
     protected const ENTITY_DIR = ROOT_DIR . '/src/Entity/';
@@ -23,6 +22,9 @@ class CreateEntity extends Command
     public function execute()
     {
         $entityData = EntityManager::getAllEntityData();
+
+        echo 'New Entity' . PHP_EOL . PHP_EOL;
+
         $newData = $this->getNewEntityData($entityData);
 
         $this->createEntityFile($newData);
@@ -33,21 +35,10 @@ class CreateEntity extends Command
         exit();
     }
 
-    private function getInput(): ?string
-    {
-        $line = trim(fgets(STDIN)); // reads one line from STDIN
-        if (empty($line) || self::BREAK_KEYWORD === $line) {
-            return null;
-        }
-
-        return lcfirst($line);
-    }
-
     private function getNewEntityData(array $entityData): array
     {
 
         $newEntity = [];
-        echo 'New Entity' . PHP_EOL . PHP_EOL;
         echo 'Entity name : ';
         $line = $this->getInput();
 
@@ -123,6 +114,8 @@ class CreateEntity extends Command
 
     private function createRepoFile(array $newData)
     {
+        echo 'Creating Repository file : ' .PHP_EOL;
+
         $doubleLine = PHP_EOL . PHP_EOL;
         $data = "<?php" . $doubleLine . "namespace App\Repository;" . $doubleLine . 'use Core\database\EntityManager;
 use Core\database\Repository;
@@ -134,16 +127,40 @@ class ' . $newData['name'] . 'Repository extends Repository
         parent::__construct($entityManager, \'' . $newData['name'] . '\');
     }
 }';
-        file_put_contents(self::ENTITY_REPO_DIR . ucfirst($newData['name']) .'Repository.php', $data, );
+        $result = file_put_contents(self::ENTITY_REPO_DIR . ucfirst($newData['name']) .'Repository.php', $data, );
+
+        if (false === $result) {
+            echo 'An error happened during the Entity Repository file creation, exiting.' . PHP_EOL;
+            exit();
+        } else {
+            echo 'Entity Repository file successfully saved.' . PHP_EOL;
+        }
     }
 
+    /**
+     * @param array $newData
+     */
     private function createJsonFile(array $newData)
     {
-        file_put_contents(self::ENTITY_CONFIG_DIR . ucfirst($newData['name']) . '.json', json_encode($newData, JSON_PRETTY_PRINT));
+        echo 'Creating Json Config file : ' .PHP_EOL;
+
+        $result = file_put_contents(self::ENTITY_CONFIG_DIR . ucfirst($newData['name']) . '.json', json_encode($newData, JSON_PRETTY_PRINT));
+
+        if (false === $result) {
+            echo 'An error happened during the Entity json Config file creation, exiting.' . PHP_EOL;
+            exit();
+        } else {
+            echo 'Entity json Config file successfully saved.' . PHP_EOL;
+        }
     }
 
+    /**
+     * @param array $newData
+     */
     private function createEntityFile(array $newData)
     {
+        echo 'Creating Entity file : ' .PHP_EOL;
+
         $doubleLine = PHP_EOL . PHP_EOL;
         $data = '<?php '. $doubleLine . 'namespace App\Entity;' . PHP_EOL;
 
@@ -210,6 +227,13 @@ class ' . $newData['name'] . 'Repository extends Repository
 
         $data .= '}';
 
-        file_put_contents(self::ENTITY_DIR . ucfirst($newData['name']) . '.php', $data);
+        $result = file_put_contents(self::ENTITY_DIR . ucfirst($newData['name']) . '.php', $data);
+
+        if (false === $result) {
+            echo 'An error happened during the Entity file creation, exiting.' . PHP_EOL;
+            exit();
+        } else {
+            echo 'Entity file successfully saved.' . PHP_EOL;
+        }
     }
 }
