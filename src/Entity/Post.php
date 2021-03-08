@@ -8,72 +8,72 @@ class Post
     /**
      * @var int
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $title;
+    private ?string $title;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $header;
+    private ?string $header;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $content;
+    private ?string $content;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private $readmore;
+    private ?array $readmore;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $metaTitle;
+    private ?string $metaTitle;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $metaDescription;
+    private ?string $metaDescription;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $listingText;
+    private string $listingText;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $slug;
+    private ?string $slug;
 
     /**
      * @var User
      */
-    private $author;
+    private User $author;
 
     /**
-     * @var Category
+     * @var Category|null
      */
-    private $category;
-
-    /**
-     * @var \DateTime
-     */
-    private $publishedAt;
+    private ?Category $category;
 
     /**
      * @var \DateTime
      */
-    private $updatedAt;
+    private \DateTime $publishedAt;
+
+    /**
+     * @var \DateTime|null
+     */
+    private ?\DateTime $updatedAt;
 
     /**
      * @var bool
      */
-    private $status;
+    private ?bool $status;
 
     public function __construct()
     {
@@ -125,7 +125,7 @@ class Post
         return $this->readmore;
     }
 
-    public function setReadmore(array $readMore)
+    public function setReadmore(?array $readMore)
     {
         $this->readmore = $readMore;
     }

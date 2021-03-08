@@ -111,10 +111,17 @@ class CreateEntityCommand extends Command
                 $newEntity['hasAssociations'] = true;
             }
 
-            echo 'Nullable(true/false) : ';
+            echo 'Nullable(yes/no) : ';
             $line = $this->getInput();
             if (empty($line)) {
                 break;
+            } elseif ('yes' === $line || 'y' === $line) {
+                $line = true;
+            } elseif ('no' === $line || 'n' === $line) {
+                $line = false;
+            } else {
+                echo 'Must be true or false' . PHP_EOL;
+                exit();
             }
 
             $newEntity['fields'][$currentField['name']]['nullable'] = $line;
@@ -196,42 +203,32 @@ class ' . $newData['name'] . 'Repository extends Repository
 ';
 
         foreach ($newData['fields'] as $fieldName => $field) {
-            if ('association' === $field['type']) {
-                $type = ucfirst($field['associatedEntity']);
-            } else {
-                $type = $field['type'];
-            }
-
+            $type = $this->getEntityTypes($field);
             $data .=
         '    /**' . PHP_EOL .
-     '    * @var ' . $type . PHP_EOL .
+     '    * @var ' . $type['$phpDoctype'] . PHP_EOL .
      '    */' . PHP_EOL .
-     '    private $' . $fieldName . ';' . $doubleLine;
+     '    private ' . $type['type'] . ' $' . $fieldName . ';' . $doubleLine;
         }
 
         $data .= '    public function getId(): ?int
-        {
-            return $this->id;
-        }
+    {
+        return $this->id;
+    }
     
-        public function setId(int $id)
-        {
-            $this->id = $id;
-        }';
+    public function setId(int $id)
+    {
+        $this->id = $id;
+    }' . $doubleLine;
 
         foreach ($newData['fields'] as $fieldName => $field) {
-            if ('association' === $field['type']) {
-                $type = ucfirst($field['associatedEntity']);
-            } else {
-                $type = $field['type'];
-            }
-
+            $type = $this->getEntityTypes($field);
             $data .=
-                '    public function get' . ucfirst($fieldName) . '(): ?' . $type . PHP_EOL .
+                '    public function get' . ucfirst($fieldName) . '(): ' . $type['type'] . PHP_EOL .
                 '    {' . PHP_EOL .
                 '        return $this->' . $fieldName . ';' . PHP_EOL .
                 '    }' . $doubleLine .
-                '    public function set' . ucfirst($fieldName) . '(' . $type . ' $' . $fieldName . ')' . PHP_EOL .
+                '    public function set' . ucfirst($fieldName) . '(' . $type['type'] . ' $' . $fieldName . ')' . PHP_EOL .
                 '    {' . PHP_EOL .
                 '        $this->' . $fieldName . ' = $' . $fieldName . ';' . PHP_EOL .
                 '    }' . $doubleLine;
@@ -247,6 +244,26 @@ class ' . $newData['name'] . 'Repository extends Repository
         } else {
             echo 'Entity file successfully saved.' . PHP_EOL;
         }
+    }
+
+    private function getEntityTypes(array $field)
+    {
+        if ('association' === $field['type']) {
+            $type = ucfirst($field['associatedEntity']);
+        } else {
+            $type = $field['type'];
+        }
+
+        if (true === $field['nullable']) {
+            $types['$phpDoctype'] = $type . '|null';
+            $type = '?' . $type;
+        } else {
+            $types['$phpDoctype'] = $type;
+        }
+
+        $types['type'] = $type;
+
+        return $types;
     }
 
     private function createMigrationFile(array $newData)

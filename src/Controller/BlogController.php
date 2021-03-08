@@ -16,7 +16,6 @@ class BlogController extends Controller
         $em = $this->getManager();
         $post = new PostRepository($em);
         $posts = $post->findAll();
-        dd($posts);
 
         $content['posts'] = $posts;
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');

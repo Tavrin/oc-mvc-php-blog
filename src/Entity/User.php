@@ -9,56 +9,56 @@ class User
     /**
      * @var int
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $firstName;
+    private ?string $firstName;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $lastName;
+    private ?string $lastName;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $presentation;
+    private ?string $presentation;
 
     /**
      * @var bool
      */
-    private $status;
+    private bool $status;
 
     /**
      * @var string
      */
-    private $email;
+    private string $email;
 
     /**
      * @var string
      */
-    private $username;
+    private string $username;
 
     /**
      * @var string
      */
-    private $password;
+    private string $password;
 
     /**
      * @var array
      */
-    private $roles;
+    private array $roles;
     /**
      * @var \DateTime
      */
-    private $publishedAt;
+    private \DateTime $publishedAt;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      */
-    private $updatedAt;
+    private ?\DateTime $updatedAt;
 
     public function __construct()
     {

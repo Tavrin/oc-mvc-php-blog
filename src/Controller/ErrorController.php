@@ -22,7 +22,6 @@ class ErrorController extends Controller
         if (isset($_ENV['ENV']) && $_ENV['ENV'] === 'dev') {
             $content['code'] = $code;
             $content['message'] = $message;
-            dump($content);
 
             return $this->render('error.html.twig',[
                 'content' => $content
@@ -32,6 +31,7 @@ class ErrorController extends Controller
         404 === $code ? $message = "La page demandée n'existe pas":($message = "Le blog a rencontré une erreur" AND $code = 500);
         $content['code'] = $code;
         $content['message'] = $message;
+
         return $this->render('error.html.twig',[
             'content' => $content
         ]);

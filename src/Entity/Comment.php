@@ -11,12 +11,12 @@ class Comment
     /**
      * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @var string
      */
-    private $content;
+    private string $content;
 
     /**
      * @var CommentStatus
@@ -26,22 +26,22 @@ class Comment
     /**
      * @var Post
      */
-    private $post;
+    private Post $post;
 
     /**
      * @var User
      */
-    private $author;
+    private User $author;
 
     /**
      * @var \DateTime
      */
-    private $publishedAt;
+    private \DateTime $publishedAt;
 
     /**
      * @var \DateTime
      */
-    private $updatedAt;
+    private \DateTime $updatedAt;
 
     public function __construct()
     {

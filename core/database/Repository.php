@@ -82,6 +82,7 @@ abstract class Repository
                         continue;
                     }
 
+
                     $entities[$entityKey]->$method($insertData);
                 }
 

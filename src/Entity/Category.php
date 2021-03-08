@@ -9,27 +9,27 @@ class Category
     /**
      * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $description;
+    private string $description;
 
     /**
      * @var \DateTime
      */
-    private $publishedAt;
+    private \DateTime $publishedAt;
 
     /**
      * @var \DateTime
      */
-    private $updatedAt;
+    private \DateTime $updatedAt;
 
     public function __construct()
     {
