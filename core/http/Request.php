@@ -117,7 +117,7 @@ class Request
         return $pathInfo;
     }
 
-    public function setController(array $controller)
+    public function setController(array $controller): bool
     {
         if (empty($controller['route']) || empty($controller['path']) || empty($controller['controller'])) {
             return false;
@@ -164,5 +164,10 @@ class Request
         }
 
         return $this->method;
+    }
+
+    public function getRequest(string $key)
+    {
+        return \array_key_exists($key, $this->request) ? $this->request[$key] : null;
     }
 }

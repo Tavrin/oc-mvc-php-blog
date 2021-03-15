@@ -607,6 +607,11 @@ h1 {
     flex-basis: 50%;
 }
 
+/* border */
+.b-1-s-g {
+    border: 1px solid #ced4da;
+}
+
 /* border-top */
 .bt-g {
     border-top: 1px solid #f5f4f4;
@@ -632,6 +637,7 @@ h1 {
     padding: .5rem 2rem .5rem 2rem;
 }
 
+/* display */
 .d-b {
     display: block;
 }

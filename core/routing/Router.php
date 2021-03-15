@@ -9,18 +9,16 @@ use http\Exception;
 
 class Router
 {
-    public $pathInfo;
+    public string $pathInfo;
 
-    const ROUTER_CONFIG = ROOT_DIR . '/config/routes.json';
+    public const ROUTER_CONFIG = ROOT_DIR . '/config/routes.json';
 
-    public function match(Request $request)
+    public function match(Request $request): array
     {
-        $params = $this->getRouteParams($request->getPathInfo());
-
-        return $params;
+        return $this->getRouteParams($request->getPathInfo());
     }
 
-    private function getRouteParams(string $pathInfo)
+    private function getRouteParams(string $pathInfo): array
     {
         $this->pathInfo = $this->sanitizePath($pathInfo);
         $parsedRoutes = JsonParser::parseFile(self::ROUTER_CONFIG);
@@ -43,21 +41,25 @@ class Router
 
             foreach ($explodedPath['url'] as $key => $explodedUrl) {
                 $explodedRoute = $explodedPath['route'][$key];
-                if ($explodedRoute === '') {
+
+                if (isset($explodedRoute) && $explodedRoute === '') {
                     $breadcrumbs['path'] = '/';
                     $breadcrumbs['name'] = 'accueil';
-                } else {
-                    $breadcrumbs['path'] = '/' . $explodedRoute;
-                    $breadcrumbs['name'] = $explodedRoute;
+                    $params['breadcrumb'][] = $breadcrumbs;
                 }
 
-                $params['breadcrumb'][] = $breadcrumbs;
                 if (preg_match('/{(.*?)}/', $explodedRoute, $match)) {
                     $slugs[$match[1]] = $explodedUrl;
                     continue;
                 } elseif ($explodedUrl !== $explodedRoute) {
                     continue 2;
                 }
+            }
+
+            if (isset($explodedRoute)) {
+                $breadcrumbs['path'] = '/' . $explodedRoute;
+                $breadcrumbs['name'] = $explodedRoute;
+                $params['breadcrumb'][] = $breadcrumbs;
             }
 
             $params['route'] = $route['route'];
@@ -73,7 +75,7 @@ class Router
         throw new \RuntimeException(sprintf('Mauvaise route'), 404);
     }
 
-    public static function matchError(\Throwable $e)
+    public static function matchError(\Throwable $e): string
     {
         $parsedRoutes = JsonParser::parseFile(self::ROUTER_CONFIG);
 
@@ -86,7 +88,7 @@ class Router
         return  sprintf('No error page');
     }
 
-    private function sanitizePath(string $pathInfo)
+    private function sanitizePath(string $pathInfo): string
     {
         $pathInfo = rawurldecode($pathInfo) ?: '/';
 

@@ -5,6 +5,7 @@ namespace Core\controller;
 
 use Core\database\EntityManager;
 use Core\http\Request;
+use Core\http\Session;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Core\http\Response;
@@ -13,14 +14,16 @@ class Controller
 {
     protected const TEMPLATES_DIR = ROOT_DIR . '/templates/';
 
-    protected $twig;
+    protected Environment $twig;
 
-    private $entityManager;
+    private ?EntityManager $entityManager;
+
+    protected Session $session;
 
     /**
      * @var Request
      */
-    protected $request;
+    protected ?Request $request;
 
     public $renderContent = null;
 
@@ -28,6 +31,8 @@ class Controller
     {
         $this->request = $request;
         $this->entityManager = $entityManager;
+        $this->session = new Session();
+        $this->session->start();
         $loader = new FilesystemLoader(self::TEMPLATES_DIR);
         if (isset($_ENV['ENV']) && $_ENV['ENV'] === 'dev') {
             $this->twig = new Environment($loader, [
@@ -61,7 +66,7 @@ class Controller
         $this->renderContent = $this->twig->render($template, $parameters);
     }
 
-    public function getControllerConter()
+    public function getControllerContent()
     {
         return $this->renderContent;
     }
@@ -79,5 +84,14 @@ class Controller
     {
         header("location:/error");
         exit();
+    }
+
+    protected function redirect(string $path)
+    {
+        $host = $this->request->server['HTTP_HOST'];
+        $uri   = rtrim(dirname($this->request->server['PHP_SELF']), '/\\');
+
+        $newPath = "http://{$host}/{$path}";
+        header("Location:" . $newPath);
     }
 }

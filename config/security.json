@@ -1,0 +1,17 @@
+{
+    "authentication_entity":
+    {
+        "name": "user"
+    },
+    "firewalls":
+    {
+        "admin":
+        {
+            "pattern": "/admin",
+            "roles":
+            [
+                "ROLE_ADMIN"
+            ]
+        }
+    }
+}

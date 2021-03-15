@@ -4,6 +4,7 @@
 namespace Core\database;
 
 
+use Core\utils\ClassUtils;
 use Core\utils\JsonParser;
 
 class EntityManager
@@ -79,12 +80,45 @@ class EntityManager
         return $entityData;
     }
 
+    public function getChildrenEntities(object $entity, array $entityData = null): ?array
+    {
+        if (null === $entityData) {
+            $className = ClassUtils::getClassNameFromObject($entity);
+            $entityData = $this->getEntityData($className);
+        }
+
+        if (!isset($entityData['childrenEntities'])) {
+            return null;
+        }
+
+        $childrenEntities = [];
+        $parentEntityId = $entity->getId();
+        foreach ($entityData['childrenEntities'] as $childrenEntity) {
+            $childrenEntityData = $this->getEntityData($childrenEntity['associatedEntity']);
+            foreach ($childrenEntityData['fields'] as $fieldName => $field) {
+                if ('association' !== $field['type'] || ('association' === $field['type'] && $entityData['name'] !== $field['associatedEntity'])) {
+                    continue;
+                }
+
+                $parentTableName = $field['fieldName'];
+                $childrenEntityRepo = new $childrenEntityData['repository'];
+                 $results = $childrenEntityRepo->findBy($parentTableName, $parentEntityId);
+                 foreach ($results as $key => $result) {
+                     $childrenEntities[$key]['entity'] = $result;
+                     $childrenEntities[$key]['data'] = $childrenEntityData;
+                 }
+            }
+        }
+        return $childrenEntities;
+    }
+
     /**
      * @param object $entity
      */
     public function save(object $entity)
     {
-        $entityData = $this->getEntityData(substr(strrchr(get_class($entity), '\\'), 1));
+        $className = ClassUtils::getClassNameFromObject($entity);
+        $entityData = $this->getEntityData($className);
 
         $preparedStatement = $this->prepareInsert($entityData, $entity, 'insert');
         $this->preparedStatements[] = $preparedStatement;
@@ -95,7 +129,8 @@ class EntityManager
      */
     public function update(object $entity)
     {
-        $entityData = $this->getEntityData(substr(strrchr(get_class($entity), '\\'), 1));
+        $className = ClassUtils::getClassNameFromObject($entity);
+        $entityData = $this->getEntityData($className);
 
         $preparedStatement = $this->prepareInsert($entityData, $entity, 'update');
         $this->preparedStatements[] = $preparedStatement;
@@ -109,7 +144,18 @@ class EntityManager
         if (! is_object($entity)) {
             throw new \InvalidArgumentException('EntityManager->remove() Wrong Entity type given : ' . gettype($entity), 500);
         }
-        $entityData = $this->getEntityData(substr(strrchr(get_class($entity), '\\'), 1));
+        $className = ClassUtils::getClassNameFromObject($entity);
+        $entityData = $this->getEntityData($className);
+
+        if (isset($entityData['childrenEntities'])) {
+
+            $childrenEntities = $this->getChildrenEntities($entity, $entityData);
+
+            foreach ($childrenEntities as $childrenEntity) {
+                $preparedStatement = $this->prepareDelete($childrenEntity['data'], $childrenEntity['entity']);
+                $this->preparedStatements[] = $preparedStatement;
+            }
+        }
 
         $preparedStatement = $this->prepareDelete($entityData, $entity);
         $this->preparedStatements[] = $preparedStatement;
@@ -204,9 +250,9 @@ class EntityManager
 
         if('update' === $operation) {
             $statement['prepare'] = 'UPDATE ' . $entityData[EntityEnums::TABLE_NAME] . " SET $rows WHERE id = :id";
+            $insertedData[':id'] = $entity->getId();
         }
 
-        $insertedData[':id'] = $entity->getId();
         $statement['execute'] = $insertedData;
 
         return $statement;

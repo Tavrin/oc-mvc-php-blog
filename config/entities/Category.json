@@ -1,6 +1,7 @@
 {
     "repository" : "App\\Repository\\CategoryRepository",
     "entity" : "App\\Entity\\Category",
+    "name" : "category",
     "table" : "category",
     "id" :
     {

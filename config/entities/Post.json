@@ -1,6 +1,7 @@
 {
     "repository" : "App\\Repository\\PostRepository",
     "entity" : "App\\Entity\\Post",
+    "name" : "post",
     "table" : "post",
     "id" :
     {
@@ -75,7 +76,14 @@
         "status" :
             {
               "fieldName": "status",
-              "type": "bool"
+              "type": "boolean"
             }
+    },
+    "childrenEntities" :
+    {
+        "Comment":
+        {
+          "associatedEntity" : "comment"
+        }
     }
 }

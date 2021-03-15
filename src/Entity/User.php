@@ -14,22 +14,22 @@ class User
     /**
      * @var string|null
      */
-    private ?string $firstName;
+    private ?string $firstName = null;
 
     /**
      * @var string|null
      */
-    private ?string $lastName;
+    private ?string $lastName = null;
 
     /**
      * @var string|null
      */
-    private ?string $presentation;
+    private ?string $presentation = null;
 
     /**
-     * @var bool
+     * @var ?bool
      */
-    private bool $status;
+    private ?bool $status = false;
 
     /**
      * @var string
@@ -47,9 +47,9 @@ class User
     private string $password;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private array $roles;
+    private ?array $roles = null;
     /**
      * @var \DateTime
      */
@@ -58,7 +58,7 @@ class User
     /**
      * @var \DateTime|null
      */
-    private ?\DateTime $updatedAt;
+    private ?\DateTime $updatedAt = null;
 
     public function __construct()
     {
@@ -75,37 +75,37 @@ class User
         $this->id = $id;
     }
 
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName)
+    public function setFirstName(?string $firstName)
     {
         $this->firstName = $firstName;
     }
 
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName)
+    public function setLastName(?string $lastName)
     {
         $this->lastName = $lastName;
     }
 
-    public function getPresentation(): string
+    public function getPresentation(): ?string
     {
-        return $this->lastName;
+        return $this->presentation;
     }
 
-    public function setPresentation(string $presentation)
+    public function setPresentation(?string $presentation)
     {
         $this->presentation = $presentation;
     }
 
-    public function getStatus(): bool
+    public function getStatus(): ?bool
     {
         return $this->status;
     }
@@ -115,7 +115,7 @@ class User
         $this->status = $status;
     }
 
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -125,7 +125,7 @@ class User
         $this->email = $email;
     }
 
-    public function getUsername(): string
+    public function getUsername(): ?string
     {
         return $this->username;
     }
@@ -135,7 +135,7 @@ class User
         $this->username = $username;
     }
 
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -145,7 +145,7 @@ class User
         $this->password = $password;
     }
 
-    public function getRoles(): array
+    public function getRoles(): ?array
     {
         $roles = $this->roles;
 
@@ -161,7 +161,7 @@ class User
         $this->roles = $roles;
     }
 
-    public function getPublishedAt(): \DateTime
+    public function getPublishedAt(): ?\DateTime
     {
         return $this->publishedAt;
     }
@@ -171,12 +171,12 @@ class User
         $this->publishedAt = $publishedAt;
     }
 
-    public function getUpdatedAt(): \DateTime
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTime $updatedAt)
+    public function setUpdatedAt(?\DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }
