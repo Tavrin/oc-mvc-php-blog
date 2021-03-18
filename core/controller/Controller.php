@@ -88,10 +88,7 @@ class Controller
 
     protected function redirect(string $path)
     {
-        $host = $this->request->server['HTTP_HOST'];
-        $uri   = rtrim(dirname($this->request->server['PHP_SELF']), '/\\');
-
-        $newPath = "http://{$host}/{$path}";
-        header("Location:" . $newPath);
+        header("Location:" . $path);
+        exit();
     }
 }

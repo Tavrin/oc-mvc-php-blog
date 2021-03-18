@@ -4,7 +4,7 @@ namespace Core\http;
 
 /**
  * Class Request
- * @package App\Config\Http
+ * @package App\Config\http
  */
 class Request
 {

@@ -5,6 +5,7 @@ namespace Core\security;
 
 
 use Core\http\Request;
+use Core\http\Response;
 use Core\utils\JsonParser;
 use Core\utils\StringUtils;
 
@@ -27,7 +28,10 @@ class Firewall
                 continue;
            }
 
-            dd('halt');
+           $response = new Response();
+           $response->setContent('<h1>Halte</h1>');
+           $response->send();
+           exit();
        }
     }
 }

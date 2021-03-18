@@ -6,12 +6,8 @@ namespace Core\http;
 
 class Session
 {
-    protected ?array $attributes = null;
+    protected ?array $attributes = [];
     protected bool $started = false;
-
-    public function __construct()
-    {
-    }
 
     /**
      * @return bool
@@ -21,6 +17,10 @@ class Session
     {
         if ($this->started) {
             return true;
+        }
+
+        if (headers_sent()) {
+            return false;
         }
 
         try {
@@ -38,10 +38,11 @@ class Session
 
     public function get(string $value, $default = null)
     {
+        $this->getAll();
         return \array_key_exists($value, $this->attributes) ? $this->attributes[$value] : $default;
     }
 
-    public function set(string $key, $value)
+    public function set(string $key, $value): void
     {
         $_SESSION[$key] = $value;
         $this->attributes[$key] = $value;
@@ -50,7 +51,7 @@ class Session
 
     public function has(string $key): bool
     {
-        if (!isset($this->attributes)) {
+        if ([] === $this->attributes) {
             return false;
         }
         return array_key_exists($key, $this->attributes);
@@ -58,15 +59,38 @@ class Session
 
     public function getAll(): ?array
     {
-        dump('session getall methode');
-        dump($this->attributes);
+        if (isset($_SESSION)) {
+            foreach ($_SESSION as $key => $value)
+            {
+                if (!array_key_exists($key, $this->attributes)) {
+                    $this->attributes[$key] = $value;
+                }
+            }
+        }
+
         return $this->attributes;
     }
 
-    public function remove(string $key)
+    public function remove(string $key): bool
     {
-        if (array_key_exists($key, $this->attributes)) {
+        if (array_key_exists($key, $_SESSION) || array_key_exists($key, $this->attributes)) {
+            unset($_SESSION[$key]);
             unset($this->attributes[$key]);
+            return true;
         }
+
+        return false;
+    }
+
+    public function removeAll(): bool
+    {
+        if (!isset($_SESSION)) {
+            return false;
+        }
+
+        unset($_SESSION);
+        $this->attributes = [];
+
+        return true;
     }
 }

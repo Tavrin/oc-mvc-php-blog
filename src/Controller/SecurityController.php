@@ -37,11 +37,7 @@ class SecurityController extends \Core\controller\Controller
 
     public function login(Request $request): Response
     {
-        dump('login $_session');
-        dump($_SESSION);
-        $this->session->getAll();
         if ($this->session->has('user')) {
-            dump('test');
             $this->redirect('blog');
         }
         if ($request->getMethod() === 'POST') {
@@ -52,9 +48,7 @@ class SecurityController extends \Core\controller\Controller
             $foundUser = $userRepo->findOneBy('email', $user['email']);
             $testPass = (password_verify($user['password'], $foundUser->getPassword()));
             if (true === $testPass) {
-                dump('dans la condition');
                $this->session->set('user', $foundUser);
-               dump($this->session->getAll());
             }
         }
 
@@ -64,5 +58,13 @@ class SecurityController extends \Core\controller\Controller
         return $this->render('pages/login.html.twig',[
             'content' => $content
         ]);
+    }
+
+    public function logout(Request $request)
+    {
+        if ($this->session->has('user')) {
+            $this->session->remove('user');
+        }
+        $this->redirect('/');
     }
 }
