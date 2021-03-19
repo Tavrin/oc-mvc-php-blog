@@ -1,0 +1,15 @@
+{% if flash is defined and flash is not empty %}
+    {% for flashType, array in flash %}
+        {% if flashType == 'success' %}
+            {% for message in array %}
+                <h1>{{ message }}</h1>
+            {% endfor %}
+        {% elseif flashType == 'danger' %}
+        {% elseif flashType == 'warning' %}
+        {% else %}
+            {% for message in array %}
+                <h1>{{ flashType }}</h1>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endif %}

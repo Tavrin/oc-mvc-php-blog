@@ -54,6 +54,7 @@ class Controller
         if (null === $response) {
             $response = new Response();
         }
+        $parameters['flash'] = $this->session->getAllFlash();
         $this->setControllerContent($template, $parameters);
 
         $response->setContent($this->renderContent);
@@ -90,5 +91,10 @@ class Controller
     {
         header("Location:" . $path);
         exit();
+    }
+
+    protected function flashMessage(string $key, string $message)
+    {
+        $this->session->addFlash($key, $message);
     }
 }

@@ -7,6 +7,7 @@ namespace Core\http;
 class Session
 {
     protected ?array $attributes = [];
+    protected array $flash = ['new' => [], 'display' => []];
     protected bool $started = false;
 
     /**
@@ -19,15 +20,12 @@ class Session
             return true;
         }
 
-        if (headers_sent()) {
-            return false;
-        }
-
         try {
             session_start();
             $this->started = true;
             header(sprintf('Set-Cookie: %s=%s', session_name(), session_id()));
-            isset($_SESSION) ? $this->attributes = $_SESSION : $this->attributes = [];
+            isset($_SESSION['attributes']) ? $this->attributes = $_SESSION['attributes'] : $this->attributes = [];
+            $this->initializeFlash();
         } catch (\Exception $exception)
         {
             throw $exception;
@@ -44,7 +42,7 @@ class Session
 
     public function set(string $key, $value): void
     {
-        $_SESSION[$key] = $value;
+        $_SESSION['attributes'][$key] = $value;
         $this->attributes[$key] = $value;
 
     }
@@ -59,8 +57,8 @@ class Session
 
     public function getAll(): ?array
     {
-        if (isset($_SESSION)) {
-            foreach ($_SESSION as $key => $value)
+        if (isset($_SESSION['attributes'])) {
+            foreach ($_SESSION['attributes'] as $key => $value)
             {
                 if (!array_key_exists($key, $this->attributes)) {
                     $this->attributes[$key] = $value;
@@ -73,8 +71,8 @@ class Session
 
     public function remove(string $key): bool
     {
-        if (array_key_exists($key, $_SESSION) || array_key_exists($key, $this->attributes)) {
-            unset($_SESSION[$key]);
+        if (isset($_SESSION['attributes'][$key]) || isset($this->attributes[$key])) {
+            unset($_SESSION['attributes'][$key]);
             unset($this->attributes[$key]);
             return true;
         }
@@ -84,13 +82,38 @@ class Session
 
     public function removeAll(): bool
     {
-        if (!isset($_SESSION)) {
+        if (!isset($_SESSION['attributes'])) {
             return false;
         }
 
-        unset($_SESSION);
+        unset($_SESSION['attributes']);
         $this->attributes = [];
 
         return true;
+    }
+
+    private function initializeFlash()
+    {
+        if (isset($_SESSION['flash'])) {
+            if (array_key_exists('new', $_SESSION['flash'])) {
+                $this->flash['display'] = $_SESSION['flash']['new'];
+                unset($_SESSION['flash']['new']);
+            }
+
+            if (array_key_exists('display', $_SESSION['flash'])) {
+                unset($_SESSION['flash']['display']);
+            }
+        }
+    }
+
+    public function addFlash(string $key, string $message)
+    {
+        $this->flash['new'][$key][] = $message;
+        $_SESSION['flash']['new'][$key][] = $message;
+    }
+
+    public function getAllFlash(): array
+    {
+        return $this->flash['display'];
     }
 }
