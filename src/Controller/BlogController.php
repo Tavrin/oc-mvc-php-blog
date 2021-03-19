@@ -18,7 +18,13 @@ class BlogController extends Controller
 
         $post = new PostRepository($em);
         $posts = $post->findAll();
+        $this->flashMessage('success', 'test2');
+        $this->flashMessage('succaaaess', 'test3');
+        $this->flashMessage('danger', 'test4');
 
+        $this->flashMessage('warning', 'test5');
+
+        $this->redirect('/', ['type' =>'success', 'message' => 'test flash']);
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
         if (empty($posts)) {
             throw new \RuntimeException("pas d'article de blog trouvé","404");

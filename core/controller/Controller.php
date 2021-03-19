@@ -21,7 +21,7 @@ class Controller
     protected Session $session;
 
     /**
-     * @var Request
+     * @var Request|null
      */
     protected ?Request $request;
 
@@ -87,8 +87,11 @@ class Controller
         exit();
     }
 
-    protected function redirect(string $path)
+    protected function redirect(string $path, array $flash = null)
     {
+        if (isset($flash['type']) && isset($flash['message'])) {
+            $this->flashMessage($flash['type'], $flash['message']);
+        }
         header("Location:" . $path);
         exit();
     }
