@@ -3,6 +3,7 @@
 
 namespace Core\routing;
 
+use Core\http\exceptions\NotFoundException;
 use Core\http\Request;
 use Core\utils\JsonParser;
 use http\Exception;
@@ -22,60 +23,43 @@ class Router
     {
         $this->pathInfo = $this->sanitizePath($pathInfo);
         $parsedRoutes = JsonParser::parseFile(self::ROUTER_CONFIG);
+        $requestPath = array_map('strtolower',explode('/', trim($this->pathInfo, '/')));
 
-        $explodedPath['url'] = explode('/', trim($this->pathInfo, '/'));
-        $explodedPath['url'] = array_map('strtolower', $explodedPath['url']);
-        $count['url'] = count($explodedPath['url']);
+        foreach ($parsedRoutes as $testedRoute) {
+            $params = [];
+            $params['breadcrumb'][] = ['path' => '/', 'name' => 'accueil'];
 
-        foreach ($parsedRoutes as $route) {
-            $slugs = [];
+            $testedRoute['path'] = array_map('strtolower', explode('/', trim($testedRoute['path'], '/')));
 
-            $explodedPath['route'] = explode('/', trim($route['path'], '/'));
-            $explodedPath['route'] = array_map('strtolower', $explodedPath['route']);
-
-            $count['route'] = count($explodedPath['route']);
-
-            if ($count['url'] !== $count['route']) {
+            if (count($requestPath) !== count($testedRoute['path'] )) {
                 continue;
             }
 
-            foreach ($explodedPath['url'] as $key => $explodedUrl) {
-                $explodedRoute = $explodedPath['route'][$key];
+            foreach ($requestPath as $key => $explodedUrl) {
+                $testedRouteItem = $testedRoute['path'][$key];
 
-                if (isset($explodedRoute) && $explodedRoute === '') {
-                    $breadcrumbs['path'] = '/';
-                    $breadcrumbs['name'] = 'accueil';
-                    $params['breadcrumb'][] = $breadcrumbs;
+                if (isset($testedRouteItem)) {
+                    $params['breadcrumb'][] = ['path' => '/' . $testedRouteItem, 'name' => $testedRouteItem];
                 }
 
-                if (preg_match('/{(.*?)}/', $explodedRoute, $match)) {
-                    $slugs[$match[1]] = $explodedUrl;
+                if (preg_match('/{(.*?)}/', $testedRouteItem, $match)) {
+                    $params[$match[1]] = $explodedUrl;
                     continue;
-                } elseif ($explodedUrl !== $explodedRoute) {
+                } elseif ($explodedUrl !== $testedRouteItem) {
                     continue 2;
                 }
             }
 
-            if (isset($explodedRoute)) {
-                $breadcrumbs['path'] = '/' . $explodedRoute;
-                $breadcrumbs['name'] = $explodedRoute;
-                $params['breadcrumb'][] = $breadcrumbs;
-            }
-
-            $params['route'] = $route['route'];
-            $params['controller'] = $route['controller'];
-
-            foreach ($slugs as $key => $slug) {
-                $params[$key] = $slug;
-            }
+            $params['route'] = $testedRoute['route'];
+            $params['controller'] = $testedRoute['controller'];
 
             return $params;
         }
 
-        throw new \RuntimeException(sprintf('Mauvaise route'), 404);
+        throw new NotFoundException(sprintf('Mauvaise route'), 404);
     }
 
-    public static function matchError(\Throwable $e): string
+    public static function matchError(): string
     {
         $parsedRoutes = JsonParser::parseFile(self::ROUTER_CONFIG);
 

@@ -95,7 +95,7 @@ class EntityManager
         $parentEntityId = $entity->getId();
         foreach ($entityData['childrenEntities'] as $childrenEntity) {
             $childrenEntityData = $this->getEntityData($childrenEntity['associatedEntity']);
-            foreach ($childrenEntityData['fields'] as $fieldName => $field) {
+            foreach ($childrenEntityData['fields'] as $field) {
                 if ('association' !== $field['type'] || ('association' === $field['type'] && $entityData['name'] !== $field['associatedEntity'])) {
                     continue;
                 }
@@ -118,9 +118,9 @@ class EntityManager
     public function save(object $entity)
     {
         $className = ClassUtils::getClassNameFromObject($entity);
-        $entityData = $this->getEntityData($className);
+        $currentEntityData = $this->getEntityData($className);
 
-        $preparedStatement = $this->prepareInsert($entityData, $entity, 'insert');
+        $preparedStatement = $this->prepareInsert($currentEntityData, $entity, 'insert');
         $this->preparedStatements[] = $preparedStatement;
     }
 
@@ -130,9 +130,9 @@ class EntityManager
     public function update(object $entity)
     {
         $className = ClassUtils::getClassNameFromObject($entity);
-        $entityData = $this->getEntityData($className);
+        $currentEntityData = $this->getEntityData($className);
 
-        $preparedStatement = $this->prepareInsert($entityData, $entity, 'update');
+        $preparedStatement = $this->prepareInsert($currentEntityData, $entity, 'update');
         $this->preparedStatements[] = $preparedStatement;
     }
 
@@ -145,11 +145,11 @@ class EntityManager
             throw new \InvalidArgumentException('EntityManager->remove() Wrong Entity type given : ' . gettype($entity), 500);
         }
         $className = ClassUtils::getClassNameFromObject($entity);
-        $entityData = $this->getEntityData($className);
+        $currentEntityData = $this->getEntityData($className);
 
-        if (isset($entityData['childrenEntities'])) {
+        if (isset($currentEntityData['childrenEntities'])) {
 
-            $childrenEntities = $this->getChildrenEntities($entity, $entityData);
+            $childrenEntities = $this->getChildrenEntities($entity, $currentEntityData);
 
             foreach ($childrenEntities as $childrenEntity) {
                 $preparedStatement = $this->prepareDelete($childrenEntity['data'], $childrenEntity['entity']);
@@ -157,7 +157,7 @@ class EntityManager
             }
         }
 
-        $preparedStatement = $this->prepareDelete($entityData, $entity);
+        $preparedStatement = $this->prepareDelete($currentEntityData, $entity);
         $this->preparedStatements[] = $preparedStatement;
     }
 

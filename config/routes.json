@@ -11,7 +11,7 @@
     },
     {
         "route": "blog_show",
-        "path": "\/blog\/{category}",
+        "path": "/blog/{category}",
         "controller": "App\\Controller\\BlogController::categoryAction"
     },
     {

@@ -32,7 +32,7 @@ class FirewallListener
         $dispatcher->addListener($listenerData, $eventName);
     }
 
-    public function onRequest(RequestEvent $event, string $eventName)
+    public function onRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
 

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Post;
 use Core\controller\Controller;
 use Core\database\EntityManager;
+use Core\http\exceptions\NotFoundException;
 use Core\http\Request;
 use App\Repository\PostRepository;
 use Core\http\Response;
@@ -27,7 +28,7 @@ class BlogController extends Controller
         $this->redirect('/', ['type' =>'success', 'message' => 'test flash']);
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
         if (empty($posts)) {
-            throw new \RuntimeException("pas d'article de blog trouvé","404");
+            throw new NotFoundException("pas d'article de blog trouvé", 404);
         }
 
         return $this->render('blog/index.html.twig',[

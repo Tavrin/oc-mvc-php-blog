@@ -54,14 +54,6 @@ abstract class Repository
                 $insertData = $result[$field[EntityEnums::FIELD_NAME]];
                 $method = "set" . ucfirst($key);
 
-  /**              $r = new \ReflectionMethod($entities[$entityKey], $method);
-                $params = $r->getParameters();
-                foreach ($params as $param) {
-                    //$param is an instance of ReflectionParameter
-                    $type = $param->getType()->getName();
-                }
-   **/
-
                 if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_DATE) {
                     $fieldData = new \DateTime($insertData);
                     $entities[$entityKey]->$method($fieldData);

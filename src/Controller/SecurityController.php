@@ -60,7 +60,7 @@ class SecurityController extends \Core\controller\Controller
         ]);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         if ($this->session->has('user')) {
             $this->session->remove('user');

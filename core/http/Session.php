@@ -4,6 +4,8 @@
 namespace Core\http;
 
 
+use Core\http\exceptions\SessionException;
+
 class Session
 {
     protected ?array $attributes = [];
@@ -28,7 +30,7 @@ class Session
             $this->initializeFlash();
         } catch (\Exception $exception)
         {
-            throw $exception;
+            throw new SessionException('an error occured during the session start', 500, $exception);
         }
 
         return true;
