@@ -3,11 +3,12 @@
 
 namespace Core\Event\listeners;
 
+
 use Core\Event\Dispatcher;
 use Core\Event\Events\RequestEvent;
-use Core\routing\Router;
+use Core\security\Firewall;
 
-class RouterListener
+class FirewallListener
 {
     /**
      * @var Dispatcher
@@ -15,13 +16,13 @@ class RouterListener
     public Dispatcher $dispatcher;
 
     /**
-     * @var Router
+     * @var Firewall
      */
-    public Router $router;
+    public Firewall $firewall;
 
     public function __construct()
     {
-        $this->router = new Router();
+        $this->firewall = new Firewall();
     }
 
     public function setListener(string $eventName, $method, Dispatcher $dispatcher)
@@ -35,8 +36,7 @@ class RouterListener
     {
         $request = $event->getRequest();
 
-        $params =  $this->router->match($request);
+        $this->firewall->checkFirewalls($request);
 
-        $request->addAttribute($params);
     }
 }

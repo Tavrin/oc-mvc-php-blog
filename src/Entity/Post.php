@@ -43,7 +43,7 @@ class Post
     /**
      * @var string|null
      */
-    private string $listingText;
+    private ?string $listingText;
 
     /**
      * @var string|null
@@ -135,7 +135,7 @@ class Post
         return $this->metaTitle;
     }
 
-    public function setMetaTitle(string $metaTitle)
+    public function setMetaTitle(?string $metaTitle)
     {
         $this->metaTitle = $metaTitle;
     }
@@ -145,7 +145,7 @@ class Post
         return $this->metaDescription;
     }
 
-    public function setMetaDescription(string $metaDescription)
+    public function setMetaDescription(?string $metaDescription)
     {
         $this->metaDescription = $metaDescription;
     }
@@ -155,7 +155,7 @@ class Post
         return $this->listingText;
     }
 
-    public function setListingText(string $listingText)
+    public function setListingText(?string $listingText)
     {
         $this->listingText = $listingText;
     }

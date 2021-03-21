@@ -1,6 +1,7 @@
 {
     "repository" : "App\\Repository\\UserRepository",
     "entity" : "App\\Entity\\User",
+    "name": "user",
     "table" : "user",
     "id" :
     {
@@ -26,7 +27,7 @@
         "status" :
             {
               "fieldName" : "status",
-              "type": "bool"
+              "type": "boolean"
             },
         "email" :
             {

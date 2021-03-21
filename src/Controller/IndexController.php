@@ -11,8 +11,8 @@ class IndexController extends Controller
 {
     public function indexAction(Request $request)
     {
+        $this->session->getAll();
         $content['title'] = 'Homepage';
-
         return $this->render('pages/home.html.twig',[
             'content' => $content
         ]);

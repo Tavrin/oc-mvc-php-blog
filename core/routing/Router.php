@@ -3,77 +3,63 @@
 
 namespace Core\routing;
 
+use Core\http\exceptions\NotFoundException;
 use Core\http\Request;
 use Core\utils\JsonParser;
 use http\Exception;
 
 class Router
 {
-    public $pathInfo;
+    public string $pathInfo;
 
-    const ROUTER_CONFIG = ROOT_DIR . '/config/routes.json';
+    public const ROUTER_CONFIG = ROOT_DIR . '/config/routes.json';
 
-    public function match(Request $request)
+    public function match(Request $request): array
     {
-        $params = $this->getRouteParams($request->getPathInfo());
-
-        return $params;
+        return $this->getRouteParams($request->getPathInfo());
     }
 
-    private function getRouteParams(string $pathInfo)
+    private function getRouteParams(string $pathInfo): array
     {
         $this->pathInfo = $this->sanitizePath($pathInfo);
         $parsedRoutes = JsonParser::parseFile(self::ROUTER_CONFIG);
+        $requestPath = array_map('strtolower',explode('/', trim($this->pathInfo, '/')));
 
-        $explodedPath['url'] = explode('/', trim($this->pathInfo, '/'));
-        $explodedPath['url'] = array_map('strtolower', $explodedPath['url']);
-        $count['url'] = count($explodedPath['url']);
+        foreach ($parsedRoutes as $testedRoute) {
+            $params = [];
+            $params['breadcrumb'][] = ['path' => '/', 'name' => 'accueil'];
 
-        foreach ($parsedRoutes as $route) {
-            $slugs = [];
+            $testedRoute['path'] = array_map('strtolower', explode('/', trim($testedRoute['path'], '/')));
 
-            $explodedPath['route'] = explode('/', trim($route['path'], '/'));
-            $explodedPath['route'] = array_map('strtolower', $explodedPath['route']);
-
-            $count['route'] = count($explodedPath['route']);
-
-            if ($count['url'] !== $count['route']) {
+            if (count($requestPath) !== count($testedRoute['path'] )) {
                 continue;
             }
 
-            foreach ($explodedPath['url'] as $key => $explodedUrl) {
-                $explodedRoute = $explodedPath['route'][$key];
-                if ($explodedRoute === '') {
-                    $breadcrumbs['path'] = '/';
-                    $breadcrumbs['name'] = 'accueil';
-                } else {
-                    $breadcrumbs['path'] = '/' . $explodedRoute;
-                    $breadcrumbs['name'] = $explodedRoute;
+            foreach ($requestPath as $key => $explodedUrl) {
+                $testedRouteItem = $testedRoute['path'][$key];
+
+                if (isset($testedRouteItem)) {
+                    $params['breadcrumb'][] = ['path' => '/' . $testedRouteItem, 'name' => $testedRouteItem];
                 }
 
-                $params['breadcrumb'][] = $breadcrumbs;
-                if (preg_match('/{(.*?)}/', $explodedRoute, $match)) {
-                    $slugs[$match[1]] = $explodedUrl;
+                if (preg_match('/{(.*?)}/', $testedRouteItem, $match)) {
+                    $params[$match[1]] = $explodedUrl;
                     continue;
-                } elseif ($explodedUrl !== $explodedRoute) {
+                } elseif ($explodedUrl !== $testedRouteItem) {
                     continue 2;
                 }
             }
 
-            $params['route'] = $route['route'];
-            $params['controller'] = $route['controller'];
-
-            foreach ($slugs as $key => $slug) {
-                $params[$key] = $slug;
-            }
+            $params['route'] = $testedRoute['route'];
+            $params['controller'] = $testedRoute['controller'];
 
             return $params;
         }
 
-        throw new \RuntimeException(sprintf('Mauvaise route'), 404);
+        throw new NotFoundException(sprintf('Mauvaise route'), 404);
     }
 
-    public static function matchError(\Throwable $e)
+    public static function matchError(): string
     {
         $parsedRoutes = JsonParser::parseFile(self::ROUTER_CONFIG);
 
@@ -86,7 +72,7 @@ class Router
         return  sprintf('No error page');
     }
 
-    private function sanitizePath(string $pathInfo)
+    private function sanitizePath(string $pathInfo): string
     {
         $pathInfo = rawurldecode($pathInfo) ?: '/';
 

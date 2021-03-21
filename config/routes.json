@@ -11,7 +11,7 @@
     },
     {
         "route": "blog_show",
-        "path": "\/blog\/{category}",
+        "path": "/blog/{category}",
         "controller": "App\\Controller\\BlogController::categoryAction"
     },
     {
@@ -19,16 +19,33 @@
         "path": "\/fakePath\/{id}\/{slug}"
     },
     {
-        "route": "fakeRouteEncore",
-        "path": "\/fakepath\/test"
+        "route": "admin_dashboard",
+        "path": "/admin",
+        "controller": "App\\Controller\\BlogController::categoryAction"
     },
     {
-        "route": "test_route",
-        "path": "\/testpath\/test"
+        "route": "inscription",
+        "path": "/register",
+        "controller": "App\\Controller\\SecurityController::register"
+    },
+    {
+        "route": "connexion",
+        "path": "/login",
+        "controller": "App\\Controller\\SecurityController::login"
+    },
+    {
+        "route": "logout",
+        "path": "/logout",
+        "controller": "App\\Controller\\SecurityController::logout"
     },
     {
         "route": "error",
         "path": "\/error",
         "controller": "App\\Controller\\ErrorController::indexAction"
+    },
+    {
+        "route": "admin_test",
+        "path": "\/admin\/test",
+        "controller": "App\\Controller\\admin\\TestController::indexAction"
     }
 ]

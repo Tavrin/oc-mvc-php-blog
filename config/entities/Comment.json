@@ -1,0 +1,47 @@
+{
+    "repository" : "App\\Repository\\CommentRepository",
+    "entity" : "App\\Entity\\Comment",
+    "name" : "comment",
+    "table" : "comment",
+    "id" :
+    {
+      "type" : "integer"
+    },
+    "fields" :
+    {
+        "content" :
+            {
+              "fieldName" : "content",
+              "type": "string"
+            },
+        "status" :
+            {
+              "fieldName" : "status",
+              "type": "int"
+            },
+        "post" :
+            {
+              "fieldName" : "post_id",
+              "type": "association",
+              "associatedEntity": "post",
+              "repository": "App\\Repository\\PostRepository"
+            },
+        "user" :
+            {
+              "fieldName" : "user_id",
+              "type": "association",
+              "associatedEntity": "user",
+              "repository": "App\\Repository\\UserRepository"
+            },
+        "publishedAt" :
+            {
+              "fieldName" : "created_at",
+              "type": "datetime"
+            },
+        "updatedAt" :
+            {
+              "fieldName" : "updated_at",
+              "type": "datetime"
+            }
+    }
+}

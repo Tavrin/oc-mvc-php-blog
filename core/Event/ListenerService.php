@@ -7,6 +7,7 @@ class ListenerService
 
     public array $listeners = [
         ['class' => 'Core\Event\listeners\RouterListener', 'callbackMethod' => 'onRequest', 'eventName' => EventNames::REQUEST],
+        ['class' => 'Core\Event\listeners\FirewallListener', 'callbackMethod' => 'onRequest', 'eventName' =>  EventNames::REQUEST],
         ['class' => 'Core\Event\listeners\FakeListener', 'callbackMethod' => 'onResponse', 'eventName' =>  EventNames::RESPONSE]
         ];
 

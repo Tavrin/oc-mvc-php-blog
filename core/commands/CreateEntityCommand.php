@@ -139,7 +139,7 @@ class CreateEntityCommand extends Command
         $data = "<?php" . $doubleLine . "namespace App\Repository;" . $doubleLine . 'use Core\database\EntityManager;
 use Core\database\Repository;
 
-class ' . $newData['name'] . 'Repository extends Repository
+class ' . ucfirst($newData['name']) . 'Repository extends Repository
 {
     public function __construct(?EntityManager $entityManager = null)
     {

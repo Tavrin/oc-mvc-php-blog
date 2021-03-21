@@ -5,6 +5,7 @@ namespace Core\controller;
 
 use Core\database\EntityManager;
 use Core\http\Request;
+use Core\http\Session;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Core\http\Response;
@@ -13,14 +14,16 @@ class Controller
 {
     protected const TEMPLATES_DIR = ROOT_DIR . '/templates/';
 
-    protected $twig;
+    protected Environment $twig;
 
-    private $entityManager;
+    private ?EntityManager $entityManager;
+
+    protected Session $session;
 
     /**
-     * @var Request
+     * @var Request|null
      */
-    protected $request;
+    protected ?Request $request;
 
     public $renderContent = null;
 
@@ -28,6 +31,8 @@ class Controller
     {
         $this->request = $request;
         $this->entityManager = $entityManager;
+        $this->session = new Session();
+        $this->session->start();
         $loader = new FilesystemLoader(self::TEMPLATES_DIR);
         if (isset($_ENV['ENV']) && $_ENV['ENV'] === 'dev') {
             $this->twig = new Environment($loader, [
@@ -49,6 +54,7 @@ class Controller
         if (null === $response) {
             $response = new Response();
         }
+        $parameters['flash'] = $this->session->getAllFlash();
         $this->setControllerContent($template, $parameters);
 
         $response->setContent($this->renderContent);
@@ -61,7 +67,7 @@ class Controller
         $this->renderContent = $this->twig->render($template, $parameters);
     }
 
-    public function getControllerConter()
+    public function getControllerContent()
     {
         return $this->renderContent;
     }
@@ -79,5 +85,19 @@ class Controller
     {
         header("location:/error");
         exit();
+    }
+
+    protected function redirect(string $path, array $flash = null)
+    {
+        if (isset($flash['type']) && isset($flash['message'])) {
+            $this->flashMessage($flash['type'], $flash['message']);
+        }
+        header("Location:" . $path);
+        exit();
+    }
+
+    protected function flashMessage(string $key, string $message)
+    {
+        $this->session->addFlash($key, $message);
     }
 }
