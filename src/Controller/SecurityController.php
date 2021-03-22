@@ -37,7 +37,7 @@ class SecurityController extends \Core\controller\Controller
 
     public function login(Request $request): Response
     {
-        if ($this->session->has('user')) {
+/*        if ($this->session->has('user')) {
             $this->redirect('blog');
         }
         if ($request->getMethod() === 'POST') {
@@ -50,13 +50,21 @@ class SecurityController extends \Core\controller\Controller
             if (true === $testPass) {
                $this->session->set('user', $foundUser);
             }
-        }
+        }*/
 
+        $user = new User();
+        $form = $this->createForm($user, ['name' => 'loginform']);
+        $form->addTextInput('username', ['class' => 'form-control', 'placeholder' => "Nom d'utilisateur"]);
+        $form->addPasswordInput('password', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Mot de passe']);
+        $form->setSubmitValue('accepter', ['class' => 'button-bb-wc']);
+
+        $form->handle($request);
         $content['title'] = 'Connexion';
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
 
         return $this->render('pages/login.html.twig',[
-            'content' => $content
+            'content' => $content,
+            'form' => $form->renderForm()
         ]);
     }
 

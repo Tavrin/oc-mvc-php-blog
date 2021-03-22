@@ -87,13 +87,26 @@ class Controller
         exit();
     }
 
-    protected function redirect(string $path, array $flash = null)
+    /**
+     * @param string $path
+     * @param array|null[] $flash
+     */
+    protected function redirect(string $path, array $flash = ['type' => null, 'message' => null])
     {
         if (isset($flash['type']) && isset($flash['message'])) {
             $this->flashMessage($flash['type'], $flash['message']);
         }
         header("Location:" . $path);
         exit();
+    }
+
+    /**
+     * @param object $entity
+     * @param array $options
+     */
+    protected function createForm(object $entity, array $options = []): Form
+    {
+        return new Form($this->request->attributes['path'], $entity, $options);
     }
 
     protected function flashMessage(string $key, string $message)
