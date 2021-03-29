@@ -62,7 +62,7 @@ class Controller
         return $response;
     }
 
-    public function setControllerContent($template, $parameters)
+    public function setControllerContent($template, $parameters = [])
     {
         $this->renderContent = $this->twig->render($template, $parameters);
     }
@@ -106,7 +106,7 @@ class Controller
      */
     protected function createForm(object $entity, array $options = []): Form
     {
-        return new Form($this->request->attributes['path'], $entity, $options);
+        return new Form($this->request->attributes['path'], $entity, $this->session, $options);
     }
 
     protected function flashMessage(string $key, string $message)

@@ -32,7 +32,7 @@ class Email
 
         $this->email->isSMTP();
         isset($emailConfig['default']['name']) ? $senderName = $emailConfig['default']['name']:$senderName = '';
-        if (isset($_ENV['ENV']) && $_ENV['ENV'] === 'dev') {
+        if (isset($_ENV['ENV']) && 'dev' === $_ENV['ENV'] && isset($emailConfig['phpmailer']['debug']) && true === $emailConfig['phpmailer']['debug']) {
             $this->email->SMTPDebug = SMTP::DEBUG_SERVER;
         } else {
             $this->email->SMTPDebug = SMTP::DEBUG_OFF;
@@ -45,8 +45,6 @@ class Email
         }
 
         $this->email->Host = $emailConfig['phpmailer']['host'];
-        dump($emailConfig['phpmailer']['host']);
-        dump($this->email->Host);
         $this->email->Port = $emailConfig['phpmailer']['port'];
         $this->email->SMTPAuth = $emailConfig['phpmailer']['smtpAuthentication'];
         if (isset($emailConfig['phpmailer']['AuthType'])) {
@@ -104,7 +102,7 @@ class Email
         $this->email->Subject = $subject;
     }
 
-    public function setContent(string $content)
+    public function setContent($content)
     {
         $this->email->msgHTML($content);
     }

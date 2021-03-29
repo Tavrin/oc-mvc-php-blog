@@ -6,32 +6,49 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Core\email\Email;
 use Core\http\Request;
 use Core\http\Response;
+use Ramsey\Uuid\Uuid;
 
 class SecurityController extends \Core\controller\Controller
 {
     public function register(Request $request): Response
     {
-        if ($request->getMethod() === 'POST') {
-            $newUser['username'] = $request->getRequest('username');
-            $newUser['password'] = $request->getRequest('password');
-            $newUser['email'] = $request->getRequest('email');
+        $user = new User();
+        $form = $this->createForm($user, ['name' => 'loginform']);
 
-            $user = new User();
+        $form->addTextInput('username', ['class' => 'form-control', 'placeholder' => "Nom d'utilisateur"]);
+        $form->addEmailInput('email', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Email']);
+        $form->addPasswordInput('password', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Mot de passe']);
+        $form->setSubmitValue('accepter', ['class' => 'button-bb-wc']);
 
-            $user->setUsername($newUser['username']);
-            $user->setEmail($newUser['email']);
-            $user->setPassword(password_hash($newUser['password'], PASSWORD_DEFAULT));
+        $form->handle($request);
 
-            $this->getManager()->save($user);
-            $this->getManager()->flush();
+        if ($form->isValid) {
+            $token = Uuid::uuid4();
+            $token = $token->toString();
+            $user->setToken($token);
+
+            $em = $this->getManager();
+            $em->save($user);
+            $em->flush();
+
+            $email = new Email();
+            $email->addReceiver($user->getEmail());
+            $this->setControllerContent('pages/email-verification.html.twig', ['user' => $user]);
+            $email->setContent($this->getControllerContent());
+            $email->subject('Email de vérification');
+            $email->send();
+
+            $this->redirect('/', ['type' => 'success', 'message' => 'Inscription réussie, veuillez confirmer votre adresse email']);
         }
         $content['title'] = 'Inscription';
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
 
         return $this->render('pages/register.html.twig',[
-            'content' => $content
+            'content' => $content,
+            'form' => $form->renderForm()
         ]);
     }
 
@@ -54,11 +71,12 @@ class SecurityController extends \Core\controller\Controller
 
         $user = new User();
         $form = $this->createForm($user, ['name' => 'loginform']);
+
         $form->addTextInput('username', ['class' => 'form-control', 'placeholder' => "Nom d'utilisateur"]);
+        $form->addEmailInput('email', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Email']);
         $form->addPasswordInput('password', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Mot de passe']);
         $form->setSubmitValue('accepter', ['class' => 'button-bb-wc']);
 
-        $form->handle($request);
         $content['title'] = 'Connexion';
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
 

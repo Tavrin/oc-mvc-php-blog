@@ -47,6 +47,11 @@ class User
     private string $password;
 
     /**
+     * @var string|null
+     */
+    private ?string $token;
+
+    /**
      * @var array|null
      */
     private ?array $roles = null;
@@ -63,6 +68,7 @@ class User
     public function __construct()
     {
         $this->publishedAt = new \DateTime();
+        $this->roles[] = 'ROLE_USER';
     }
 
     public function getId(): ?int
@@ -143,6 +149,16 @@ class User
     public function setPassword(string $password)
     {
         $this->password = $password;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setToken(?string $token)
+    {
+        $this->token = $token;
     }
 
     public function getRoles(): ?array

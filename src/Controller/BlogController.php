@@ -24,11 +24,12 @@ class BlogController extends Controller
         $post = new PostRepository($em);
         $posts = $post->findAll();
 
-        $email = new Email();
-       $email->subject('test email');
-       $email->setContent('<h1>Test du contenu</h1>');
-       $email->addReceiver('etienne.doux@gmail.com');
-       $email->send();
+        $this->flashMessage('success', 'test success');
+        $this->flashMessage('warning', 'test warning');
+        $this->flashMessage('danger', 'test error');
+        $this->flashMessage('aaaa', 'test');
+
+        $this->redirect('/', ['type' => 'success', 'message' => 'test redirect']);
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
         if (empty($posts)) {
             throw new NotFoundException("pas d'article de blog trouvé", 404);

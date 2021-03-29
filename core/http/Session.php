@@ -18,7 +18,7 @@ class Session
      */
     public function start(): bool
     {
-        if ($this->started) {
+        if ($this->started || isset($_SESSION)) {
             return true;
         }
 
@@ -36,10 +36,10 @@ class Session
         return true;
     }
 
-    public function get(string $value, $default = null)
+    public function get(string $key, $default = null)
     {
         $this->getAll();
-        return \array_key_exists($value, $this->attributes) ? $this->attributes[$value] : $default;
+        return \array_key_exists($key, $this->attributes) ? $this->attributes[$key] : $default;
     }
 
     public function set(string $key, $value): void
@@ -102,8 +102,10 @@ class Session
                 unset($_SESSION['flash']['new']);
             }
 
-            if (array_key_exists('display', $_SESSION['flash'])) {
+            if (array_key_exists('display', $_SESSION['flash']) && !isset($this->flash['display'])) {
                 unset($_SESSION['flash']['display']);
+            } else {
+                $_SESSION['flash']['display'] = $this->flash['display'];
             }
         }
     }
@@ -114,8 +116,12 @@ class Session
         $_SESSION['flash']['new'][$key][] = $message;
     }
 
-    public function getAllFlash(): array
+    public function getAllFlash(): ?array
     {
-        return $this->flash['display'];
+        if (isset($_SESSION['flash']['display'])) {
+            $this->flash['display'] = $_SESSION['flash']['display'];
+            return $this->flash['display'];
+        }
+        return null;
     }
 }

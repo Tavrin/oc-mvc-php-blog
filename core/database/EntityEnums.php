@@ -29,4 +29,10 @@ class EntityEnums
         'array' => 'JSON',
         'association' => 'INT'
     ];
+
+    public const TYPE_COMPARISON = [
+        'boolean' => 'boolean',
+        'array' => 'json',
+        'string' => 'string'
+    ];
 }

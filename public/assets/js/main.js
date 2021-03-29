@@ -9,6 +9,5 @@ document.addEventListener('DOMContentLoaded', (event) => {
 })
 
 function addCloseEvent(e) {
-    console.log(e.target.parentElement);
     e.currentTarget.parentNode.classList.add('d-n')
 }
