@@ -47,5 +47,10 @@
         "route": "admin_test",
         "path": "\/admin\/test",
         "controller": "App\\Controller\\admin\\TestController::indexAction"
+    },
+    {
+        "route": "email_verification",
+        "path": "/confirm-email",
+        "controller": "App\\Controller\\SecurityController::confirmEmailAction"
     }
 ]

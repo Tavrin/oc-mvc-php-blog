@@ -172,6 +172,7 @@ class Form
 
         $input .= ">";
 
+        isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : false;
         isset($options['entity']) ? $fieldData['entity'] = $options['entity'] : $fieldData['entity'] = $this->entity;
         isset($options['type']) ? $fieldData['type'] = $options['type'] : false;
         isset($options['placeholder']) ? $fieldData['placeholder'] = $options['placeholder'] : $fieldData['placeholder'] = $name;
@@ -260,7 +261,7 @@ class Form
             }
         }
 
-        if (isset($fieldData['type']) && 'password' === $fieldData['type']) {
+        if (isset($fieldData['type']) && 'password' === $fieldData['type'] && isset($fieldData['hash']) && true === $fieldData['hash']) {
             $requestField = password_hash($requestField, PASSWORD_DEFAULT);
         }
 

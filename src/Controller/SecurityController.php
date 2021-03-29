@@ -20,7 +20,7 @@ class SecurityController extends \Core\controller\Controller
 
         $form->addTextInput('username', ['class' => 'form-control', 'placeholder' => "Nom d'utilisateur"]);
         $form->addEmailInput('email', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Email']);
-        $form->addPasswordInput('password', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Mot de passe']);
+        $form->addPasswordInput('password', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Mot de passe', 'hash' => true]);
         $form->setSubmitValue('accepter', ['class' => 'button-bb-wc']);
 
         $form->handle($request);
@@ -52,30 +52,59 @@ class SecurityController extends \Core\controller\Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     */
+    public function confirmEmailAction(Request $request)
+    {
+        $em = $this->getManager();
+        $userRepository = new UserRepository($em);
+        if (!$request->hasQuery('token')) {
+            $this->redirect('/');
+        }
+
+        $user = $userRepository->findOneBy('token', $request->getQuery('token'));
+
+        if (!isset($user) || true === $user->getStatus()) {
+            $this->redirect('/');
+        }
+
+        $user->setStatus(true);
+        $em->update($user);
+        $em->flush();
+
+       $this->redirect('/login', ['type' => 'success', 'message' => 'Email validé ! Vous pouvez maintenant vous connecter']);
+    }
+
     public function login(Request $request): Response
     {
-/*        if ($this->session->has('user')) {
-            $this->redirect('blog');
-        }
-        if ($request->getMethod() === 'POST') {
-            $user['password'] = $request->getRequest('password');
-            $user['email'] = $request->getRequest('email');
+        $em = $this->getManager();
+        $userTemplate = new User();
+        $form = $this->createForm($userTemplate, ['name' => 'loginform']);
 
-            $userRepo = new UserRepository();
-            $foundUser = $userRepo->findOneBy('email', $user['email']);
-            $testPass = (password_verify($user['password'], $foundUser->getPassword()));
-            if (true === $testPass) {
-               $this->session->set('user', $foundUser);
-            }
-        }*/
-
-        $user = new User();
-        $form = $this->createForm($user, ['name' => 'loginform']);
-
-        $form->addTextInput('username', ['class' => 'form-control', 'placeholder' => "Nom d'utilisateur"]);
         $form->addEmailInput('email', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Email']);
         $form->addPasswordInput('password', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Mot de passe']);
         $form->setSubmitValue('accepter', ['class' => 'button-bb-wc']);
+
+        $form->handle($request);
+
+        if ($form->isValid) {
+            $userRepo = new UserRepository($em);
+
+            $user = $userRepo->findOneBy('email', $userTemplate->getEmail());
+
+            if (!isset($user) || false === $user->getStatus()) {
+                $this->redirect('/login', ['type' => 'danger', 'message' => 'La connexion a échouée, veuillez réessayer']);
+            }
+
+            if (false === password_verify( $userTemplate->getPassword(), $user->getPassword())) {
+                $this->redirect('/login', ['type' => 'danger', 'message' => 'La connexion a échouée, veuillez réessayerr']);
+            }
+
+            $this->session->set('user', $user);
+            $this->redirect('/', ['type' => 'success', 'message' => 'Connexion réussie !']);
+
+        }
 
         $content['title'] = 'Connexion';
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
