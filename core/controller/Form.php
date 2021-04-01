@@ -44,7 +44,7 @@ class Form
         isset($options['name']) ? $this->name = $options['name'] : false;
 
         isset($options['action']) ? $this->action = $options['action'] : $this->action = $currentAction;
-        if (isset($options['sanitize']) && false == $options['sanitize']) {
+        if (isset($options['sanitize']) && !$options['sanitize']) {
             $this->options['sanitize'] = false;
         }
 
@@ -135,8 +135,7 @@ class Form
             $render .= '    <input type="submit" class="" value="Submit">' . PHP_EOL;
         }
 
-        $render .= "</form>";
-        return $render;
+        return $render . "</form>";
     }
 
     /**
@@ -190,27 +189,24 @@ class Form
     {
 
 
-        if (false === $currentRequest = $this->validateAndSanitizeRequest($request)) {
-            return;
+        if (false !== $currentRequest = $this->validateAndSanitizeRequest($request)) {
+            foreach ($this->data as $fieldName => $fieldData) {
+                if ((!isset($currentRequest[$fieldName]) || "" == $currentRequest[$fieldName]) && true === $fieldData['required']) {
+                    return;
+                }
+
+                if (false === $requestField = $this->validateRequestField($fieldData, $currentRequest[$fieldName])) {
+                    return;
+                }
+
+                if (false === $this->validateAndHydrateEntity($fieldName, $fieldData, $requestField)) {
+                    return;
+                }
+            }
+
+            $this->isValid = true;
+
         }
-
-        foreach ($this->data as $fieldName => $fieldData) {
-
-
-            if ((!isset($currentRequest[$fieldName]) || "" == $currentRequest[$fieldName]) && true === $fieldData['required']) {
-                return;
-            }
-
-            if (false ===  $requestField = $this->validateRequestField($fieldName, $fieldData, $currentRequest[$fieldName])) {
-                return;
-            }
-
-            if (false === $this->validateAndHydrateEntity($fieldName, $fieldData, $requestField)) {
-                return;
-            }
-        }
-
-        $this->isValid = true;
     }
 
     /**
@@ -219,20 +215,15 @@ class Form
      */
     private function validateAndSanitizeRequest(Request $request)
     {
-        if (!isset($request->request) || (isset($this->name) && !isset($request->request['formName']))) {
-            return false;
-        }
-
-        if ($this->name !== $request->getRequest('formName')) {
-            return false;
-        }
-
         $oldToken = $this->session->get('csrf-old');
-        if ( !isset($request->request['csrf']) || !isset($oldToken) || $request->getRequest('csrf') !== $oldToken->toString()) {
+
+        if (!isset($request->request)
+            || (isset($this->name) && (!isset($request->request['formName']) || $this->name !== $request->getRequest('formName'))
+            || ( !isset($request->request['csrf']) || !isset($oldToken) || $request->getRequest('csrf') !== $oldToken->toString()))) {
             return false;
         }
 
-        if (isset($this->options['sanitize']) && false == $this->options['sanitize']) {
+        if (isset($this->options['sanitize']) && !$this->options['sanitize']) {
             return $request->request;
         }
 
@@ -245,20 +236,15 @@ class Form
      * @param string $requestField
      * @return false|string|null
      */
-    private function validateRequestField(string $fieldName, array $fieldData, string $requestField)
+    private function validateRequestField(array $fieldData, string $requestField)
     {
-        if (isset($fieldData['maxLength']) && $fieldData['maxLength'] < strlen($requestField)) {
+        if ((isset($fieldData['maxLength']) && $fieldData['maxLength'] < strlen($requestField)) || (isset($fieldData['minLength']) && $fieldData['minLength'] > strlen($requestField))) {
             return false;
         }
 
-        if (isset($fieldData['minLength']) && $fieldData['minLength'] > strlen($requestField)) {
+        if (isset($fieldData['type']) && 'email' === $fieldData['type']
+            && !preg_match('#^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$#', $requestField)) {
             return false;
-        }
-
-        if (isset($fieldData['type']) && 'email' === $fieldData['type']) {
-            if (!preg_match('#^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$#', $requestField)) {
-                return false;
-            }
         }
 
         if (isset($fieldData['type']) && 'password' === $fieldData['type'] && isset($fieldData['hash']) && true === $fieldData['hash']) {
@@ -293,8 +279,8 @@ class Form
             return false;
         }
 
-        $method = 'set' . ucfirst($fieldName);
-        $fieldData['entity']->$method($requestField);
+        $entityMethod = 'set' . ucfirst($fieldName);
+        $fieldData['entity']->$entityMethod($requestField);
 
         return true;
     }

@@ -55,6 +55,10 @@ class Controller
             $response = new Response();
         }
         $parameters['flash'] = $this->session->getAllFlash();
+        if ($this->session->has('user')) {
+            $parameters['user'] = $this->session->get('user');
+        }
+        
         $this->setControllerContent($template, $parameters);
 
         $response->setContent($this->renderContent);

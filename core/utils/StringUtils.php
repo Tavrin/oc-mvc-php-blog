@@ -19,28 +19,28 @@ class StringUtils
 
     public static function changeTypeFromValue(string $string)
     {
-        $string = trim($string);
+        $string = (string)trim($string);
         if (empty($string)) {
             return "";
         }
 
         if (!preg_match("/[^0-9(.|,)]+/",$string)) {
             if (preg_match("/([.]|[,])+/", $string)) {
-                return (double)$string;
+                $string =  (double)$string;
             } else {
-                return (int)$string;
+                $string = (int)$string;
             }
         }
 
         if ('true' === $string) {
-            return true;
+            $string = true;
         }
 
         if ('false' === $string) {
-            return false;
+            $string = false;
         }
 
-        return (string)$string;
+        return $string;
     }
 
 }

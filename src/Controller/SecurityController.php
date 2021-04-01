@@ -13,10 +13,11 @@ use Ramsey\Uuid\Uuid;
 
 class SecurityController extends \Core\controller\Controller
 {
+    private const LOGIN_PATH = '/login';
     public function register(Request $request): Response
     {
         $user = new User();
-        $form = $this->createForm($user, ['name' => 'loginform']);
+        $form = $this->createForm($user, ['name' => 'registerform']);
 
         $form->addTextInput('username', ['class' => 'form-control', 'placeholder' => "Nom d'utilisateur"]);
         $form->addEmailInput('email', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Email']);
@@ -65,7 +66,7 @@ class SecurityController extends \Core\controller\Controller
 
         $user = $userRepository->findOneBy('token', $request->getQuery('token'));
 
-        if (!isset($user) || true === $user->getStatus()) {
+        if (!isset($user) || $user->getStatus()) {
             $this->redirect('/');
         }
 
@@ -73,11 +74,14 @@ class SecurityController extends \Core\controller\Controller
         $em->update($user);
         $em->flush();
 
-       $this->redirect('/login', ['type' => 'success', 'message' => 'Email validé ! Vous pouvez maintenant vous connecter']);
+       $this->redirect(self::LOGIN_PATH, ['type' => 'success', 'message' => 'Email validé ! Vous pouvez maintenant vous connecter']);
     }
 
     public function login(Request $request): Response
     {
+        if ($this->session->has('user')) {
+            $this->redirect('/');
+        }
         $em = $this->getManager();
         $userTemplate = new User();
         $form = $this->createForm($userTemplate, ['name' => 'loginform']);
@@ -93,12 +97,12 @@ class SecurityController extends \Core\controller\Controller
 
             $user = $userRepo->findOneBy('email', $userTemplate->getEmail());
 
-            if (!isset($user) || false === $user->getStatus()) {
-                $this->redirect('/login', ['type' => 'danger', 'message' => 'La connexion a échouée, veuillez réessayer']);
+            if (!isset($user) || !$user->getStatus()) {
+                $this->redirect(self::LOGIN_PATH, ['type' => 'danger', 'message' => 'La connexion a échouée, veuillez réessayer']);
             }
 
-            if (false === password_verify( $userTemplate->getPassword(), $user->getPassword())) {
-                $this->redirect('/login', ['type' => 'danger', 'message' => 'La connexion a échouée, veuillez réessayerr']);
+            if (!password_verify( $userTemplate->getPassword(), $user->getPassword())) {
+                $this->redirect(self::LOGIN_PATH, ['type' => 'danger', 'message' => 'La connexion a échouée, veuillez réessayerr']);
             }
 
             $this->session->set('user', $user);
@@ -120,6 +124,6 @@ class SecurityController extends \Core\controller\Controller
         if ($this->session->has('user')) {
             $this->session->remove('user');
         }
-        $this->redirect('/');
+        $this->redirect('/', ['type' => 'success', 'message' => 'Vous êtes maintenant déconnecté']);
     }
 }

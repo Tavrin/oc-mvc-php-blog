@@ -19,6 +19,7 @@ class Session
     public function start(): bool
     {
         if ($this->started || isset($_SESSION)) {
+            isset($_SESSION['attributes']) ? $this->attributes = $_SESSION['attributes'] : $this->attributes = [];
             return true;
         }
 

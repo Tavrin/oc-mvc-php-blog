@@ -668,6 +668,22 @@ margin-bottom: 2rem;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
+.dropdown {
+    text-align: left;
+    border: 1px solid rgba(0,0,0, 0.1) ;
+    line-height: 1.5rem;
+    background-color: #fff;
+    position: absolute;
+    display: none;
+    z-index: 9999;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+}
+
+.dropdown.active {
+    display: block;
+}
 /* flash */
 .flash {
     max-width: 70%;

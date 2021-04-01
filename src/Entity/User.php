@@ -153,7 +153,7 @@ class User
 
     public function getToken(): ?string
     {
-        return $this->password;
+        return $this->token;
     }
 
     public function setToken(?string $token)
