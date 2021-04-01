@@ -55,6 +55,10 @@ class Controller
             $response = new Response();
         }
         $parameters['flash'] = $this->session->getAllFlash();
+        if ($this->session->has('user')) {
+            $parameters['user'] = $this->session->get('user');
+        }
+        
         $this->setControllerContent($template, $parameters);
 
         $response->setContent($this->renderContent);
@@ -62,7 +66,7 @@ class Controller
         return $response;
     }
 
-    public function setControllerContent($template, $parameters)
+    public function setControllerContent($template, $parameters = [])
     {
         $this->renderContent = $this->twig->render($template, $parameters);
     }
@@ -87,13 +91,26 @@ class Controller
         exit();
     }
 
-    protected function redirect(string $path, array $flash = null)
+    /**
+     * @param string $path
+     * @param array|null[] $flash
+     */
+    protected function redirect(string $path, array $flash = ['type' => null, 'message' => null])
     {
         if (isset($flash['type']) && isset($flash['message'])) {
             $this->flashMessage($flash['type'], $flash['message']);
         }
         header("Location:" . $path);
         exit();
+    }
+
+    /**
+     * @param object $entity
+     * @param array $options
+     */
+    protected function createForm(object $entity, array $options = []): Form
+    {
+        return new Form($this->request->attributes['path'], $entity, $this->session, $options);
     }
 
     protected function flashMessage(string $key, string $message)

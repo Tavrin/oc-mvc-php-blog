@@ -3,9 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Entity\User;
 use Core\controller\Controller;
+use Core\controller\Form;
 use Core\database\EntityManager;
+
 use Core\http\exceptions\NotFoundException;
+use Core\email\Email;
 use Core\http\Request;
 use App\Repository\PostRepository;
 use Core\http\Response;
@@ -19,13 +23,13 @@ class BlogController extends Controller
 
         $post = new PostRepository($em);
         $posts = $post->findAll();
-        $this->flashMessage('success', 'test2');
-        $this->flashMessage('succaaaess', 'test3');
-        $this->flashMessage('danger', 'test4');
 
-        $this->flashMessage('warning', 'test5');
+        $this->flashMessage('success', 'test success');
+        $this->flashMessage('warning', 'test warning');
+        $this->flashMessage('danger', 'test error');
+        $this->flashMessage('aaaa', 'test');
 
-        $this->redirect('/', ['type' =>'success', 'message' => 'test flash']);
+        $this->redirect('/', ['type' => 'success', 'message' => 'test redirect']);
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
         if (empty($posts)) {
             throw new NotFoundException("pas d'article de blog trouvé", 404);

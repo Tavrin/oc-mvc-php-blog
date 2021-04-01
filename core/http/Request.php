@@ -154,6 +154,16 @@ class Request
         return \array_key_exists($key, $this->attributes);
     }
 
+    public function hasQuery(string $key):bool
+    {
+        return \array_key_exists($key, $this->query);
+    }
+
+    public function getQuery(string $key)
+    {
+        return \array_key_exists($key, $this->query) ? $this->query[$key] : null;
+    }
+
     /**
      * @return string
      */

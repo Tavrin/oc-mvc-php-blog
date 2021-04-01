@@ -44,6 +44,11 @@
               "fieldName" : "password",
               "type": "string"
             },
+            "token" :
+            {
+                "fieldName" : "token",
+                "type": "string"
+            },
         "roles" :
             {
               "fieldName" : "roles",

@@ -51,6 +51,7 @@ class Router
             }
 
             $params['route'] = $testedRoute['route'];
+            $params['path'] = '/' . implode($testedRoute['path']);
             $params['controller'] = $testedRoute['controller'];
 
             return $params;
