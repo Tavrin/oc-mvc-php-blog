@@ -21,7 +21,7 @@
     {
         "route": "admin_dashboard",
         "path": "/admin",
-        "controller": "App\\Controller\\BlogController::categoryAction"
+        "controller": "App\\Controller\\admin\\IndexController::indexAction"
     },
     {
         "route": "inscription",
