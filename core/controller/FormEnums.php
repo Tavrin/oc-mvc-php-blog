@@ -62,4 +62,16 @@ class FormEnums
             'class'
         ]
     ];
+
+    public const SELECT = [
+        'type' => 'select',
+        'attributes' => [
+            'max',
+            'min',
+            'step',
+            'value',
+            'id',
+            'class'
+        ]
+    ];
 }

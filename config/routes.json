@@ -15,8 +15,9 @@
         "controller": "App\\Controller\\BlogController::categoryAction"
     },
     {
-        "route": "fakeRoute",
-        "path": "\/fakePath\/{id}\/{slug}"
+        "route": "new_post",
+        "path": "/admin/posts/new",
+        "controller": "App\\Controller\\admin\\BlogController::newAction"
     },
     {
         "route": "admin_dashboard",

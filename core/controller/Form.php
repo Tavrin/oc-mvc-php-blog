@@ -95,6 +95,16 @@ class Form
     }
 
     /**
+     * @param string $name
+     * @param array $options
+     */
+    public function addSelectInput(string $name, array $options = [])
+    {
+        $options['type'] = 'select';
+        $this->setData(FormEnums::SELECT, $name, $options);
+    }
+
+    /**
      * @param string $text
      * @param array $options
      */
