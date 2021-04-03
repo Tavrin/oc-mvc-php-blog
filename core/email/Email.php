@@ -7,12 +7,18 @@ use Core\utils\JsonParser;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class Email
 {
-    private const ENV_REGEX = '#\$_(ENV|SERVER)\[(\'|\")(.*?)(\'|\")]#';
-    const EMAIL_CONFIG = ROOT_DIR . '/config/email.json';
-   protected PHPMailer $email;
+    protected const TEMPLATES_DIR = ROOT_DIR . '/templates/';
+    protected const ENV_REGEX = '#\$_(ENV|SERVER)\[(\'|\")(.*?)(\'|\")]#';
+    protected const EMAIL_CONFIG = ROOT_DIR . '/config/email.json';
+
+    protected PHPMailer $email;
+    protected Environment $twig;
+
 
     /**
      * Email constructor.
@@ -25,6 +31,11 @@ class Email
         } catch (Exception $e) {
             throw new Exception();
         }
+
+        $loader = new FilesystemLoader(self::TEMPLATES_DIR);
+        $this->twig = new Environment($loader, [
+            'debug' => false
+        ]);
     }
 
     /**
@@ -75,7 +86,7 @@ class Email
         if (isset($emailConfig['default']['email'])) {
             try {
                 if (preg_match(self::ENV_REGEX, $emailConfig['default']['email'], $match)) {
-                    isset($_ENV[$match[3]]) ? $this->email->setFrom($_ENV[$match[3]]) : null;
+                    isset($_ENV[$match[3]]) ? $this->email->setFrom($_ENV[$match[3]], $senderName) : null;
                 } else {
                     $this->email->setFrom($emailConfig['default']['email'], $senderName);
                 }
@@ -176,5 +187,10 @@ class Email
         } else {
             return true;
         }
+    }
+
+    public function setRender($template, $parameters = [])
+    {
+        $this->setContent($this->twig->render($template, $parameters));
     }
 }

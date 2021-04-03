@@ -222,6 +222,10 @@ h1 {
     margin-right: 3rem;
 }
 
+.mr-auto {
+    margin-right: auto;
+}
+
 /* bottom */
 .mb-0 {
     margin-bottom: 0;
@@ -270,6 +274,10 @@ h1 {
 
 .ml-3 {
     margin-left: 3rem;
+}
+
+.ml-auto {
+    margin-left: auto;
 }
 
 /* Paddings */

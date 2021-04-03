@@ -2,7 +2,7 @@
     "default" :
     {
         "email": "$_ENV['EMAIL_USERNAME']",
-        "name": "Etienne Doux",
+        "name": "Tavrin.io",
         "timezone": "Europe/Paris"
     },
     "phpmailer" :

@@ -4,8 +4,12 @@
 namespace App\Controller;
 
 
+use App\Email\ResetPasswordEmail;
+use App\Email\VerificationEmail;
 use App\Entity\User;
+use App\Manager\UserManager;
 use App\Repository\UserRepository;
+use Core\controller\Form;
 use Core\email\Email;
 use Core\http\Request;
 use Core\http\Response;
@@ -17,6 +21,7 @@ class SecurityController extends \Core\controller\Controller
     public function register(Request $request): Response
     {
         $user = new User();
+        $userManager = new UserManager($this->getManager());
         $form = $this->createForm($user, ['name' => 'registerform']);
 
         $form->addTextInput('username', ['class' => 'form-control', 'placeholder' => "Nom d'utilisateur"]);
@@ -27,23 +32,15 @@ class SecurityController extends \Core\controller\Controller
         $form->handle($request);
 
         if ($form->isValid) {
-            $token = Uuid::uuid4();
-            $token = $token->toString();
-            $user->setToken($token);
 
-            $em = $this->getManager();
-            $em->save($user);
-            $em->flush();
+            $userManager->newToken($user, 'save');
 
-            $email = new Email();
-            $email->addReceiver($user->getEmail());
-            $this->setControllerContent('pages/email-verification.html.twig', ['user' => $user]);
-            $email->setContent($this->getControllerContent());
-            $email->subject('Email de vérification');
+            $email = new VerificationEmail($user);
             $email->send();
 
             $this->redirect('/', ['type' => 'success', 'message' => 'Inscription réussie, veuillez confirmer votre adresse email']);
         }
+
         $content['title'] = 'Inscription';
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
 
@@ -59,20 +56,14 @@ class SecurityController extends \Core\controller\Controller
     public function confirmEmailAction(Request $request)
     {
         $em = $this->getManager();
-        $userRepository = new UserRepository($em);
-        if (!$request->hasQuery('token')) {
+        $userManager = new UserManager($em);
+
+        if (! $user = $userManager->confirmUser($request)) {
             $this->redirect('/');
         }
 
-        $user = $userRepository->findOneBy('token', $request->getQuery('token'));
-
-        if (!isset($user) || $user->getStatus()) {
-            $this->redirect('/');
-        }
-
-        $user->setStatus(true);
-        $em->update($user);
-        $em->flush();
+        $userManager->updateStatus($user,true);
+        $userManager->newToken($user, 'update');
 
        $this->redirect(self::LOGIN_PATH, ['type' => 'success', 'message' => 'Email validé ! Vous pouvez maintenant vous connecter']);
     }
@@ -82,7 +73,9 @@ class SecurityController extends \Core\controller\Controller
         if ($this->session->has('user')) {
             $this->redirect('/');
         }
+
         $em = $this->getManager();
+        $userManager = new UserManager($em);
         $userTemplate = new User();
         $form = $this->createForm($userTemplate, ['name' => 'loginform']);
 
@@ -93,21 +86,12 @@ class SecurityController extends \Core\controller\Controller
         $form->handle($request);
 
         if ($form->isValid) {
-            $userRepo = new UserRepository($em);
-
-            $user = $userRepo->findOneBy('email', $userTemplate->getEmail());
-
-            if (!isset($user) || !$user->getStatus()) {
+            if (!$user = $userManager->verifyUserLogin($userTemplate)) {
                 $this->redirect(self::LOGIN_PATH, ['type' => 'danger', 'message' => 'La connexion a échouée, veuillez réessayer']);
-            }
-
-            if (!password_verify( $userTemplate->getPassword(), $user->getPassword())) {
-                $this->redirect(self::LOGIN_PATH, ['type' => 'danger', 'message' => 'La connexion a échouée, veuillez réessayerr']);
             }
 
             $this->session->set('user', $user);
             $this->redirect('/', ['type' => 'success', 'message' => 'Connexion réussie !']);
-
         }
 
         $content['title'] = 'Connexion';
@@ -119,11 +103,79 @@ class SecurityController extends \Core\controller\Controller
         ]);
     }
 
+    public function forgotPassword(Request $request): Response
+    {
+        if ($this->session->has('user')) {
+            $this->redirect('/');
+        }
+
+        $userManager = new UserManager($this->getManager());
+        $userTemplate = new User();
+        $form = $this->createForm($userTemplate);
+
+        $form->addEmailInput('email', ['placeholder' => 'adresse email associée au compte', 'class' => 'form-control', 'label' => 'email']);
+        $form->setSubmitValue('accepter', ['class' => 'button-bb-wc']);
+
+        $form->handle($request);
+        if ($form->isValid) {
+            if (!$user = $userManager->getUserBy($userTemplate, 'email')) {
+                $this->redirect('forgot-password', ['type' => 'danger', 'message' => 'Veuillez réessayer']);
+            }
+
+            $userManager->newToken($user, 'update');
+            $email = new ResetPasswordEmail($user);
+            $email->send();
+
+            $this->redirect('/', ['type' => 'success', 'message' => 'Un email a été envoyé']);
+        }
+
+        return $this->render('/pages/forgot.html.twig', [
+            'form'=>$form->renderForm()
+        ]);
+    }
+
+    public function reset(Request $request): Response
+    {
+        $em = $this->getManager();
+        $userManager = new UserManager($em);
+
+        if (!$request->hasQuery('token')) {
+            $this->redirect('/');
+        }
+
+        if (! $user = $userManager->findUserByQuery($request, 'token')) {
+            $this->redirect('/');
+        }
+
+        $userTemplate = new User();
+        $form = $this->createForm($userTemplate, ['action' => $request->getPathInfo() . '?token=' . $request->getQuery('token')]);
+
+        $form->addPasswordInput('password', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Nouveau mot de passe', 'fieldName' => 'password', 'hash' => true]);
+        $form->addPasswordInput('passwordConfirm', ['entity' => false, 'required' => true, 'class' => 'form-control', 'label' => 'Confirmation','placeholder' => 'Confirmation de nouveau mot de passe']);
+        $form->setSubmitValue('Changer le mot de passe', ['class' => 'button-bb-wc']);
+
+        $form->handle($request);
+
+        if ($form->isValid) {
+            if ($userManager->resetPassword($form, $user, $userTemplate)) {
+                $userManager->newToken($user, 'update');
+                $this->redirect('/login', ['type' => 'success', 'message' => 'Modification réussie']);
+            }
+
+            $this->redirect('/', ['type' => 'danger', 'message' => "La modification n'a pas pu aboutir"]);
+        }
+
+        return $this->render('pages/reset.html.twig', [
+            'form' => $form->renderForm()
+        ]);
+    }
+
     public function logout()
     {
         if ($this->session->has('user')) {
             $this->session->remove('user');
         }
+
         $this->redirect('/', ['type' => 'success', 'message' => 'Vous êtes maintenant déconnecté']);
     }
 }
