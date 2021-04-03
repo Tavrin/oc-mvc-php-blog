@@ -25,7 +25,7 @@ class UserManager
     }
     public function updateStatus(User $user, bool $status)
     {
-        $user->setStatus(true);
+        $user->setStatus($status);
         $this->em->update($user);
         $this->em->flush();
     }

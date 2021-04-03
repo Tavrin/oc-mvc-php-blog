@@ -161,15 +161,30 @@ class Form
             $input .= $optionName . "=\"{$option}\" ";
         }
 
-        if (isset($options['required']) && false === $options['required']) {
-            $fieldData['required'] = false;
-        } else {
+        if (!isset($options['required']) || (isset($options['required']) && true === $options['required'])) {
             $input .= "required ";
-            $fieldData['required'] = true;
         }
 
 
         $input .= ">";
+
+        $fieldData = $this->setDataOptions($name, $options);
+        $fieldData['render'] = $input;
+        $this->data[$name] = $fieldData;
+    }
+
+    /**
+     * @param $name
+     * @param $options
+     * @return array
+     */
+    private function setDataOptions($name, $options): array
+    {
+        if (isset($options['required']) && false === $options['required']) {
+            $fieldData['required'] = false;
+        } else {
+            $fieldData['required'] = true;
+        }
 
         $fieldData['result'] = '';
         isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : false;
@@ -180,8 +195,8 @@ class Form
         isset($options['label']) ? $fieldData['label'] = $options['label'] : $fieldData['label'] = $fieldData['placeholder'];
         isset($options['property']) ? $fieldData['property'] = $options['property'] : false;
         $fieldData['id'] = $options['id'];
-        $fieldData['render'] = $input;
-        $this->data[$name] = $fieldData;
+
+        return $fieldData;
     }
 
     /**
