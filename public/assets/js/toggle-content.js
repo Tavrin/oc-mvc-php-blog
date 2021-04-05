@@ -25,7 +25,8 @@ class ToggleContent {
     }
 
     setDisplayEvent(elem) {
-        elem.addEventListener('click', ()=> {
+        elem.addEventListener('click', () => {
+            this.state = !this.state;
             if (this.options['icons'] && this.options['icons'][0] && this.options['icons'][1]) {
                 elem.classList.toggle(this.options['icons'][0]);
                 elem.classList.toggle(this.options['icons'][1]);

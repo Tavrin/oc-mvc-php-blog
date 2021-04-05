@@ -13,9 +13,6 @@ editors.forEach((el) => {
         document.querySelector(`#${el.dataset.target}`) ? targetInput = document.querySelector(`#${el.dataset.target}`) : targetInput = null;
     }
 
-    console.log(targetInput);
-    console.log(targetForm);
-
     const editor = new EditorJS({
         readOnly: false,
         holder: el.id,
@@ -43,9 +40,6 @@ editors.forEach((el) => {
                 }
             },
 
-            /**
-             * Or pass class directly without any configuration
-             */
             image: SimpleImage,
 
             list: {
@@ -99,10 +93,7 @@ editors.forEach((el) => {
             },
 
         },
-        data: {},
-        onChange: function() {
-            console.log('something changed');
-        }
+        data: {}
     });
 
 
@@ -110,9 +101,7 @@ editors.forEach((el) => {
         editor.save()
             .then((outputData) => {
                 outputData.id = el.id;
-                console.log('Article data: ', JSON.stringify(outputData));
                 targetInput.value = JSON.stringify(outputData);
-                console.log(targetForm);
                 targetForm.submit();
             }).catch((error) => {
                 console.log('Saving failed: ', error);

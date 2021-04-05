@@ -74,7 +74,7 @@ class EntityManager
             }
 
             $parsedData = JsonParser::parseFile($currentFile);
-            $entityData[$parsedData['table']] = $parsedData;
+            $entityData[$parsedData['name']] = $parsedData;
         }
 
         return $entityData;
@@ -162,9 +162,9 @@ class EntityManager
     }
 
     /**
-     * @return void
+     * @return bool
      */
-    public function flush()
+    public function flush(): bool
     {
         $connection = $this->getConnection();
 
@@ -173,6 +173,8 @@ class EntityManager
             $stmt->execute($statement['execute']);
             unset($this->preparedStatements[$key]);
         }
+
+        return true;
     }
 
     public function getStatements(): ?array
@@ -223,11 +225,12 @@ class EntityManager
             }
 
             if (EntityEnums::TYPE_ASSOCIATION === $metadata[EntityEnums::FIELD_TYPE]) {
-                $insertedData[":{$currentField}"] = $entity->$currentGetMethod()->getId();
+                $associatedEntity = $entity->$currentGetMethod();
+                isset($associatedEntity) ? $insertedData[":{$currentField}"] = $associatedEntity->getId() : $insertedData[":{$currentField}"] = null;
                 continue;
             }
 
-            $data = $entity->$currentGetMethod()?:null;
+            $data = $entity->$currentGetMethod()?? null;
             $insertedData[":{$currentField}"] = $data;
         }
 

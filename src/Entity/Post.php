@@ -28,7 +28,7 @@ class Post
     /**
      * @var array|null
      */
-    private ?array $readmore;
+    private ?array $readmore = [];
 
     /**
      * @var string|null
@@ -43,17 +43,12 @@ class Post
     /**
      * @var string|null
      */
-    private ?string $listingText;
-
-    /**
-     * @var string|null
-     */
     private ?string $slug;
 
     /**
-     * @var User
+     * @var User|null
      */
-    private User $author;
+    private ?User $author = null;
 
     /**
      * @var Category|null
@@ -68,7 +63,7 @@ class Post
     /**
      * @var \DateTime|null
      */
-    private ?\DateTime $updatedAt;
+    private ?\DateTime $updatedAt = null;
 
     /**
      * @var bool
@@ -77,6 +72,7 @@ class Post
 
     public function __construct()
     {
+        $this->status = false;
         $this->publishedAt = new \DateTime();
     }
 
@@ -148,16 +144,6 @@ class Post
     public function setMetaDescription(?string $metaDescription)
     {
         $this->metaDescription = $metaDescription;
-    }
-
-    public function getListingText(): ?string
-    {
-        return $this->listingText;
-    }
-
-    public function setListingText(?string $listingText)
-    {
-        $this->listingText = $listingText;
     }
 
     public function getSlug(): ?string

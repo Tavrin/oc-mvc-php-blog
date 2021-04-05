@@ -39,11 +39,6 @@
               "fieldName" : "meta_description",
               "type": "string"
             },
-        "listingText" :
-            {
-              "fieldName" : "listing_text",
-              "type": "string"
-            },
         "slug" :
             {
               "fieldName" : "slug",
