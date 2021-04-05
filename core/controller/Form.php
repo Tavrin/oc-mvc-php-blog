@@ -213,6 +213,18 @@ class Form
                 continue;
             }
 
+            if ('dataAttributes' === $optionName) {
+                foreach ($option as $attributeName => $dataAttribute) {
+                    if (is_array($dataAttribute)) {
+                        $dataAttribute = json_encode($dataAttribute);
+                        $input .= "data-{$attributeName}={$dataAttribute} ";
+                    }
+
+                    $input .= "data-{$attributeName}=\"{$dataAttribute}\" ";
+                }
+                continue;
+            }
+
             if ('readonly' === $optionName) {
                 $input .= "{$optionName} ";
                 continue;
@@ -255,6 +267,7 @@ class Form
         isset($options['type']) ? $fieldData['type'] = $options['type'] : false;
         isset($options['placeholder']) ? $fieldData['placeholder'] = $options['placeholder'] : $fieldData['placeholder'] = $name;
         isset($options['label']) ? $fieldData['label'] = $options['label'] : $fieldData['label'] = $fieldData['placeholder'];
+        isset($options['dataAttributes']) ? $fieldData['dataAttributes'] = $options['dataAttributes'] : $fieldData['dataAttributes'] = null;
         isset($options['property']) ? $fieldData['property'] = $options['property'] : false;
         $fieldData['id'] = $options['id'];
 
@@ -366,6 +379,10 @@ class Form
         if (EntityEnums::TYPE_ASSOCIATION === $entityField[EntityEnums::FIELD_TYPE]) {
             $repository = new $entityField['repository'];
             $associatedEntity = $repository->findOneBy($fieldData['targetField'] ?? 'id',$requestField);
+        }
+
+        if ( 'string' === $fieldType) {
+            'text' === $entityField[EntityEnums::FIELD_TYPE] ? $fieldType = 'text' : $fieldType = 'string';
         }
 
         if ((EntityEnums::TYPE_ASSOCIATION !== $entityField[EntityEnums::FIELD_TYPE] && $fieldType !== $entityField[EntityEnums::FIELD_TYPE]) ||

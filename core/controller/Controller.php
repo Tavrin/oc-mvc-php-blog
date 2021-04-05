@@ -6,6 +6,7 @@ namespace Core\controller;
 use Core\database\EntityManager;
 use Core\http\Request;
 use Core\http\Session;
+use Core\security\Security;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Core\http\Response;
@@ -25,10 +26,16 @@ class Controller
      */
     protected ?Request $request;
 
+    /**
+     * @var Security
+     */
+    protected Security $security;
+
     public $renderContent = null;
 
     public function __construct(Request $request = null, EntityManager $entityManager = null)
     {
+        $this->security = new Security();
         $this->request = $request;
         $this->entityManager = $entityManager;
         $this->session = new Session();
@@ -89,6 +96,11 @@ class Controller
     {
         header("location:/error");
         exit();
+    }
+
+    protected function getUser()
+    {
+        return $this->security->getUser();
     }
 
     /**
