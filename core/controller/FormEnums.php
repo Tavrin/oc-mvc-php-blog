@@ -74,4 +74,16 @@ class FormEnums
             'class'
         ]
     ];
+
+    public const HIDDEN = [
+        'type' => 'hidden',
+        'attributes' => [
+            'max',
+            'min',
+            'step',
+            'value',
+            'id',
+            'class'
+        ]
+    ];
 }
