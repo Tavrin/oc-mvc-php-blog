@@ -681,7 +681,7 @@ h1 {
 /* align-content */
 .ac-fs {
     align-content: flex-start;
-}right
+}
 
 .ac-fe {
     align-content: flex-end;

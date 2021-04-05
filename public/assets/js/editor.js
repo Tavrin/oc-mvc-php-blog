@@ -1,6 +1,20 @@
 let editors = document.querySelectorAll('.editor');
 editors.forEach((el) => {
-    console.log(el.id);
+    let targetForm = null;
+    let targetInput = null;
+
+    const saveButton = document.getElementById(el.dataset.button);
+
+    if (saveButton.dataset.target) {
+        document.querySelector(`#${saveButton.dataset.target}`) ? targetForm = document.querySelector(`#${saveButton.dataset.target}`): targetForm = null;
+    }
+
+    if (el.dataset.target) {
+        document.querySelector(`#${el.dataset.target}`) ? targetInput = document.querySelector(`#${el.dataset.target}`) : targetInput = null;
+    }
+
+    console.log(targetInput);
+    console.log(targetForm);
 
     const editor = new EditorJS({
         readOnly: false,
@@ -86,23 +100,23 @@ editors.forEach((el) => {
 
         },
         data: {},
-        onReady: function(){
-            saveButton.click();
-        },
         onChange: function() {
             console.log('something changed');
         }
     });
 
-    const saveButton = document.getElementById(el.dataset.button);
 
-    saveButton.addEventListener('click', function () {
+    saveButton.addEventListener('click', () => {
         editor.save()
             .then((outputData) => {
-            console.log('Article data: ', outputData)
-        }).catch((error) => {
-            console.log('Saving failed: ', error)
-        });
+                outputData.id = el.id;
+                console.log('Article data: ', JSON.stringify(outputData));
+                targetInput.value = JSON.stringify(outputData);
+                console.log(targetForm);
+                targetForm.submit();
+            }).catch((error) => {
+                console.log('Saving failed: ', error);
+            });
     });
 });
 
