@@ -44,13 +44,29 @@
         "controller": "App\\Controller\\ErrorController::indexAction"
     },
     {
-        "route": "admin_test",
-        "path": "\/admin\/test",
-        "controller": "App\\Controller\\admin\\TestController::indexAction"
+        "route": "forgot_password",
+        "path": "/forgot-password",
+        "controller": "App\\Controller\\SecurityController::forgotPassword"
+    },
+    {
+        "route": "reset",
+        "path": "/reset",
+        "controller": "App\\Controller\\SecurityController::reset"
+
     },
     {
         "route": "email_verification",
         "path": "/confirm-email",
         "controller": "App\\Controller\\SecurityController::confirmEmailAction"
+    },
+    {
+        "route": "settings",
+        "path": "/user/settings",
+        "controller": "App\\Controller\\UserController::settingsAction"
+    },
+    {
+        "route": "profile",
+        "path": "/user/profile",
+        "controller": "App\\Controller\\UserController::indexAction"
     }
 ]

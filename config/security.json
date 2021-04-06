@@ -13,6 +13,14 @@
                 "ROLE_ADMIN"
             ],
             "redirect": "/login"
+        },
+        "user":
+        {
+            "pattern": "/user",
+            "roles":
+            [
+                "ROLE_USER"
+            ]
         }
     }
 }
