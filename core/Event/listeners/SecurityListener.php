@@ -28,6 +28,6 @@ class SecurityListener
     public function onRequest()
     {
         $this->security->setCSRFToken();
-
+        $this->security->verifyLoggedUser();
     }
 }
