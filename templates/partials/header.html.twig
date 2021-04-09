@@ -1,0 +1,47 @@
+<header class="m-auto mw-70">
+    <nav class="">
+        <ul class="pb-1 pt-1 d-f fd-r jc-sb td-n">
+            <li>
+                <a href="/" class="fw-700 h3 ff-titi">Etienne Doux</a>
+            </li>
+            <li class="fw-700 h3 ff-titi">
+                <a href="/blog" class="fw-700 h3 ff-titi">Blog</a>
+            </li>
+            <li class="fw-700 h3 ff-titi">
+                {% if user is defined and user is not empty %}
+                    <a href="#" class="fw-700 h3 ff-titi" id="userDropdown"><i class="fas fa-bars"></i></a>
+                    <ul class="dropdown" id="userDropdownLinks">
+                        <li><a href="/user/profile" class="">Profil</a></li>
+                        <li><a href="/user/settings" class="">Paramètres</a></li>
+                        <li><a href="/logout" class="">Déconnexion</a></li>
+                    </ul>
+                {% else %}
+                    <a href="/login" class="fw-700 h3 ff-titi"><i class="fas fa-sign-in-alt"></i></a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+    <nav class=" bt-g pt-0-5">
+        <ul class=" d-f fd-r jc-sb td-n">
+            <li>
+                Backend Dev
+            </li>
+            <li>
+                Frontend Dev
+            </li>
+            <li>
+                Game Dev
+            </li>
+            <li>
+                Web Design
+            </li>
+            <li>
+                Game Design
+            </li>
+            <li>
+                Digital Painting
+            </li>
+        </ul>
+    </nav>
+    {% include 'partials/inc/breadcrumb.html.twig' %}
+</header>

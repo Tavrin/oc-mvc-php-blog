@@ -1,0 +1,6 @@
+{% if content.title is defined %}
+    {% set title = content.title %}
+{% else %}
+    {% set title = "Mon blog - Etienne Doux" %}
+{% endif %}
+<meta title="{{ title }}">

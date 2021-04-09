@@ -1,22 +1,24 @@
 <?php
 
 
-namespace App\core\database;
+namespace Core\database;
 
 
-use App\core\utils\JsonParser;
-use App\core\database\EntityManager;
+use Core\utils\JsonParser;
+use Core\database\EntityManager;
 
 class DatabaseResolver
 {
-    public static function instanciateManager(): EntityManager
+    public static function instantiateManager(): ?EntityManager
     {
         $url = self::getDatabaseUrl();
-
+        if (empty($url)) {
+            return null;
+        }
         return new EntityManager($url);
     }
 
-    private static function getDatabaseUrl()
+    public static function getDatabaseUrl()
     {
         $parsedUrl = JsonParser::parseFile(ROOT_DIR . '/config/configuration.json');
 
@@ -26,9 +28,10 @@ class DatabaseResolver
 
         $parsedUrl = $parsedUrl['database']['url'];
         if (preg_match('#\$_(ENV|SERVER)\[(\'|\")(.*?)(\'|\")]#', $parsedUrl, $match)) {
-            $parsedUrl = $_ENV[$match[3]];
+            isset($_ENV[$match[3]]) ? $parsedUrl = $_ENV[$match[3]] : $parsedUrl = null;
         }
-        assert(is_string($parsedUrl));
+
+        is_string($parsedUrl) ? true : $parsedUrl = null;
 
         return $parsedUrl;
     }

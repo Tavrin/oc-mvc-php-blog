@@ -1,0 +1,17 @@
+{
+    "default" :
+    {
+        "email": "$_ENV['EMAIL_USERNAME']",
+        "name": "Tavrin.io",
+        "timezone": "Europe/Paris"
+    },
+    "phpmailer" :
+    {
+        "username": "$_ENV['EMAIL_USERNAME']",
+        "password": "$_ENV['EMAIL_PASSWORD']",
+        "host": "smtp.gmail.com",
+        "port": "587",
+        "smtpAuthentication": true,
+        "SMTPSecure": "TLS"
+    }
+}

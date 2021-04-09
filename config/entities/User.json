@@ -1,0 +1,68 @@
+{
+    "repository" : "App\\Repository\\UserRepository",
+    "entity" : "App\\Entity\\User",
+    "name": "user",
+    "table" : "user",
+    "id" :
+    {
+      "type" : "integer"
+    },
+    "fields" :
+    {
+        "firstName" :
+            {
+              "fieldName" : "first_name",
+              "type": "string"
+            },
+        "lastName" :
+            {
+              "fieldName" : "last_name",
+              "type": "string"
+            },
+        "presentation" :
+            {
+              "fieldName" : "presentation",
+              "type": "string"
+            },
+        "status" :
+            {
+              "fieldName" : "status",
+              "type": "boolean"
+            },
+        "email" :
+            {
+              "fieldName" : "email",
+              "type": "string"
+            },
+        "username" :
+            {
+              "fieldName" : "username",
+              "type": "string"
+            },
+        "password" :
+            {
+              "fieldName" : "password",
+              "type": "string"
+            },
+            "token" :
+            {
+                "fieldName" : "token",
+                "type": "string"
+            },
+        "roles" :
+            {
+              "fieldName" : "roles",
+              "type": "json"
+            },
+        "publishedAt" :
+            {
+              "fieldName" : "created_at",
+              "type": "datetime"
+            },
+        "updatedAt" :
+            {
+              "fieldName" : "updated_at",
+              "type": "datetime"
+            }
+    }
+}

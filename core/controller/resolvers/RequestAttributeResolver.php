@@ -1,10 +1,10 @@
 <?php
 
 
-namespace App\core\controller\resolvers;
+namespace Core\controller\resolvers;
 
 
-use App\Core\Http\Request;
+use Core\http\Request;
 
 class RequestAttributeResolver
 {

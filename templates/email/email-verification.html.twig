@@ -1,0 +1,11 @@
+<!DOCTYPE HTML>
+<html lang="en-EN">
+    <header>
+
+    </header>
+    <body>
+        <h1 style="margin: auto 0">Bonjour {{ user.username }}</h1>
+        <p>Afin de conclure votre inscription veuillez cliquer sur le lien suivant :</p>
+        <a href="http://localhost:8000/confirm-email?token={{ user.token }}">Lien de vérification</a>
+    </body>
+</html>

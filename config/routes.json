@@ -1,33 +1,72 @@
 [
-  {
-    "route" : "index",
-    "path" : "/",
-    "controller": "App\\src\\Controller\\IndexController::indexAction"
-  },
-  {
-    "route" : "blog_index",
-    "path" : "/blog",
-    "controller": "App\\src\\Controller\\IndexController::indexAction"
-  },
-  {
-    "route" : "blog_show",
-    "path" : "/blog/{slug}",
-    "controller": "App\\src\\Controller\\IndexController::showAction"
-  },
-  {
-    "route": "fakeRoute",
-    "path": "/fakePath/{id}/{slug}"
-  },
-  {
-    "route": "fakeRouteEncore",
-    "path": "/fakepath/test"
-  },
-  {
-    "route": "test_route",
-    "path": "/testpath/test"
-  },
-  {
-    "route": "error",
-    "controller": "App\\src\\Controller\\ErrorController::indexAction"
-  }
+    {
+        "route": "index",
+        "path": "\/",
+        "controller": "App\\Controller\\IndexController::indexAction"
+    },
+    {
+        "route": "blog_index",
+        "path": "\/blog",
+        "controller": "App\\Controller\\BlogController::indexAction"
+    },
+    {
+        "route": "blog_show",
+        "path": "/blog/{category}",
+        "controller": "App\\Controller\\BlogController::categoryAction"
+    },
+    {
+        "route": "fakeRoute",
+        "path": "\/fakePath\/{id}\/{slug}"
+    },
+    {
+        "route": "admin_dashboard",
+        "path": "/admin",
+        "controller": "App\\Controller\\admin\\IndexController::indexAction"
+    },
+    {
+        "route": "inscription",
+        "path": "/register",
+        "controller": "App\\Controller\\SecurityController::register"
+    },
+    {
+        "route": "connexion",
+        "path": "/login",
+        "controller": "App\\Controller\\SecurityController::login"
+    },
+    {
+        "route": "logout",
+        "path": "/logout",
+        "controller": "App\\Controller\\SecurityController::logout"
+    },
+    {
+        "route": "error",
+        "path": "\/error",
+        "controller": "App\\Controller\\ErrorController::indexAction"
+    },
+    {
+        "route": "forgot_password",
+        "path": "/forgot-password",
+        "controller": "App\\Controller\\SecurityController::forgotPassword"
+    },
+    {
+        "route": "reset",
+        "path": "/reset",
+        "controller": "App\\Controller\\SecurityController::reset"
+
+    },
+    {
+        "route": "email_verification",
+        "path": "/confirm-email",
+        "controller": "App\\Controller\\SecurityController::confirmEmailAction"
+    },
+    {
+        "route": "settings",
+        "path": "/user/settings",
+        "controller": "App\\Controller\\UserController::settingsAction"
+    },
+    {
+        "route": "profile",
+        "path": "/user/profile",
+        "controller": "App\\Controller\\UserController::indexAction"
+    }
 ]

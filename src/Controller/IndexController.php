@@ -1,24 +1,20 @@
 <?php
 
 
-namespace App\src\Controller;
+namespace App\Controller;
 
 
-use App\core\controller\Controller;
-use App\Core\Http\Request;
+use Core\controller\Controller;
+use Core\http\Request;
 
 class IndexController extends Controller
 {
     public function indexAction(Request $request)
     {
-
-        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM pofsd');
-
-         $query->execute();
-       $result = $query->fetchAll();
-        dump($result);
-        return $this->render('test.html.twig',[
-            'title' => "Twig Title modifié"
+        $this->session->getAll();
+        $content['title'] = 'Homepage';
+        return $this->render('pages/home.html.twig',[
+            'content' => $content
         ]);
     }
 

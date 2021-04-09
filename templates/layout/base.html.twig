@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html lang="en-EN">
+<head>
+    {% block head %}
+        {% include 'partials/inc/meta.html.twig' %}
+        <script src="https://kit.fontawesome.com/2c52a0fe5c.js" crossorigin="anonymous"></script>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+        <link href="/assets/css/reset.css" rel="stylesheet">
+        <link href="/assets/css/main.css" rel="stylesheet">
+    {% endblock %}
+</head>
+<body>
+    {% block header %}
+        {% include 'partials/header.html.twig' %}
+        {% include 'partials/inc/flash.html.twig' %}
+    {% endblock %}
+
+    {% block main %}
+    {% endblock %}
+
+    {% block footer%}
+        {% include 'partials/footer.html.twig' %}
+    {% endblock %}
+
+    {% block scripts %}
+            <script defer type="module" src="/assets/js/common.js"></script>
+            <script defer type="module" src="/assets/js/main.js"></script>
+    {% endblock %}
+</body>
+</html>

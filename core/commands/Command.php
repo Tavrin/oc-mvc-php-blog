@@ -1,15 +1,19 @@
 <?php
 
 
-namespace App\core\commands;
+namespace Core\commands;
+
+define('ROOT_DIR', dirname(__DIR__) . '/../');
 
 
 abstract class Command
 {
+    protected const BREAK_KEYWORD = 'stop';
     protected ?string $name;
     protected ?string $alias;
     protected ?string $description;
     protected array $arguments;
+    protected array $options;
 
     /**
      * Command constructor.
@@ -17,6 +21,7 @@ abstract class Command
     public function __construct()
     {
         $this->arguments = [];
+        $this->options = [];
         $this->name = null;
         $this->alias = null;
         $this->description = null;
@@ -42,7 +47,7 @@ abstract class Command
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -51,7 +56,7 @@ abstract class Command
      * @param string $alias
      * @return $this
      */
-    public function setAlias(string $alias)
+    public function setAlias(string $alias): Command
     {
         $this->alias = $alias;
 
@@ -77,18 +82,56 @@ abstract class Command
         return $this;
     }
 
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
     /**
      * @param string $argument
+     * @param string|null $description
      * @return $this|false
      */
-    public function addArgument(string $argument)
+    public function addArgument(string $argument, string $description = null)
     {
         if (in_array($argument, $this->arguments)) {
             return false;
         }
+        $argumentData['name'] = $argument;
+        $argumentData['description'] = $description?? null;
+        $argumentData['value'] = null;
 
-        array_push($this->arguments, $argument);
+        $this->arguments[$argument] = $argumentData;
         return $this;
+    }
+
+    public function addOption(string $option, string $description = null)
+    {
+        if (in_array($option, $this->options)) {
+            return false;
+        }
+        $optionData['name'] = $option;
+        $optionData['description'] = $description?? null;
+        $optionData['value'] = null;
+
+        $this->options[$option] = $optionData;
+        return $this;
+    }
+
+
+    public function setParemValues(array $arguments = null, array $options = null)
+    {
+        if (!empty($arguments)) {
+            foreach ($arguments as $name => $argument) {
+                $this->arguments[$name]['value'] = $argument;
+            }
+        }
+
+        if (!empty($options)) {
+            foreach ($options as $name => $option) {
+                $this->options[$name]['value'] = $option;
+            }
+        }
     }
 
     /**
@@ -99,9 +142,31 @@ abstract class Command
         return $this->arguments;
     }
 
-    public function hasArgument(string $argument)
+    /**
+     * @param string $argument
+     * @return mixed
+     */
+    public function getArgument(string $argument)
     {
-        return in_array($argument, $this->arguments);
+        return $this->arguments[$argument];
+    }
+
+    public function hasArgument(string $argument): bool
+    {
+        return isset($this->arguments[$argument]);
+    }
+
+    public function hasOption(string $option): bool
+    {
+        return isset($this->options[$option]);
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
     }
 
     public function run()
@@ -109,7 +174,20 @@ abstract class Command
         $this->execute();
     }
 
+
     protected function execute()
     {
+    }
+
+
+    protected function getInput(bool $noLower = false): ?string
+    {
+        $line = trim(fgets(STDIN)); // reads one line from STDIN
+        if (empty($line) || self::BREAK_KEYWORD === $line) {
+            return null;
+        }
+
+        false === $noLower ? $line = lcfirst($line) : true;
+        return $line;
     }
 }

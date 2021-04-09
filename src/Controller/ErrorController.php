@@ -1,25 +1,39 @@
 <?php
 
 
-namespace App\src\Controller;
+namespace App\Controller;
 
-use App\core\controller\Controller;
+use Core\controller\Controller;
+use Core\http\Response;
 
 
 class ErrorController extends Controller
 {
-    public function indexAction(string $message, int $code)
+    /**
+     * @param \Exception|null $e
+     * @param string|null $message
+     * @param null $code
+     * @return Response
+     */
+    public function indexAction(\Exception $e = null, string $message = null,  $code = null):Response
     {
+        $content['title'] = "Page d'erreur";
 
-        if ($code !== 404) {
-            $message = "Le blog a rencontré une erreur serveur !";
-            $code = 500;
+        if (isset($_ENV['ENV']) && $_ENV['ENV'] === 'dev') {
+            $content['code'] = $code;
+            $content['message'] = $message;
+
+            return $this->render('error.html.twig',[
+                'content' => $content
+                ]);
         }
 
+        404 === $code ? $message = "La page demandée n'existe pas":($message = "Le blog a rencontré une erreur" AND $code = 500);
+        $content['code'] = $code;
+        $content['message'] = $message;
+
         return $this->render('error.html.twig',[
-            'title' => "Page d'erreur",
-            'message' => $message,
-            'code' => $code
+            'content' => $content
         ]);
     }
 }

@@ -1,39 +1,38 @@
 <?php
 
 
-namespace App\core\controller;
+namespace Core\controller;
 
-use App\core\database\EntityManager;
-use App\Core\Http\Request;
+use Core\database\EntityManager;
+use Core\http\Request;
 
 class ControllerResolver
 {
     /**
-     * @var EntityManager
+     * @param Request $request
+     * @param EntityManager|null $entityManager
+     * @return array|false
      */
-    public $entityManager;
-
-    public function __construct(EntityManager $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-
-    public function getController(Request $request)
+    public function getController(Request $request, ?EntityManager $entityManager = null)
     {
         if (!$controllerPath = $request->getAttribute('controller')) {
             return false;
         }
 
-        $instanciatedController = $this->createController($controllerPath);
+        return self::createController($controllerPath, $request, $entityManager);
 
-        return $instanciatedController;
     }
 
-    public function createController(string $controllerPath)
+    /**
+     * @param string $controllerPath
+     * @param Request|null $request
+     * @param EntityManager|null $entityManager
+     * @return array
+     */
+    public static function createController(string $controllerPath, Request $request = null,EntityManager $entityManager = null):array
     {
-        $entityManager = $this->entityManager;
         [$class, $method] = explode('::', $controllerPath, 2);
-        $class = new $class($entityManager);
+        $class = new $class($request, $entityManager);
 
         return $controller = [$class, $method];
     }

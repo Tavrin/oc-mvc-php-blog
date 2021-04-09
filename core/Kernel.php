@@ -1,20 +1,20 @@
 <?php
 
-namespace App\core;
+namespace Core;
 
-use App\core\database\DatabaseResolver;
-use App\core\database\EntityManager;
-use App\Core\Http\Request;
-use App\Core\Http\Response;
-use App\Core\Event\Dispatcher;
-use App\core\event\EventNames;
-use App\core\event\ListenerService;
-use App\core\event\events\RequestEvent;
-use App\core\event\events\ControllerEvent;
-use App\core\controller\ControllerResolver;
-use App\core\controller\ArgumentsResolver;
-use App\core\routing\Router;
-use App\core\utils\JsonParser;
+use Core\database\DatabaseResolver;
+use Core\database\EntityManager;
+use Core\http\Request;
+use Core\http\Response;
+use Core\Event\Dispatcher;
+use Core\Event\EventNames;
+use Core\Event\ListenerService;
+use Core\Event\Events\RequestEvent;
+use Core\Event\Events\ControllerEvent;
+use Core\controller\ControllerResolver;
+use Core\controller\ArgumentsResolver;
+use Core\routing\Router;
+use Core\utils\JsonParser;
 
 
 /**
@@ -24,29 +24,26 @@ use App\core\utils\JsonParser;
 class Kernel
 {
     /**
-     * @var Dispatcher
+     * @var ?Dispatcher
      */
-    protected $dispatcher;
+    protected ?Dispatcher $dispatcher = null;
 
     /**
      * @var ListenerService
      */
-    protected $listenerService;
+    protected ListenerService $listenerService;
 
     /**
      * @var ControllerResolver
      */
-    protected $controllerResolver;
+    protected ControllerResolver $controllerResolver;
 
-    /**
-     * @var EntityManager
-     */
-    public $entityManager;
+    public ?EntityManager $entityManager = null;
 
     /**
      * @var ArgumentsResolver
      */
-    protected $argumentResolver;
+    protected ArgumentsResolver $argumentResolver;
 
     public function __construct()
     {
@@ -55,16 +52,22 @@ class Kernel
 
     public function setServices()
     {
-        if (null === $this->dispatcher) {
-            $this->setDispatcher();
+        try {
+            if (null === $this->dispatcher) {
+                $this->setDispatcher();
+            }
+
+
+            $dispatcher = $this->dispatcher;
+            $this->listenerService = new ListenerService($dispatcher);
+            $this->listenerService->setListeners();
+            $this->argumentResolver = new ArgumentsResolver();
+            $this->entityManager = DatabaseResolver::instantiateManager();
+            $this->controllerResolver = new ControllerResolver();
+        } catch (\Exception $e) {
+            $this->throwResponse($e);
         }
 
-        $dispatcher = $this->dispatcher;
-        $this->listenerService = new ListenerService($dispatcher);
-        $this->listenerService->setListeners();
-        $this->entityManager = DatabaseResolver::instanciateManager();
-        $this->controllerResolver = new ControllerResolver($this->entityManager);
-        $this->argumentResolver = new ArgumentsResolver();
     }
 
     private function setDatabase()
@@ -81,12 +84,12 @@ class Kernel
      * @param Request $request
      * @return Response
      */
-    public function handleRequest(Request $request)
+    public function handleRequest(Request $request):Response
     {
         try {
             return $this->route($request);
         } catch (\Exception $e) {
-            return $this->throwResponse($e, $request);
+            $this->throwResponse($e);
         }
     }
     /**
@@ -98,7 +101,7 @@ class Kernel
         $event = new RequestEvent($this, $request);
         $this->dispatcher->dispatch($event, EventNames::REQUEST);
 
-        $controller = $this->controllerResolver->getController($request);
+        $controller = $this->controllerResolver->getController($request, $this->entityManager);
 
         $event = new ControllerEvent($this, $controller);
         $this->dispatcher->dispatch($event, EventNames::CONTROLLER);
@@ -108,17 +111,22 @@ class Kernel
        /* $this->argumentResolver->getArguments($request, $controller); */
         $response = $controller(...$arguments);
 
+        if (!$response instanceof Response) {
+            throw new \RuntimeException(sprintf('Mauvaise réponse'), 500);
+        }
+
         return $response;
     }
 
-    public function throwResponse(\Throwable $e, Request $request): Response
+    public function throwResponse(\Throwable $e)
     {
-        $controller = Router::matchError($e, $request);
-
-        $response = $this->controllerResolver->createController($controller);
+        $controller = Router::matchError($e);
+        $controller = ControllerResolver::createController($controller);
         $message = $e->getMessage();
         $code = $e->getCode();
-
-        return $response($message, $code);
+        $controllerResponse = $controller($e, $message, $code);
+        $code === 404 ? $controllerResponse->setStatusCode(404):$controllerResponse->setStatusCode(500);
+        $controllerResponse->send();
+        exit();
     }
 }

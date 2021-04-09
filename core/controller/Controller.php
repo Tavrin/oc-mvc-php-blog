@@ -1,29 +1,49 @@
 <?php
 
 
-namespace App\core\controller;
+namespace Core\controller;
 
-use App\core\database\EntityManager;
-use phpDocumentor\Reflection\Types\This;
+use Core\database\EntityManager;
+use Core\http\Request;
+use Core\http\Session;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
-use App\Core\Http\Response;
+use Core\http\Response;
 
 class Controller
 {
     protected const TEMPLATES_DIR = ROOT_DIR . '/templates/';
-    protected $twig;
+
+    protected Environment $twig;
+
+    private ?EntityManager $entityManager;
+
+    protected Session $session;
 
     /**
-     * @var EntityManager
+     * @var Request|null
      */
-    protected  $entityManager;
+    protected ?Request $request;
 
-    public function __construct(EntityManager $entityManager)
+    public $renderContent = null;
+
+    public function __construct(Request $request = null, EntityManager $entityManager = null)
     {
+        $this->request = $request;
         $this->entityManager = $entityManager;
+        $this->session = new Session();
+        $this->session->start();
         $loader = new FilesystemLoader(self::TEMPLATES_DIR);
-        $this->twig = new Environment($loader);
+        if (isset($_ENV['ENV']) && $_ENV['ENV'] === 'dev') {
+            $this->twig = new Environment($loader, [
+                'debug' => true
+            ]);
+            $this->twig->addExtension(new \Twig\Extension\DebugExtension());
+        } else {
+            $this->twig = new Environment($loader, [
+                'debug' => false
+            ]);
+        }
     }
     protected function render(string $template = null, array $parameters = [], Response $response = null): Response
     {
@@ -34,15 +54,67 @@ class Controller
         if (null === $response) {
             $response = new Response();
         }
+        $parameters['flash'] = $this->session->getAllFlash();
+        if ($this->session->has('user')) {
+            $parameters['user'] = $this->session->get('user');
+        }
+        
+        $this->setControllerContent($template, $parameters);
 
-        $content = $this->twig->render($template, $parameters);
-        $response->setContent($content);
+        $response->setContent($this->renderContent);
 
         return $response;
     }
 
+    public function setControllerContent($template, $parameters = []): string
+    {
+        return $this->renderContent = $this->twig->render($template, $parameters);
+    }
+
+    public function getControllerContent()
+    {
+        return $this->renderContent;
+    }
+
     protected function getManager(): EntityManager
     {
-        return $this->entityManager;
+        if (!empty($this->entityManager)) {
+            return $this->entityManager;
+        } else {
+            throw new \RuntimeException("Entity manager is of type : " . gettype($this->entityManager) . " and is called for this controller: " . $this->request->getAttribute('controller'), 500);
+        }
+    }
+
+    protected function get404()
+    {
+        header("location:/error");
+        exit();
+    }
+
+    /**
+     * @param string $path
+     * @param array|null[] $flash
+     */
+    protected function redirect(string $path, array $flash = ['type' => null, 'message' => null])
+    {
+        if (isset($flash['type']) && isset($flash['message'])) {
+            $this->flashMessage($flash['type'], $flash['message']);
+        }
+        header("Location:" . $path);
+        exit();
+    }
+
+    /**
+     * @param object $entity
+     * @param array $options
+     */
+    protected function createForm(object $entity, array $options = []): Form
+    {
+        return new Form($this->request->getPathInfo(), $entity, $this->session, $options);
+    }
+
+    protected function flashMessage(string $key, string $message)
+    {
+        $this->session->addFlash($key, $message);
     }
 }

@@ -1,20 +1,20 @@
 <?php
 
 
-namespace App\core\controller;
+namespace Core\controller;
 
-use App\core\controller\resolvers\RequestAttributeResolver;
-use App\core\controller\resolvers\RequestResolver;
-use App\Core\Http\Request;
+use Core\controller\resolvers\RequestAttributeResolver;
+use Core\controller\resolvers\RequestResolver;
+use Core\http\Request;
 
 class ArgumentsResolver
 {
-    private $argumentResolvers;
+    private array $argumentResolvers;
     public function __construct()
     {
         $this->argumentResolvers = $this->setResolvers();
     }
-    public function getArguments(Request $request, array $controller)
+    public function getArguments(Request $request, array $controller): array
     {
         $params = [];
         $arguments = $this->createArguments($controller);
@@ -33,7 +33,12 @@ class ArgumentsResolver
         return $params;
     }
 
-    private function createArguments(array $controller)
+    /**
+     * @param array $controller
+     * @return array
+     * @throws \ReflectionException
+     */
+    private function createArguments(array $controller): array
     {
         $arguments = [];
 
@@ -52,7 +57,10 @@ class ArgumentsResolver
         return $arguments;
     }
 
-    private function setResolvers()
+    /**
+     * @return array
+     */
+    private function setResolvers(): array
     {
         return [
             new RequestAttributeResolver(),

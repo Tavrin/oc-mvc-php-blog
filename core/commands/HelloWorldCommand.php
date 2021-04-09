@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\core\commands;
+namespace Core\commands;
 
 
 class HelloWorldCommand extends Command
@@ -10,12 +10,11 @@ class HelloWorldCommand extends Command
     {
         $this->setName('HelloWorld')
             ->setAlias('hlw')
-            ->setDescription('écrit Hello World')
-            ->addArgument('test');
+            ->setDescription('écrit Hello World');
     }
 
     public function execute()
     {
-        echo "Hello World";
+        echo "Hello World" . PHP_EOL;
     }
 }
