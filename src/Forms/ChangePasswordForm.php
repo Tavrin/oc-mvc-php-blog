@@ -4,10 +4,11 @@
 namespace App\Forms;
 
 
+use Core\controller\Form;
 use Core\http\Request;
 use Core\http\Session;
 
-class ChangePasswordForm extends \Core\controller\Form
+class ChangePasswordForm extends Form
 {
     public function __construct(Request $request, object $entity, Session $session, array $options)
     {

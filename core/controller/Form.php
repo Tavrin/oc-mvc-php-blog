@@ -128,7 +128,18 @@ class Form
         }
 
         $input .= ">" . PHP_EOL;
-        $input .= '    <option value="">' . ($options['placeholder'] ?? $name) . '</option>' . PHP_EOL;
+        $input .= $this->setSelectOptions($name, $selection, $options);
+        $input .= '</select>';
+        $fieldData = $this->setDataOptions($name, $options);
+        $fieldData['render'] = $input;
+        $fieldData['selection'] = $selection;
+        $this->data[$name] = $fieldData;
+
+    }
+
+    private function setSelectOptions(string $name, array $selection, array $options)
+    {
+        $input = '    <option value="">' . ($options['placeholder'] ?? $name) . '</option>' . PHP_EOL;
         foreach ($selection as $item) {
             $selected = '';
             if (is_array($item) && isset($item['id'])) {
@@ -136,19 +147,15 @@ class Form
                     $selected = 'selected="' . $item['id'] . '"';
                 } elseif (true === $this->session->get('formError') && $formData = $this->session->get('formData')) {
                     if (array_key_exists($name, $formData)) {
-                        $selected = 'selected="' . $formData[$name]. '"';;
+                        $selected = 'selected="' . $formData[$name]. '"';
                     }
                 }
-;
+
                 $input .= '    <option value="' . $item['id'] . '" ' . $selected . '>' . ($item['placeholder'] ?? $item['id']) . '</option>' . PHP_EOL;
             }
         }
-        $input .= '</select>';
-        $fieldData = $this->setDataOptions($name, $options);
-        $fieldData['render'] = $input;
-        $fieldData['selection'] = $selection;
-        $this->data[$name] = $fieldData;
 
+        return $input;
     }
 
     /**
@@ -223,11 +230,10 @@ class Form
     protected function setData(array $type, string $name, array $options)
     {
 
-        if (true === $this->session->get('formError') && $formData = $this->session->get('formData')) {
-            if (array_key_exists($name, $formData)) {
-                $options['value'] = $formData[$name];
-            }
+        if (true === $this->session->get('formError') && $this->session->get('formData') && array_key_exists($name, $this->session->get('formData'))) {
+            $options['value'] = $this->session->get('formData')[$name];
         }
+
         $input = "<input type='{$type['type']}' name='{$name}' " ;
 
         isset($options['id']) ? true :  $options['id'] = $name;
@@ -237,14 +243,7 @@ class Form
             }
 
             if ('dataAttributes' === $optionName) {
-                foreach ($option as $attributeName => $dataAttribute) {
-                    if (is_array($dataAttribute)) {
-                        $dataAttribute = json_encode($dataAttribute);
-                        $input .= "data-{$attributeName}={$dataAttribute} ";
-                    }
-
-                    $input .= "data-{$attributeName}=\"{$dataAttribute}\" ";
-                }
+                $input .= $this->setDataAttributes($option);
                 continue;
             }
 
@@ -266,6 +265,21 @@ class Form
         $fieldData = $this->setDataOptions($name, $options);
         $fieldData['render'] = $input;
         $this->data[$name] = $fieldData;
+    }
+
+    private function setDataAttributes($option): string
+    {
+        $input = '';
+        foreach ($option as $attributeName => $dataAttribute) {
+            if (is_array($dataAttribute)) {
+                $dataAttribute = json_encode($dataAttribute);
+                $input .= "data-{$attributeName}={$dataAttribute} ";
+            }
+
+            $input .= "data-{$attributeName}=\"{$dataAttribute}\" ";
+        }
+
+        return $input;
     }
 
     /**

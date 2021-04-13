@@ -3,6 +3,7 @@
 
 namespace App\Manager;
 
+use App\Entity\Post;
 use App\Repository\PostRepository;
 use Core\database\DatabaseResolver;
 use Core\database\EntityManager;
@@ -57,8 +58,18 @@ class BlogManager
         $post->setPath($post->getCategory()->getPath() . '/' . $post->getSlug());
 
         $postAuthor = $post->getAuthor;
-        !isset($postAuthor) ? $post->setAuthor($user) : true;
+        isset($postAuthor) ?? $post->setAuthor($user);
         $this->em->save($post);
+        return $this->em->flush();
+    }
+
+    public function updatePost(Post $post, $user): bool
+    {
+        if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+            throw new ForbiddenException('Action non autorisée', 403);
+        }
+
+        $this->em->update($post);
         return $this->em->flush();
     }
 

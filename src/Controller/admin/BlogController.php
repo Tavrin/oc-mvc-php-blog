@@ -48,11 +48,11 @@ class BlogController extends Controller
         $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'new']);
         if ($this->session->get('formError') && $formData =$this->session->get('formData')) {
             if (array_key_exists('header', $formData)) {
-                $content['header'] = $formData['header'];
+                $content['item']['header'] = $formData['header'];
             }
 
             if (array_key_exists('content', $formData)) {
-                $content['content'] = $formData['content'];
+                $content['item']['content'] = $formData['content'];
             }
         }
         $editorForm->handle($request);
@@ -75,7 +75,10 @@ class BlogController extends Controller
             $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
         }
 
-        return $this->render('blog/new.html.twig', [
+        $content['action'] = 'new';
+        $content['title'] = 'Nouvel article';
+
+        return $this->render('blog/editor.html.twig', [
             'form' => $editorForm->renderForm(),
             'content' => $content ?? null
         ]);
@@ -102,20 +105,22 @@ class BlogController extends Controller
         if ($editorForm->isSubmitted && $editorForm->isValid) {
 
             if (!$blogManager->validateEditor($editorForm)) {
-                $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
+                $this->redirect('/admin/posts/edit', ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
-            if ($blogManager->savePost($post, $this->getUser())) {
-                $this->redirect('/admin', ['type' => 'success', 'message' => 'Article publié avec succès']);
+            if ($blogManager->updatePost($post, $this->getUser())) {
+                $this->redirect('/admin', ['type' => 'success', 'message' => 'Article mis à jour avec succès']);
             }
 
-            $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
+            $this->redirect('/admin/posts/edit', ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
         } elseif ($editorForm->isSubmitted) {
-            $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
+            $this->redirect('/admin/posts/edit', ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
         }
 
-        $content['content'] = $post->getContent();
-        $content['header'] = $post->getHeader();
-        return $this->render('blog/new.html.twig', [
+        $content['action'] = 'edit';
+        $content['title'] = 'Editer l\'article';
+        $content['item']['content'] = $post->getContent();
+        $content['item']['header'] = $post->getHeader();
+        return $this->render('blog/editor.html.twig', [
             'form' => $editorForm->renderForm(),
             'content' => $content
         ]);
