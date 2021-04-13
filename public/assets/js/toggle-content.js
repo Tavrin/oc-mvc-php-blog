@@ -43,6 +43,5 @@ class ToggleContent {
 }
 
 document.querySelectorAll('.js-toggle').forEach((element) => {
-    console.log(element);
    new ToggleContent(element);
 })

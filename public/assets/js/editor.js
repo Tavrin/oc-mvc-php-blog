@@ -98,6 +98,7 @@ editors.forEach((el) => {
             },
 
         },
+
         data: content
     });
 

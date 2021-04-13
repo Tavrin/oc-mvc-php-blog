@@ -3,6 +3,7 @@
 
 namespace App\Controller\admin;
 
+
 use App\Forms\EditorForm;
 use App\Manager\BlogManager;
 use App\Repository\CategoryRepository;
@@ -42,6 +43,7 @@ class BlogController extends Controller
         $post = new Post();
         $blogManager = new BlogManager($em);
         $selection = $blogManager->getSelection('category', ['placeholder' => 'name']);
+
         $content = null;
         $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'new']);
         if ($this->session->get('formError') && $formData =$this->session->get('formData')) {
@@ -62,11 +64,13 @@ class BlogController extends Controller
                 $this->session->set('formData', $request->request);
                 $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
+
             if ($blogManager->savePost($post, $this->getUser())) {
                 $this->redirect('/admin', ['type' => 'success', 'message' => 'Article publié avec succès']);
             }
 
             $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
+
         } elseif ($editorForm->isSubmitted) {
             $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
         }

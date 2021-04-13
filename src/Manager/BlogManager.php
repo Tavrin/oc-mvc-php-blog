@@ -3,21 +3,23 @@
 
 namespace App\Manager;
 
-
 use App\Repository\PostRepository;
 use Core\database\DatabaseResolver;
 use Core\database\EntityManager;
 use Core\http\exceptions\ForbiddenException;
+
 
 class BlogManager
 {
     private ?EntityManager $em;
     private array $allEntityData = [];
     private PostRepository $postRepository;
+
     public function __construct(EntityManager $entityManager = null)
     {
         $this->em = $entityManager ?? DatabaseResolver::instantiateManager();
         $this->postRepository = new PostRepository();
+
         $this->allEntityData = $this->em::getAllEntityData();
     }
 
@@ -51,7 +53,9 @@ class BlogManager
         }
 
         $post->setStatus(true);
+
         $post->setPath($post->getCategory()->getPath() . '/' . $post->getSlug());
+
         $postAuthor = $post->getAuthor;
         !isset($postAuthor) ? $post->setAuthor($user) : true;
         $this->em->save($post);
@@ -108,5 +112,4 @@ class BlogManager
 
         return $content;
     }
-
 }

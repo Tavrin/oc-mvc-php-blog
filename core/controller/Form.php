@@ -110,6 +110,7 @@ class Form
 
         isset($options['id']) ? true :  $options['id'] = $name;
         foreach ($options as $optionName => $option) {
+
             if (!in_array($optionName, FormEnums::SELECT['attributes'])) {
                 continue;
             }
@@ -306,7 +307,9 @@ class Form
         $this->session->remove('formData');
 
         if (false !== $currentRequest = $this->validateAndSanitizeRequest($request)) {
+
             $this->isSubmitted = true;
+
             foreach ($this->data as $fieldName => $fieldData) {
                 if ($fieldData['sanitize']) {
                     $currentRequest[$fieldName] = htmlspecialchars($currentRequest[$fieldName]);

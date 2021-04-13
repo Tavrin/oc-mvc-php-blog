@@ -72,7 +72,9 @@ class FormEnums
         'type' => 'select',
         'attributes' => [
             'dataAttributes',
-            'required',
+            'max',
+            'min',
+            'step',
             'value',
             'id',
             'class'
