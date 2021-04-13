@@ -9,6 +9,7 @@ class FormEnums
     public const TEXT = [
         'type' => 'text',
         'attributes' => [
+            'value',
             'dataAttributes',
             'placeholder',
             'id',
@@ -71,9 +72,7 @@ class FormEnums
         'type' => 'select',
         'attributes' => [
             'dataAttributes',
-            'max',
-            'min',
-            'step',
+            'required',
             'value',
             'id',
             'class'
@@ -84,9 +83,7 @@ class FormEnums
         'type' => 'hidden',
         'attributes' => [
             'dataAttributes',
-            'max',
-            'min',
-            'step',
+            'required',
             'value',
             'id',
             'class'

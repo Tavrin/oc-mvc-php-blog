@@ -29,6 +29,8 @@ class BlogController extends Controller
             throw new NotFoundException("pas d'article de blog trouvé", 404);
         }
 
+        $content['posts'] = $posts;
+
         return $this->render('blog/index.html.twig',[
             'content' => $content
         ]);

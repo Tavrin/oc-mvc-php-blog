@@ -30,6 +30,14 @@ h1 {
     font-size: 0.7rem;
 }
 
+.fs-08 {
+    font-size: 0.8rem;
+}
+
+.fs-09 {
+    font-size: 0.9rem;
+}
+
 .fs-1 {
     font-size: 1rem;
 }
@@ -449,6 +457,10 @@ h1 {
     width: 75%;
 }
 
+.w-80 {
+    width: 80%;
+}
+
 .w-100 {
     width: 100%;
 }
@@ -480,6 +492,10 @@ h1 {
 
 .mw-80 {
     max-width: 80%;
+}
+
+.mw-90 {
+    max-width: 90%;
 }
 
 .maw-100 {
@@ -540,6 +556,10 @@ h1 {
     height: 100%;
 }
 
+/* height rem */
+.hrem-5 {
+    height: 6rem;
+}
 /*max-height */
 .mh-0 {
     max-height: 0;
@@ -678,6 +698,14 @@ h1 {
     align-self: end;
 }
 
+.as-fs {
+    align-self: flex-start;
+}
+
+.as-fe {
+    align-self: flex-end;
+}
+
 /* align-content */
 .ac-fs {
     align-content: flex-start;
@@ -704,6 +732,19 @@ h1 {
     flex-basis: auto;
 }
 
+.fb-10 {
+    flex-basis: 10%;
+}
+
+.fb-15 {
+    flex-basis: 15%;
+}
+
+
+.fb-25 {
+    flex-basis: 25%;
+}
+
 .fb-50 {
     flex-basis: 50%;
 }
@@ -716,6 +757,15 @@ h1 {
 /* border-top */
 .bt-g {
     border-top: 1px solid #f5f4f4;
+}
+
+/* border-bottom */
+.bb-g {
+    border-bottom: 1px solid #f5f4f4;
+}
+
+.bb-dg   {
+    border-bottom: 1px solid #DFE1E7;
 }
 
 /*border-radius */
@@ -779,7 +829,6 @@ margin-bottom: 2rem;
     line-height: 1.5rem;
     background-color: #fff;
     position: absolute;
-    display: none;
     z-index: 9999;
     padding: 0.5rem;
     font-size: 1rem;

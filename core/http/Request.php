@@ -55,6 +55,11 @@ class Request
     protected ?string $method;
 
     /**
+     * @var ?string
+     */
+    protected ?string $host;
+
+    /**
      * Request constructor.
      * @param array $query
      * @param array $request
@@ -75,6 +80,7 @@ class Request
         $this->pathInfo = null;
         $this->controller = null;
         $this->method = null;
+        $this->host = null;
     }
 
     /**
@@ -149,6 +155,11 @@ class Request
         return \array_key_exists($key, $this->attributes) ? $this->attributes[$key] : null;
     }
 
+    public function getServer(string $key)
+    {
+        return \array_key_exists($key, $this->server) ? $this->server[$key] : null;
+    }
+
     public function hasAttribute(string $key):bool
     {
         return \array_key_exists($key, $this->attributes);
@@ -179,5 +190,14 @@ class Request
     public function getRequest(string $key)
     {
         return \array_key_exists($key, $this->request) ? $this->request[$key] : null;
+    }
+
+    public function getHost()
+    {
+        if (empty($this->method)) {
+            $this->host = $this->server['HTTP_HOST'];
+        }
+
+        return $this->host;
     }
 }

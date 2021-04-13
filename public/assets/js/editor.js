@@ -1,7 +1,12 @@
 let editors = document.querySelectorAll('.editor');
+let saveCount = 0;
 editors.forEach((el) => {
     let targetForm = null;
     let targetInput = null;
+    let content = null;
+    if (el.dataset.content) {
+        content = JSON.parse(el.dataset.content);
+    }
 
     const saveButton = document.getElementById(el.dataset.button);
 
@@ -93,7 +98,7 @@ editors.forEach((el) => {
             },
 
         },
-        data: {}
+        data: content
     });
 
 
@@ -102,7 +107,7 @@ editors.forEach((el) => {
             .then((outputData) => {
                 outputData.id = el.id;
                 targetInput.value = JSON.stringify(outputData);
-                targetForm.submit();
+                targetForm.requestSubmit();
             }).catch((error) => {
                 console.log('Saving failed: ', error);
             });

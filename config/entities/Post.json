@@ -44,6 +44,11 @@
               "fieldName" : "slug",
               "type": "string"
             },
+        "path" :
+        {
+            "fieldName" : "path",
+            "type": "string"
+        },
         "author" :
             {
               "fieldName" : "user_id",

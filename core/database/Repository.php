@@ -83,9 +83,14 @@ abstract class Repository
         return $entities;
     }
 
-    public function findAll($orderBy = null): array
+    public function findAll(array $orderBy = null): array
     {
-        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData[EntityEnums::TABLE_NAME]);
+        if (isset($orderBy['column'], $orderBy['order']) ) {
+            $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData[EntityEnums::TABLE_NAME] . ' ORDER BY ' . $orderBy['column'] . ' ' . $orderBy['order']);
+        } else {
+            $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData[EntityEnums::TABLE_NAME]);
+        }
+
         $query->execute();
         $results = $query->fetchAll();
         return $this->hydrateEntity($results);

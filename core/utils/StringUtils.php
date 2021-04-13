@@ -43,4 +43,16 @@ class StringUtils
         return $string;
     }
 
+    public static function slugify(string $str)
+    {
+        $separator = '-';
+        $accents_regex = '~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i';
+        $special_cases = array( '&' => 'and', "'" => '');
+        $str = mb_strtolower( trim( $str ), 'UTF-8' );
+        $str = str_replace( array_keys($special_cases), array_values( $special_cases), $str );
+        $str = preg_replace( $accents_regex, '$1', htmlentities( $str, ENT_QUOTES, 'UTF-8' ) );
+        $str = preg_replace("/[^a-z0-9]/u", "$separator", $str);
+        return preg_replace("/[$separator]+/u", "$separator", $str);
+    }
+
 }

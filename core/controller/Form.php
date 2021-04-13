@@ -25,6 +25,7 @@ class Form
     protected ?array $submit = null;
     protected array $options = [];
     public bool $isValid = false;
+    public bool $isSubmitted = false;
 
     /**
      * Form constructor.
@@ -34,7 +35,7 @@ class Form
      * @param array $options
      * @throws \Exception
      */
-    public function __construct(string $currentAction, object $entity, Session $session, array $options)
+    public function __construct(Request $request, object $entity, Session $session, array $options)
     {
         $this->session = $session;
         if (isset($options['method'])) {
@@ -44,7 +45,7 @@ class Form
         isset($options['name']) ? $this->name = $options['name'] : false;
         (isset($options['submit']) && !$options['submit']) ? $this->options['submit'] = false : $this->options['submit'] = true;
 
-        isset($options['action']) ? $this->action = $options['action'] : $this->action = $currentAction;
+        isset($options['action']) ? $this->action = $options['action'] : $this->action = $request->getPathInfo();
         if (isset($options['sanitize']) && !$options['sanitize']) {
             $this->options['sanitize'] = false;
         }
@@ -80,6 +81,8 @@ class Form
     public function addDateTimeInput(string $name, array $options = [])
     {
         $options['type'] = 'datetime';
+        $currentDate = date("Y-m-d\TH:i:s");
+        $options['value'] ?? $options['value'] = $currentDate;
         $this->setData(FormEnums::DATETIME, $name, $options);
     }
 
@@ -107,7 +110,7 @@ class Form
 
         isset($options['id']) ? true :  $options['id'] = $name;
         foreach ($options as $optionName => $option) {
-            if (!in_array($optionName, FormEnums::HIDDEN['attributes'])) {
+            if (!in_array($optionName, FormEnums::SELECT['attributes'])) {
                 continue;
             }
 
@@ -119,11 +122,24 @@ class Form
             $input .= $optionName . "=\"{$option}\" ";
         }
 
+        if (!isset($options['required']) || (isset($options['required']) && true === $options['required'])) {
+            $input .= "required ";
+        }
+
         $input .= ">" . PHP_EOL;
         $input .= '    <option value="">' . ($options['placeholder'] ?? $name) . '</option>' . PHP_EOL;
         foreach ($selection as $item) {
+            $selected = '';
             if (is_array($item) && isset($item['id'])) {
-                $input .= '    <option value="' . $item['id'] . '">' . ($item['placeholder'] ?? $item['id']) . '</option>' . PHP_EOL;
+                if ($options['selected'] && $options['selected'] === $item['id']) {
+                    $selected = 'selected="' . $item['id'] . '"';
+                } elseif (true === $this->session->get('formError') && $formData = $this->session->get('formData')) {
+                    if (array_key_exists($name, $formData)) {
+                        $selected = 'selected="' . $formData[$name]. '"';;
+                    }
+                }
+;
+                $input .= '    <option value="' . $item['id'] . '" ' . $selected . '>' . ($item['placeholder'] ?? $item['id']) . '</option>' . PHP_EOL;
             }
         }
         $input .= '</select>';
@@ -205,6 +221,12 @@ class Form
      */
     protected function setData(array $type, string $name, array $options)
     {
+
+        if (true === $this->session->get('formError') && $formData = $this->session->get('formData')) {
+            if (array_key_exists($name, $formData)) {
+                $options['value'] = $formData[$name];
+            }
+        }
         $input = "<input type='{$type['type']}' name='{$name}' " ;
 
         isset($options['id']) ? true :  $options['id'] = $name;
@@ -280,18 +302,23 @@ class Form
      */
     public function handle(Request $request)
     {
-        if (false !== $currentRequest = $this->validateAndSanitizeRequest($request)) {
+        $this->session->remove('formError');
+        $this->session->remove('formData');
 
+        if (false !== $currentRequest = $this->validateAndSanitizeRequest($request)) {
+            $this->isSubmitted = true;
             foreach ($this->data as $fieldName => $fieldData) {
                 if ($fieldData['sanitize']) {
                     $currentRequest[$fieldName] = htmlspecialchars($currentRequest[$fieldName]);
                 }
 
                 if ((!isset($currentRequest[$fieldName]) || "" == $currentRequest[$fieldName]) && true === $fieldData['required']) {
+                    $this->setFormError($request);
                     return;
                 }
 
                 if (false === $requestField = $this->validateRequestField($fieldData, $currentRequest[$fieldName])) {
+                    $this->setFormError($request);
                     return;
                 }
 
@@ -301,6 +328,7 @@ class Form
                 }
 
                 if (false === $this->validateAndHydrateEntity($fieldName, $fieldData, $requestField)) {
+                    $this->setFormError($request);
                     return;
                 }
 
@@ -310,6 +338,12 @@ class Form
             $this->isValid = true;
 
         }
+    }
+
+    public function setFormError(Request $request)
+    {
+        $this->session->set('formError', true);
+        $this->session->set('formData', $request->request);
     }
 
     /**
@@ -369,7 +403,7 @@ class Form
 
         $fieldType = gettype(StringUtils::changeTypeFromValue($requestField));
 
-        if (isset($fieldData['type']) && 'datetime' === $fieldData['type'] && preg_match('#^(?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}?))$#', $requestField, $match)) {
+        if (isset($fieldData['type']) && 'datetime' === $fieldData['type'] && preg_match('#^(?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}?))$#', $requestField, $match)) {
             $requestField = new \DateTime($match[0]);
             $fieldType = strtolower(get_class($requestField));
         }
@@ -402,5 +436,10 @@ class Form
     public function getData(string $fieldName)
     {
         return \array_key_exists($fieldName, $this->data) ? $this->data[$fieldName]['result'] : null;
+    }
+
+    public function getAllData()
+    {
+        return $this->data;
     }
 }

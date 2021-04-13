@@ -4,21 +4,20 @@
 namespace App\Manager;
 
 
+use App\Repository\PostRepository;
 use Core\database\DatabaseResolver;
 use Core\database\EntityManager;
 use Core\http\exceptions\ForbiddenException;
-use Core\security\Security;
 
 class BlogManager
 {
     private ?EntityManager $em;
     private array $allEntityData = [];
-    private Security $security ;
-
+    private PostRepository $postRepository;
     public function __construct(EntityManager $entityManager = null)
     {
-        $this->security = new Security();
         $this->em = $entityManager ?? DatabaseResolver::instantiateManager();
+        $this->postRepository = new PostRepository();
         $this->allEntityData = $this->em::getAllEntityData();
     }
 
@@ -52,9 +51,62 @@ class BlogManager
         }
 
         $post->setStatus(true);
+        $post->setPath($post->getCategory()->getPath() . '/' . $post->getSlug());
         $postAuthor = $post->getAuthor;
         !isset($postAuthor) ? $post->setAuthor($user) : true;
         $this->em->save($post);
         return $this->em->flush();
     }
+
+    public function validateEditor($form): bool
+    {
+        $header = json_decode($form->getData('header'), true);
+        $content = json_decode($form->getData('content'), true);
+
+        if (empty($header['blocks']) || empty($content['blocks'])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function hydrateListing(string $column, string $order, array $pagination = null): ?array
+    {
+        $posts = $this->postRepository->findAll(['column' => $column, 'order' => $order]);
+        $content = [];
+        $postEntityDataFields = $this->allEntityData['post']['fields'];
+        foreach ($posts as $key => $post) {
+            foreach ($postEntityDataFields as $fieldName => $fieldData) {
+                $method = 'get' . ucfirst($fieldName);
+                $content['items'][$key][$fieldName] = $post->$method();
+            }
+            $publishDate =  $post->getPublishedAt();
+            $content['items'][$key]['publishedAt'] = $publishDate->format("Y-m-d\TH:i:s");
+
+            if ($post->getUpdatedAt()) {
+                $updateDate =  $post->getUpdatedAt();
+                $content['items'][$key]['updatedAt'] = $updateDate->format("Y-m-d\TH:i:s");
+            }
+        }
+        if ($pagination) {
+            $itemsToKeep = [];
+            $content['pages'] = intval(ceil(count($content['items']) / $pagination['limit']));
+            $content['actualPage'] = $pagination['page'];
+            if ($content['actualPage'] > $content['pages'] || $content['actualPage'] < 1) {
+                $content['actualPage'] = 1;
+            }
+            $firstItem = ($content['actualPage'] * $pagination['limit']) - $pagination['limit'];
+            for ($i = $firstItem; $i < $firstItem + $pagination['limit']; $i++) {
+                if ($content['items'][$i]) {
+                    $itemsToKeep[] = $content['items'][$i];
+                }
+            }
+
+            $content['items'] = $itemsToKeep;
+
+        }
+
+        return $content;
+    }
+
 }

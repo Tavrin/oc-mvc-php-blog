@@ -4,6 +4,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Forms\ChangePasswordForm;
 use App\Manager\UserManager;
 use Core\http\Request;
 use Core\http\Response;
@@ -19,11 +20,7 @@ class UserController extends \Core\controller\Controller
     {
         $user = new User();
         $userManager = new UserManager($this->getManager());
-        $passwordForm = $this->createForm($user);
-        $passwordForm->addPasswordInput('oldPassword', ['entity' => false, 'required' => true, 'class' => 'form-control', 'placeholder' => 'Mot de passe actuel']);
-        $passwordForm->addPasswordInput('newPassword', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Nouveau mot de passe', 'fieldName' => 'password', 'hash' => true]);
-        $passwordForm->addPasswordInput('newPasswordConfirm', ['entity' => false, 'required' => true, 'class' => 'form-control', 'label' => 'Confirmation','placeholder' => 'Confirmation de nouveau mot de passe']);
-        $passwordForm->setSubmitValue('accepter', ['class' => 'button-bb-wc']);
+        $passwordForm = new ChangePasswordForm($request, $user, $this->session, []);
 
         $passwordForm->handle($request);
 

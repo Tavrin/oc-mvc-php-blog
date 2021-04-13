@@ -3,8 +3,10 @@
 
 namespace App\Controller\admin;
 
+use App\Forms\EditorForm;
 use App\Manager\BlogManager;
 use App\Repository\CategoryRepository;
+use App\Repository\PostRepository;
 use Core\controller\Controller;
 use Core\http\Request;
 use App\Entity\Post;
@@ -12,9 +14,21 @@ use Core\http\Response;
 
 class BlogController extends Controller
 {
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        $this->getManager()->findAll('post');
+        $query = 1;
+        if ($request->hasQuery('page')) {
+            $query = (int)$request->getQuery('page');
+        }
+
+        $em = $this->getManager();
+        $blogManager = new BlogManager($em);
+
+        $posts = $blogManager->hydrateListing('created_at', 'DESC', ['page' => $query, 'limit' => 5]);
+
+        return $this->render('admin/posts/index.html.twig', [
+            'posts' => $posts
+        ]);
     }
 
     public function showAction()
@@ -28,40 +42,91 @@ class BlogController extends Controller
         $post = new Post();
         $blogManager = new BlogManager($em);
         $selection = $blogManager->getSelection('category', ['placeholder' => 'name']);
+        $content = null;
+        $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'new']);
+        if ($this->session->get('formError') && $formData =$this->session->get('formData')) {
+            if (array_key_exists('header', $formData)) {
+                $content['header'] = $formData['header'];
+            }
 
-        $form = $this->createForm($post, ['name' => 'newPost','submit' => false]);
-        $form->addCss('w-75');
-        $form->addTextInput('title', ['class' => 'form-control js-binder', 'placeholder' => "Titre", 'dataAttributes' => ['type' => 'text', 'target' => 'slug', 'target-attribute' => 'value', 'options' => ['slugify' => true]]]);
-        $form->addTextInput('metaTitle', ['class' => 'form-control', 'placeholder' => "Méta titre"]);
-        $form->addTextInput('metaDescription', ['class' => 'form-control', 'placeholder' => "Méta description"]);
-        $form->addTextInput('slug', ['class' => 'form-control', 'placeholder' => "Slug"]);
-        $form->addSelectInput('category', $selection, ['class' => 'form-control w-75', 'placeholder' => 'choisissez une catégorie', 'label' => 'catégorie :', 'targetField' => 'id']);
-        $form->addDateTimeInput('publishedAt', ['class' => 'form-control', 'placeholder' => "Date de publication"]);
-        $form->addHiddenInput('header', ['sanitize' => false]);
-        $form->addHiddenInput('content', ['sanitize' => false]);
+            if (array_key_exists('content', $formData)) {
+                $content['content'] = $formData['content'];
+            }
+        }
+        $editorForm->handle($request);
 
-        $form->handle($request);
+        if ($editorForm->isSubmitted && $editorForm->isValid) {
 
-        if ($form->isValid) {
+            if (!$blogManager->validateEditor($editorForm)) {
+                $this->session->set('formError', true);
+                $this->session->set('formData', $request->request);
+                $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
+            }
             if ($blogManager->savePost($post, $this->getUser())) {
                 $this->redirect('/admin', ['type' => 'success', 'message' => 'Article publié avec succès']);
             }
 
             $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
+        } elseif ($editorForm->isSubmitted) {
+            $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
         }
 
         return $this->render('blog/new.html.twig', [
-            'form' => $form->renderForm()
+            'form' => $editorForm->renderForm(),
+            'content' => $content ?? null
         ]);
     }
 
-    public function editAction()
+    /**
+     * @throws \Exception
+     */
+    public function editAction(Request $request, string $slug)
     {
+        $redirectPath = $request->getServer('HTTP_REFERER') ?? '/';
+        $em = $this->getManager();
+        $postRepository = new PostRepository($em);
+        $blogManager = new BlogManager($em);
+        if (!$post = $postRepository->findOneBy('slug', $slug)) {
+            $this->redirect($redirectPath, ['type' => 'danger', 'message' => 'l\'article n\'a pas été trouvé en base de données']);
+        }
 
+        $selection = $blogManager->getSelection('category', ['placeholder' => 'name']);
+        $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'edit']);
+
+        $editorForm->handle($request);
+
+        if ($editorForm->isSubmitted && $editorForm->isValid) {
+
+            if (!$blogManager->validateEditor($editorForm)) {
+                $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
+            }
+            if ($blogManager->savePost($post, $this->getUser())) {
+                $this->redirect('/admin', ['type' => 'success', 'message' => 'Article publié avec succès']);
+            }
+
+            $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
+        } elseif ($editorForm->isSubmitted) {
+            $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
+        }
+
+        $content['content'] = $post->getContent();
+        $content['header'] = $post->getHeader();
+        return $this->render('blog/new.html.twig', [
+            'form' => $editorForm->renderForm(),
+            'content' => $content
+        ]);
     }
 
-    public function deleteAction()
+    public function deleteAction(Request $request, string $slug)
     {
+        $redirectPath = $request->getServer('HTTP_REFERER') ?? '/';
+        $em = $this->getManager();
+        $postRepository = new PostRepository();
+        $post = $postRepository->findOneBy('slug', $slug);
 
+        $em->remove($post);
+        $em->flush();
+
+        $this->redirect($redirectPath, ['type' => 'success', 'message' => 'Suppression réussie']);
     }
 }

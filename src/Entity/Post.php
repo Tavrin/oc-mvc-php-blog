@@ -46,6 +46,11 @@ class Post
     private ?string $slug;
 
     /**
+     * @var string|null
+     */
+    private ?string $path;
+
+    /**
      * @var User|null
      */
     private ?User $author = null;
@@ -154,6 +159,16 @@ class Post
     public function setSlug(string $slug)
     {
         $this->slug = $slug;
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(string $path)
+    {
+        $this->path = $path;
     }
 
     public function getAuthor(): ?User

@@ -7,6 +7,7 @@ use Core\database\EntityManager;
 use Core\http\Request;
 use Core\http\Session;
 use Core\security\Security;
+use Core\utils\JsonParser;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Core\http\Response;
@@ -14,7 +15,7 @@ use Core\http\Response;
 class Controller
 {
     protected const TEMPLATES_DIR = ROOT_DIR . '/templates/';
-
+    protected const CONFIG_DIR = ROOT_DIR . '/config/';
     protected Environment $twig;
 
     private ?EntityManager $entityManager;
@@ -65,7 +66,8 @@ class Controller
         if ($this->session->has('user')) {
             $parameters['user'] = $this->session->get('user');
         }
-        
+
+        $parameters['app'] = $this->getConstants();
         $this->setControllerContent($template, $parameters);
 
         $response->setContent($this->renderContent);
@@ -81,6 +83,20 @@ class Controller
     public function getControllerContent()
     {
         return $this->renderContent;
+    }
+
+    public function getConstants(): array
+    {
+        $constants = [];
+        if ($configConstants = JsonParser::parseFile(self::CONFIG_DIR . '/constants.json')) {
+            $constants['userConstants'] = $configConstants;
+        }
+
+        if ($this->request) {
+            $constants['constants']['host'] = $this->request->getHost();
+        }
+
+        return $constants;
     }
 
     protected function getManager(): EntityManager
@@ -122,7 +138,7 @@ class Controller
      */
     protected function createForm(object $entity, array $options = []): Form
     {
-        return new Form($this->request->getPathInfo(), $entity, $this->session, $options);
+        return new Form($this->request, $entity, $this->session, $options);
     }
 
     protected function flashMessage(string $key, string $message)

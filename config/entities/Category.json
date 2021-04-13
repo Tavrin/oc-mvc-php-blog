@@ -14,6 +14,11 @@
                 "fieldName" : "name",
                 "type": "string"
             },
+        "path" :
+        {
+            "fieldName" : "path",
+            "type": "string"
+        },
         "description" :
             {
                 "fieldName" : "description",

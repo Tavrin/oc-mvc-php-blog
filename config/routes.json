@@ -20,6 +20,21 @@
         "controller": "App\\Controller\\admin\\BlogController::newAction"
     },
     {
+        "route": "edit_post",
+        "path": "/admin/posts/{slug}/edit",
+        "controller": "App\\Controller\\admin\\BlogController::editAction"
+    },
+    {
+        "route": "delete_post",
+        "path": "/admin/posts/{slug}/delete",
+        "controller": "App\\Controller\\admin\\BlogController::deleteAction"
+    },
+    {
+        "route": "admin_post_listing",
+        "path": "/admin/posts",
+        "controller": "App\\Controller\\admin\\BlogController::indexAction"
+    },
+    {
         "route": "admin_dashboard",
         "path": "/admin",
         "controller": "App\\Controller\\admin\\IndexController::indexAction"
