@@ -15,7 +15,10 @@ use Core\http\Response;
 
 class BlogController extends Controller
 {
-    public function indexAction(Request $request)
+    private const NEW_POST_LINK = '/admin/posts/new';
+    private const EDIT_POST_LINK = '/admin/posts/edit';
+
+    public function indexAction(Request $request): Response
     {
         $query = 1;
         if ($request->hasQuery('page')) {
@@ -62,17 +65,17 @@ class BlogController extends Controller
             if (!$blogManager->validateEditor($editorForm)) {
                 $this->session->set('formError', true);
                 $this->session->set('formData', $request->request);
-                $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
+                $this->redirect(self::NEW_POST_LINK, ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
 
             if ($blogManager->savePost($post, $this->getUser())) {
                 $this->redirect('/admin', ['type' => 'success', 'message' => 'Article publié avec succès']);
             }
 
-            $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
+            $this->redirect(self::NEW_POST_LINK, ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
 
         } elseif ($editorForm->isSubmitted) {
-            $this->redirect('/admin/posts/new', ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
+            $this->redirect(self::NEW_POST_LINK, ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
         }
 
         $content['action'] = 'new';
@@ -87,7 +90,7 @@ class BlogController extends Controller
     /**
      * @throws \Exception
      */
-    public function editAction(Request $request, string $slug)
+    public function editAction(Request $request, string $slug): Response
     {
         $redirectPath = $request->getServer('HTTP_REFERER') ?? '/';
         $em = $this->getManager();
@@ -105,15 +108,15 @@ class BlogController extends Controller
         if ($editorForm->isSubmitted && $editorForm->isValid) {
 
             if (!$blogManager->validateEditor($editorForm)) {
-                $this->redirect('/admin/posts/edit', ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
+                $this->redirect(self::EDIT_POST_LINK, ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
             if ($blogManager->updatePost($post, $this->getUser())) {
                 $this->redirect('/admin', ['type' => 'success', 'message' => 'Article mis à jour avec succès']);
             }
 
-            $this->redirect('/admin/posts/edit', ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
+            $this->redirect(self::EDIT_POST_LINK, ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
         } elseif ($editorForm->isSubmitted) {
-            $this->redirect('/admin/posts/edit', ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
+            $this->redirect(self::EDIT_POST_LINK, ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
         }
 
         $content['action'] = 'edit';

@@ -325,9 +325,7 @@ class Form
             $this->isSubmitted = true;
 
             foreach ($this->data as $fieldName => $fieldData) {
-                if ($fieldData['sanitize']) {
-                    $currentRequest[$fieldName] = htmlspecialchars($currentRequest[$fieldName]);
-                }
+                $currentRequest[$fieldName] = $this->sanitizeRequest($currentRequest, $fieldData, $fieldName);
 
                 if ((!isset($currentRequest[$fieldName]) || "" == $currentRequest[$fieldName]) && true === $fieldData['required']) {
                     $this->setFormError($request);
@@ -355,6 +353,16 @@ class Form
             $this->isValid = true;
 
         }
+    }
+
+    private function sanitizeRequest($currentRequest, $fieldData, $fieldName)
+    {
+        $currentRequestField = $currentRequest[$fieldName];
+        if ($fieldData['sanitize']) {
+            $currentRequestField = htmlspecialchars($currentRequestField);
+        }
+
+        return $currentRequestField;
     }
 
     public function setFormError(Request $request)

@@ -57,8 +57,9 @@ class BlogManager
 
         $post->setPath($post->getCategory()->getPath() . '/' . $post->getSlug());
 
-        $postAuthor = $post->getAuthor;
-        isset($postAuthor) ?? $post->setAuthor($user);
+        $postAuthor = $post->getAuthor();
+
+        $postAuthor ?? $post->setAuthor($user);
         $this->em->save($post);
         return $this->em->flush();
     }
