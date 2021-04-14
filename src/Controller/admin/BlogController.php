@@ -48,7 +48,7 @@ class BlogController extends Controller
         $selection = $blogManager->getSelection('category', ['placeholder' => 'name']);
 
         $content = null;
-        $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'new']);
+        $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'new', 'wrapperClass' => 'mb-1']);
         if ($this->session->get('formError') && $formData =$this->session->get('formData')) {
             if (array_key_exists('header', $formData)) {
                 $content['item']['header'] = $formData['header'];
@@ -101,7 +101,7 @@ class BlogController extends Controller
         }
 
         $selection = $blogManager->getSelection('category', ['placeholder' => 'name']);
-        $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'edit']);
+        $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'edit', 'wrapperClass' => 'mb-1']);
 
         $editorForm->handle($request);
 

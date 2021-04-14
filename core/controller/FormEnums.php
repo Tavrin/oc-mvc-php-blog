@@ -91,4 +91,27 @@ class FormEnums
             'class'
         ]
     ];
+
+    public const FILE = [
+        'type' => 'file',
+        'attributes' => [
+            'dataAttributes',
+            'required',
+            'value',
+            'id',
+            'class',
+            'accept',
+            'capture',
+            'files',
+            'multiple'
+        ]
+    ];
+
+    public const BOOL_FIELDS = [
+        'readonly',
+        'multiple',
+        'autofocus',
+        'checked',
+        'disabled'
+    ];
 }

@@ -15,25 +15,37 @@ use Core\utils\StringUtils;
 class Form
 {
     protected Session $session;
+
     protected string $method = 'POST';
+
     protected string $name = 'defaultForm';
+
     protected ?string $action = null;
+
     protected array $data = [];
+
     protected string $css = '';
+
     protected object $entity;
+
     protected array $allEntityData = [];
+
     protected ?array $submit = null;
-    protected array $options = [];
+
+    protected array $options = [
+        'enctype' => 'application/x-www-form-urlencoded'
+    ];
+
     public bool $isValid = false;
+
     public bool $isSubmitted = false;
 
     /**
      * Form constructor.
-     * @param string $currentAction
+     * @param \Core\http\Request $request
      * @param object $entity
      * @param Session $session
      * @param array $options
-     * @throws \Exception
      */
     public function __construct(Request $request, object $entity, Session $session, array $options)
     {
@@ -44,6 +56,7 @@ class Form
 
         isset($options['name']) ? $this->name = $options['name'] : false;
         (isset($options['submit']) && !$options['submit']) ? $this->options['submit'] = false : $this->options['submit'] = true;
+        isset($options['wrapperClass']) ? $this->options['wrapperClass'] = $options['wrapperClass'] : $this->options['wrapperClass'] = '';
 
         isset($options['action']) ? $this->action = $options['action'] : $this->action = $request->getPathInfo();
         if (isset($options['sanitize']) && !$options['sanitize']) {
@@ -168,6 +181,13 @@ class Form
         $this->setData(FormEnums::HIDDEN, $name, $options);
     }
 
+    public function addFileInput(string $name, array $options = [])
+    {
+        $options['type'] = FormEnums::FILE['type'];
+        $this->options['enctype'] = 'multipart/form-data';
+        $this->setData(FormEnums::FILE, $name, $options);
+    }
+
     /**
      * @param string $text
      * @param array $options
@@ -197,13 +217,14 @@ class Form
     {
         $token = $this->session->get('csrf-new');
 
-        $render = "<form action='{$this->action}' id='{$this->name}' method='{$this->method}' class='{$this->css}'>" . PHP_EOL;
+        $globalOptions = $this->options;
+        $render = "<form action='{$this->action}' enctype='{$globalOptions['enctype']}' id='{$this->name}' method='{$this->method}' class='{$this->css}'>" . PHP_EOL;
         $render .= "    <input type=\"hidden\"  name=\"csrf\" value=\"{$token}\">" . PHP_EOL;
         foreach ($this->data as $input) {
             if ('hidden' === $input['type']) {
                 $render .= '        ' . $input['render'] . PHP_EOL;
             } else {
-                $render .= '    <div class="mb-1">' . PHP_EOL .
+                $render .= "    <div class='{$globalOptions['wrapperClass']} {$input['wrapperClass']}'>" . PHP_EOL .
                     "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL .
                     '        ' . $input['render'] . '</div>'. PHP_EOL;
             }
@@ -247,7 +268,7 @@ class Form
                 continue;
             }
 
-            if ('readonly' === $optionName) {
+            if (in_array($optionName,FormEnums::BOOL_FIELDS)) {
                 $input .= "{$optionName} ";
                 continue;
             }
@@ -304,6 +325,7 @@ class Form
         isset($options['type']) ? $fieldData['type'] = $options['type'] : false;
         isset($options['placeholder']) ? $fieldData['placeholder'] = $options['placeholder'] : $fieldData['placeholder'] = $name;
         isset($options['label']) ? $fieldData['label'] = $options['label'] : $fieldData['label'] = $fieldData['placeholder'];
+        isset($options['wrapperClass']) ? $fieldData['wrapperClass'] = $options['wrapperClass'] : $fieldData['wrapperClass'] = '';
         isset($options['dataAttributes']) ? $fieldData['dataAttributes'] = $options['dataAttributes'] : $fieldData['dataAttributes'] = null;
         isset($options['property']) ? $fieldData['property'] = $options['property'] : false;
         $fieldData['id'] = $options['id'];
@@ -320,19 +342,29 @@ class Form
         $this->session->remove('formError');
         $this->session->remove('formData');
 
-        if (false !== $currentRequest = $this->validateAndSanitizeRequest($request)) {
+        if (false !== $currentRequest = $this->validateRequest($request)) {
 
             $this->isSubmitted = true;
 
             foreach ($this->data as $fieldName => $fieldData) {
-                $currentRequest[$fieldName] = $this->sanitizeRequest($currentRequest, $fieldData, $fieldName);
+                if ('file' === $fieldData['type']) {
+                    if (null === $newFileData = $this->handleFile($currentRequest->files, $fieldData, $fieldName)) {
+                        $this->setFormError($request);
+                        return;
+                    }
 
-                if ((!isset($currentRequest[$fieldName]) || "" == $currentRequest[$fieldName]) && true === $fieldData['required']) {
+                    $this->data[$fieldName]['result'] = $newFileData;
+                    continue;
+                }
+
+                $currentRequest->request[$fieldName] = $this->sanitizeRequest( $currentRequest->request, $fieldData, $fieldName);
+
+                if ((!isset( $currentRequest->request[$fieldName]) || "" ==  $currentRequest->request[$fieldName]) && true === $fieldData['required']) {
                     $this->setFormError($request);
                     return;
                 }
 
-                if (false === $requestField = $this->validateRequestField($fieldData, $currentRequest[$fieldName])) {
+                if (false === $requestField = $this->validateRequestField($fieldData,  $currentRequest->request[$fieldName])) {
                     $this->setFormError($request);
                     return;
                 }
@@ -355,6 +387,24 @@ class Form
         }
     }
 
+    private function handleFile(array $currentRequest, $fieldData, $fieldName): ?array
+    {
+        if (!is_uploaded_file($currentRequest[$fieldName]['tmp_name'])) {
+            return null;
+        }
+
+        $newFileData['type'] =  mime_content_type($currentRequest[$fieldName]['tmp_name']);
+        $newFileData['name'] = StringUtils::slugify(pathinfo($currentRequest[$fieldName]['name'])['filename']) . '.' . pathinfo($currentRequest[$fieldName]['name'])['extension'];
+        $newFileData['tmp_name'] = $currentRequest[$fieldName]['tmp_name'];
+
+        if (($newFileData['type']) !== $currentRequest[$fieldName]['type']) {
+            return null;
+        }
+
+
+        return $newFileData;
+    }
+
     private function sanitizeRequest($currentRequest, $fieldData, $fieldName)
     {
         $currentRequestField = $currentRequest[$fieldName];
@@ -373,9 +423,9 @@ class Form
 
     /**
      * @param Request $request
-     * @return array|false
+     * @return Request|false
      */
-    private function validateAndSanitizeRequest(Request $request)
+    private function validateRequest(Request $request)
     {
         $oldToken = $this->session->get('csrf-old');
 
@@ -385,11 +435,10 @@ class Form
             return false;
         }
 
-        return $request->request;
+        return $request;
     }
 
     /**
-     * @param string $fieldName
      * @param array $fieldData
      * @param string $requestField
      * @return false|string|null
