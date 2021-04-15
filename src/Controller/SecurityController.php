@@ -7,6 +7,9 @@ namespace App\Controller;
 use App\Email\ResetPasswordEmail;
 use App\Email\VerificationEmail;
 use App\Entity\User;
+use App\Forms\LoginForm;
+use App\Forms\RegisterForm;
+use App\Forms\ResetPasswordForm;
 use App\Manager\UserManager;
 use App\Repository\UserRepository;
 use Core\controller\Form;
@@ -18,23 +21,21 @@ use Ramsey\Uuid\Uuid;
 class SecurityController extends \Core\controller\Controller
 {
     private const LOGIN_PATH = '/login';
+
+    /**
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
     public function register(Request $request): Response
     {
         $user = new User();
         $userManager = new UserManager($this->getManager());
-        $form = $this->createForm($user, ['name' => 'registerform']);
-
-        $form->addTextInput('username', ['class' => 'form-control', 'placeholder' => "Nom d'utilisateur"]);
-        $form->addEmailInput('email', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Email']);
-        $form->addPasswordInput('password', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Mot de passe', 'hash' => true]);
-        $form->setSubmitValue('accepter', ['class' => 'button-bb-wc']);
+        $form = new RegisterForm($request,$user, $this->session, ['name' => 'registerform']);
 
         $form->handle($request);
 
         if ($form->isValid) {
 
             $userManager->newToken($user, 'save');
-
             $email = new VerificationEmail($user);
             $email->send();
 
@@ -68,6 +69,9 @@ class SecurityController extends \Core\controller\Controller
        $this->redirect(self::LOGIN_PATH, ['type' => 'success', 'message' => 'Email validé ! Vous pouvez maintenant vous connecter']);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function login(Request $request): Response
     {
         if ($this->session->has('user')) {
@@ -77,11 +81,8 @@ class SecurityController extends \Core\controller\Controller
         $em = $this->getManager();
         $userManager = new UserManager($em);
         $userTemplate = new User();
-        $form = $this->createForm($userTemplate, ['name' => 'loginform']);
 
-        $form->addEmailInput('email', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Email']);
-        $form->addPasswordInput('password', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Mot de passe']);
-        $form->setSubmitValue('accepter', ['class' => 'button-bb-wc']);
+        $form = new LoginForm($request,$userTemplate, $this->session, ['name' => 'loginform']);
 
         $form->handle($request);
 
@@ -103,6 +104,9 @@ class SecurityController extends \Core\controller\Controller
         ]);
     }
 
+    /**
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
     public function forgotPassword(Request $request): Response
     {
         if ($this->session->has('user')) {
@@ -119,7 +123,7 @@ class SecurityController extends \Core\controller\Controller
         $form->handle($request);
         if ($form->isValid) {
             if (!$user = $userManager->getUserBy($userTemplate, 'email')) {
-                $this->redirect('forgot-password', ['type' => 'danger', 'message' => 'Veuillez réessayer']);
+                $this->redirect('/', ['type' => 'success', 'message' => 'Un email a été envoyé']);
             }
 
             $userManager->newToken($user, 'update');
@@ -134,6 +138,9 @@ class SecurityController extends \Core\controller\Controller
         ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function reset(Request $request): Response
     {
         $em = $this->getManager();
@@ -148,12 +155,7 @@ class SecurityController extends \Core\controller\Controller
         }
 
         $userTemplate = new User();
-        $form = $this->createForm($userTemplate, ['action' => $request->getPathInfo() . '?token=' . $request->getQuery('token')]);
-
-        $form->addPasswordInput('password', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Nouveau mot de passe', 'fieldName' => 'password', 'hash' => true]);
-        $form->addPasswordInput('passwordConfirm', ['entity' => false, 'required' => true, 'class' => 'form-control', 'label' => 'Confirmation','placeholder' => 'Confirmation de nouveau mot de passe']);
-        $form->setSubmitValue('Changer le mot de passe', ['class' => 'button-bb-wc']);
-
+        $form = new ResetPasswordForm($request, $userManager, $this->session, ['action' => $request->getPathInfo() . '?token=' . $request->getQuery('token')]);
         $form->handle($request);
 
         if ($form->isValid) {

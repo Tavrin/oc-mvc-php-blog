@@ -28,7 +28,7 @@ class Post
     /**
      * @var array|null
      */
-    private ?array $readmore;
+    private ?array $readmore = [];
 
     /**
      * @var string|null
@@ -43,17 +43,17 @@ class Post
     /**
      * @var string|null
      */
-    private ?string $listingText;
+    private ?string $slug;
 
     /**
      * @var string|null
      */
-    private ?string $slug;
+    private ?string $path;
 
     /**
-     * @var User
+     * @var User|null
      */
-    private User $author;
+    private ?User $author = null;
 
     /**
      * @var Category|null
@@ -68,7 +68,7 @@ class Post
     /**
      * @var \DateTime|null
      */
-    private ?\DateTime $updatedAt;
+    private ?\DateTime $updatedAt = null;
 
     /**
      * @var bool
@@ -77,6 +77,7 @@ class Post
 
     public function __construct()
     {
+        $this->status = false;
         $this->publishedAt = new \DateTime();
     }
 
@@ -150,16 +151,6 @@ class Post
         $this->metaDescription = $metaDescription;
     }
 
-    public function getListingText(): ?string
-    {
-        return $this->listingText;
-    }
-
-    public function setListingText(?string $listingText)
-    {
-        $this->listingText = $listingText;
-    }
-
     public function getSlug(): ?string
     {
         return $this->slug;
@@ -168,6 +159,16 @@ class Post
     public function setSlug(string $slug)
     {
         $this->slug = $slug;
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(string $path)
+    {
+        $this->path = $path;
     }
 
     public function getAuthor(): ?User

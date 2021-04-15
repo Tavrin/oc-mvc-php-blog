@@ -1,0 +1,41 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block head %}
+    {{ parent() }}
+    {% include 'partials/inc/editor-import.html.twig' %}
+{% endblock %}
+
+{% block header %}
+    {% include 'partials/admin_header.html.twig' %}
+    {% include 'partials/inc/flash.html.twig' %}
+{% endblock %}
+
+
+{% block main %}
+<main class="">
+    <div class="mw-70 m-auto mt-3 mb-3 d-f fd-c">
+        <section id="home-presentation" class="d-f jc-c m-auto pt-3 pb-3 mb-3">
+            <div class="ta-l">
+                <h1 class="fw-600 fs-3-5 lh-3c5">{{ content.title|default('Nouvel article') }}</h1>
+            </div>
+        </section>
+        <section class="d-f fd-c ai-c">
+            <div class="ta-r as-fs pb-2">
+                <a href="/admin/posts" class="m-0-5 button-bb-wc br-5 fw-600">< Revenir aux articles</a>
+            </div>
+            {{ form.render|raw }}
+            <div class="bcg-light2 p-1 br-10 mb-1 w-75">
+                <span class="pb-0-5 d-f jc-sb ai-c"><h4 class="d-ib">Chapo</h4>
+                <i class="fas fa-chevron-up js-toggle" data-type="display" data-target-Id="editorjsChapo" data-options='{"icons":["fa-chevron-up", "fa-chevron-down"]}'></i></span>
+                <div id="editorjsChapo" class="editor bcg-white b-1-s-g br-10" data-button="saveButton" data-target="header" {% if content.item.header %} data-content="{{ content.item.header }}"{% endif %}></div>
+            </div>
+            <div class="bcg-light2 p-1 br-10 w-75">
+                <span class="pb-0-5 d-f jc-sb ai-c"><h4 class="d-ib">Contenu</h4>
+                <i class="fas fa-chevron-up js-toggle" data-type="display" data-target-id="editorjsContent" data-options='{"icons":["fa-chevron-up", "fa-chevron-down"]}'></i></span>
+                <div id="editorjsContent" class="editor bcg-white b-1-s-g br-10" data-button="saveButton" data-target="content" {% if content.item.content %} data-content="{{ content.item.content }}"{% endif %}></div>
+            </div>
+            <button class="m-0-5 button-bb-wc br-5 fw-600 ta-c mw-50 as-c" id="saveButton" data-target="{{ form.name }}">Publier</button>
+        </section>
+    </div>
+</main>
+{% endblock %}

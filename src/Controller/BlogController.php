@@ -24,16 +24,12 @@ class BlogController extends Controller
         $post = new PostRepository($em);
         $posts = $post->findAll();
 
-        $this->flashMessage('success', 'test success');
-        $this->flashMessage('warning', 'test warning');
-        $this->flashMessage('danger', 'test error');
-        $this->flashMessage('aaaa', 'test');
-
-        $this->redirect('/', ['type' => 'success', 'message' => 'test redirect']);
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
         if (empty($posts)) {
             throw new NotFoundException("pas d'article de blog trouvé", 404);
         }
+
+        $content['posts'] = $posts;
 
         return $this->render('blog/index.html.twig',[
             'content' => $content

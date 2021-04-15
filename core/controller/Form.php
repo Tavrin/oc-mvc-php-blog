@@ -16,7 +16,7 @@ class Form
 {
     protected Session $session;
     protected string $method = 'POST';
-    protected string $name = '';
+    protected string $name = 'defaultForm';
     protected ?string $action = null;
     protected array $data = [];
     protected string $css = '';
@@ -25,6 +25,7 @@ class Form
     protected ?array $submit = null;
     protected array $options = [];
     public bool $isValid = false;
+    public bool $isSubmitted = false;
 
     /**
      * Form constructor.
@@ -34,7 +35,7 @@ class Form
      * @param array $options
      * @throws \Exception
      */
-    public function __construct(string $currentAction, object $entity, Session $session, array $options)
+    public function __construct(Request $request, object $entity, Session $session, array $options)
     {
         $this->session = $session;
         if (isset($options['method'])) {
@@ -42,8 +43,9 @@ class Form
         }
 
         isset($options['name']) ? $this->name = $options['name'] : false;
+        (isset($options['submit']) && !$options['submit']) ? $this->options['submit'] = false : $this->options['submit'] = true;
 
-        isset($options['action']) ? $this->action = $options['action'] : $this->action = $currentAction;
+        isset($options['action']) ? $this->action = $options['action'] : $this->action = $request->getPathInfo();
         if (isset($options['sanitize']) && !$options['sanitize']) {
             $this->options['sanitize'] = false;
         }
@@ -79,6 +81,8 @@ class Form
     public function addDateTimeInput(string $name, array $options = [])
     {
         $options['type'] = 'datetime';
+        $currentDate = date("Y-m-d\TH:i:s");
+        $options['value'] ?? $options['value'] = $currentDate;
         $this->setData(FormEnums::DATETIME, $name, $options);
     }
 
@@ -95,14 +99,87 @@ class Form
     }
 
     /**
+     * @param string $name
+     * @param array $selection
+     * @param array $options
+     */
+    public function addSelectInput(string $name, array $selection, array $options = [])
+    {
+        $options['type'] = 'select';
+        $input = "<select name='{$name}' " ;
+
+        isset($options['id']) ? true :  $options['id'] = $name;
+        foreach ($options as $optionName => $option) {
+
+            if (!in_array($optionName, FormEnums::SELECT['attributes'])) {
+                continue;
+            }
+
+            if ('disabled' === $optionName) {
+                $input .= "{$optionName} ";
+                continue;
+            }
+
+            $input .= $optionName . "=\"{$option}\" ";
+        }
+
+        if (!isset($options['required']) || (isset($options['required']) && true === $options['required'])) {
+            $input .= "required ";
+        }
+
+        $input .= ">" . PHP_EOL;
+        $input .= $this->setSelectOptions($name, $selection, $options);
+        $input .= '</select>';
+        $fieldData = $this->setDataOptions($name, $options);
+        $fieldData['render'] = $input;
+        $fieldData['selection'] = $selection;
+        $this->data[$name] = $fieldData;
+
+    }
+
+    private function setSelectOptions(string $name, array $selection, array $options)
+    {
+        $input = '    <option value="">' . ($options['placeholder'] ?? $name) . '</option>' . PHP_EOL;
+        foreach ($selection as $item) {
+            $selected = '';
+            if (is_array($item) && isset($item['id'])) {
+                if ($options['selected'] && $options['selected'] === $item['id']) {
+                    $selected = 'selected="' . $item['id'] . '"';
+                } elseif (true === $this->session->get('formError') && $formData = $this->session->get('formData')) {
+                    if (array_key_exists($name, $formData)) {
+                        $selected = 'selected="' . $formData[$name]. '"';
+                    }
+                }
+
+                $input .= '    <option value="' . $item['id'] . '" ' . $selected . '>' . ($item['placeholder'] ?? $item['id']) . '</option>' . PHP_EOL;
+            }
+        }
+
+        return $input;
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     */
+    public function addHiddenInput(string $name, array $options = [])
+    {
+        $options['type'] = 'hidden';
+        $this->setData(FormEnums::HIDDEN, $name, $options);
+    }
+
+    /**
      * @param string $text
      * @param array $options
      */
     public function setSubmitValue(string $text, array $options = [])
     {
+        if (!$this->options['submit']) {
+            return false;
+        }
+
         $this->submit['value'] = $text;
         isset($options['class']) ? $this->submit['class'] = $options['class'] : $this->submit['class'] = '';
-
     }
 
     /**
@@ -114,28 +191,35 @@ class Form
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function renderForm(): string
+    public function renderForm(): array
     {
         $token = $this->session->get('csrf-new');
 
-        $render = "<form action='{$this->action}' method='{$this->method}' class='{$this->css}'>" . PHP_EOL;
+        $render = "<form action='{$this->action}' id='{$this->name}' method='{$this->method}' class='{$this->css}'>" . PHP_EOL;
         $render .= "    <input type=\"hidden\"  name=\"csrf\" value=\"{$token}\">" . PHP_EOL;
         foreach ($this->data as $input) {
-            $render .= '    <div class="mb-1">' . PHP_EOL .
-            "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL .
-            '        ' . $input['render'] . '</div>'. PHP_EOL;
+            if ('hidden' === $input['type']) {
+                $render .= '        ' . $input['render'] . PHP_EOL;
+            } else {
+                $render .= '    <div class="mb-1">' . PHP_EOL .
+                    "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL .
+                    '        ' . $input['render'] . '</div>'. PHP_EOL;
+            }
         }
         $render .= "    <input type=\"hidden\"  name=\"formName\" value=\"{$this->name}\">" . PHP_EOL;
 
-        if (isset($this->submit)) {
+        if (isset($this->submit) && $this->options['submit']) {
             $render .= "    <input type=\"submit\"  class=\"{$this->submit['class']}\" value=\"{$this->submit['value']}\">" . PHP_EOL;
-        } else {
+        } elseif ($this->options['submit']) {
             $render .= '    <input type="submit" class="" value="Submit">' . PHP_EOL;
         }
-
-        return $render . "</form>";
+        $render .= "</form>";
+        $form['render'] = $render;
+        $form['data'] = $this->data;
+        $form['name'] = $this->name;
+        return $form;
     }
 
     /**
@@ -145,11 +229,21 @@ class Form
      */
     protected function setData(array $type, string $name, array $options)
     {
+
+        if (true === $this->session->get('formError') && $this->session->get('formData') && array_key_exists($name, $this->session->get('formData'))) {
+            $options['value'] = $this->session->get('formData')[$name];
+        }
+
         $input = "<input type='{$type['type']}' name='{$name}' " ;
 
         isset($options['id']) ? true :  $options['id'] = $name;
         foreach ($options as $optionName => $option) {
             if (!in_array($optionName, $type['attributes'])) {
+                continue;
+            }
+
+            if ('dataAttributes' === $optionName) {
+                $input .= $this->setDataAttributes($option);
                 continue;
             }
 
@@ -173,6 +267,21 @@ class Form
         $this->data[$name] = $fieldData;
     }
 
+    private function setDataAttributes($option): string
+    {
+        $input = '';
+        foreach ($option as $attributeName => $dataAttribute) {
+            if (is_array($dataAttribute)) {
+                $dataAttribute = json_encode($dataAttribute);
+                $input .= "data-{$attributeName}={$dataAttribute} ";
+            }
+
+            $input .= "data-{$attributeName}=\"{$dataAttribute}\" ";
+        }
+
+        return $input;
+    }
+
     /**
      * @param $name
      * @param $options
@@ -187,12 +296,15 @@ class Form
         }
 
         $fieldData['result'] = '';
+        isset($options['sanitize']) ? $fieldData['sanitize'] = $options['sanitize'] : $fieldData['sanitize'] = true;
         isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : false;
         isset($options['entity']) ? $fieldData['entity'] = $options['entity'] : $fieldData['entity'] = $this->entity;
+        isset($options['targetField']) ? $fieldData['targetField'] = $options['targetField'] : false;
         isset($options['fieldName']) ? $fieldData['fieldName'] = $options['fieldName'] : $fieldData['fieldName'] = $name;
         isset($options['type']) ? $fieldData['type'] = $options['type'] : false;
         isset($options['placeholder']) ? $fieldData['placeholder'] = $options['placeholder'] : $fieldData['placeholder'] = $name;
         isset($options['label']) ? $fieldData['label'] = $options['label'] : $fieldData['label'] = $fieldData['placeholder'];
+        isset($options['dataAttributes']) ? $fieldData['dataAttributes'] = $options['dataAttributes'] : $fieldData['dataAttributes'] = null;
         isset($options['property']) ? $fieldData['property'] = $options['property'] : false;
         $fieldData['id'] = $options['id'];
 
@@ -205,13 +317,23 @@ class Form
      */
     public function handle(Request $request)
     {
+        $this->session->remove('formError');
+        $this->session->remove('formData');
+
         if (false !== $currentRequest = $this->validateAndSanitizeRequest($request)) {
+
+            $this->isSubmitted = true;
+
             foreach ($this->data as $fieldName => $fieldData) {
+                $currentRequest[$fieldName] = $this->sanitizeRequest($currentRequest, $fieldData, $fieldName);
+
                 if ((!isset($currentRequest[$fieldName]) || "" == $currentRequest[$fieldName]) && true === $fieldData['required']) {
+                    $this->setFormError($request);
                     return;
                 }
 
                 if (false === $requestField = $this->validateRequestField($fieldData, $currentRequest[$fieldName])) {
+                    $this->setFormError($request);
                     return;
                 }
 
@@ -221,6 +343,7 @@ class Form
                 }
 
                 if (false === $this->validateAndHydrateEntity($fieldName, $fieldData, $requestField)) {
+                    $this->setFormError($request);
                     return;
                 }
 
@@ -230,6 +353,22 @@ class Form
             $this->isValid = true;
 
         }
+    }
+
+    private function sanitizeRequest($currentRequest, $fieldData, $fieldName)
+    {
+        $currentRequestField = $currentRequest[$fieldName];
+        if ($fieldData['sanitize']) {
+            $currentRequestField = htmlspecialchars($currentRequestField);
+        }
+
+        return $currentRequestField;
+    }
+
+    public function setFormError(Request $request)
+    {
+        $this->session->set('formError', true);
+        $this->session->set('formData', $request->request);
     }
 
     /**
@@ -246,11 +385,7 @@ class Form
             return false;
         }
 
-        if (isset($this->options['sanitize']) && !$this->options['sanitize']) {
-            return $request->request;
-        }
-
-        return ArrayUtils::sanitizeArray($request->request);
+        return $request->request;
     }
 
     /**
@@ -293,18 +428,29 @@ class Form
 
         $fieldType = gettype(StringUtils::changeTypeFromValue($requestField));
 
-        if (isset($fieldData['type']) && 'datetime' === $fieldData['type'] && preg_match('#^(?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}?))$#', $requestField, $match)) {
+        if (isset($fieldData['type']) && 'datetime' === $fieldData['type'] && preg_match('#^(?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}?))$#', $requestField, $match)) {
             $requestField = new \DateTime($match[0]);
             $fieldType = strtolower(get_class($requestField));
         }
 
-        if ($fieldType !== $this->allEntityData[$entityName][EntityEnums::FIELDS_CATEGORY][$fieldData['fieldName']][EntityEnums::FIELD_TYPE]) {
+        $entityField = $this->allEntityData[$entityName][EntityEnums::FIELDS_CATEGORY][$fieldData['fieldName']];
+
+        if (EntityEnums::TYPE_ASSOCIATION === $entityField[EntityEnums::FIELD_TYPE]) {
+            $repository = new $entityField['repository'];
+            $associatedEntity = $repository->findOneBy($fieldData['targetField'] ?? 'id',$requestField);
+        }
+
+        if ( 'string' === $fieldType) {
+            'text' === $entityField[EntityEnums::FIELD_TYPE] ? $fieldType = 'text' : $fieldType = 'string';
+        }
+
+        if ((EntityEnums::TYPE_ASSOCIATION !== $entityField[EntityEnums::FIELD_TYPE] && $fieldType !== $entityField[EntityEnums::FIELD_TYPE]) ||
+            (EntityEnums::TYPE_ASSOCIATION === $entityField[EntityEnums::FIELD_TYPE] && !isset($associatedEntity))) {
             return false;
         }
 
         $entityMethod = 'set' . ucfirst($fieldData['fieldName']);
-        $fieldData['entity']->$entityMethod($requestField);
-
+        $fieldData['entity']->$entityMethod($associatedEntity ?? $requestField);
         return true;
     }
 
@@ -315,5 +461,10 @@ class Form
     public function getData(string $fieldName)
     {
         return \array_key_exists($fieldName, $this->data) ? $this->data[$fieldName]['result'] : null;
+    }
+
+    public function getAllData()
+    {
+        return $this->data;
     }
 }

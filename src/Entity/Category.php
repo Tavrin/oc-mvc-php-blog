@@ -4,6 +4,8 @@
 namespace App\Entity;
 
 
+use Core\utils\StringUtils;
+
 class Category
 {
     /**
@@ -12,14 +14,19 @@ class Category
     private int $id;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $name;
+    private ?string $name = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $description;
+    private ?string $path = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $description = null;
 
     /**
      * @var \DateTime
@@ -27,13 +34,17 @@ class Category
     private \DateTime $publishedAt;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      */
-    private \DateTime $updatedAt;
+    private ?\DateTime $updatedAt;
 
     public function __construct()
     {
         $this->publishedAt = new \DateTime();
+
+        if ($this->name) {
+            $this->setPath(StringUtils::slugify($this->name));
+        }
     }
 
     public function getId(): ?int
@@ -64,6 +75,16 @@ class Category
     public function setDescription(string $description)
     {
         $this->description = $description;
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(string $path)
+    {
+        $this->path = $path;
     }
 
     public function getPublishedAt(): \DateTime

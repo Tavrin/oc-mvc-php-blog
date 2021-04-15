@@ -39,16 +39,16 @@
               "fieldName" : "meta_description",
               "type": "string"
             },
-        "listingText" :
-            {
-              "fieldName" : "listing_text",
-              "type": "string"
-            },
         "slug" :
             {
               "fieldName" : "slug",
               "type": "string"
             },
+        "path" :
+        {
+            "fieldName" : "path",
+            "type": "string"
+        },
         "author" :
             {
               "fieldName" : "user_id",

@@ -13,6 +13,8 @@ abstract class Repository
 
     protected ?array $entityData;
 
+    protected const SELECT_ALL = 'SELECT * FROM ';
+
     public function __construct(?EntityManager $entityManager, string $entityName)
     {
         if (null == $entityManager) {
@@ -28,7 +30,7 @@ abstract class Repository
 
     public function findBy(string $row, string $criteria, array $order = null, int $limit = null): array
     {
-        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData[EntityEnums::TABLE_NAME] . ' WHERE ' . $row . ' = :criteria');
+        $query = $this->entityManager->getConnection()->prepare(self::SELECT_ALL . $this->entityData[EntityEnums::TABLE_NAME] . ' WHERE ' . $row . ' = :criteria');
         $query->execute([':criteria'=>$criteria]);
         $results = $query->fetchAll();
         return $this->hydrateEntity($results);
@@ -83,9 +85,14 @@ abstract class Repository
         return $entities;
     }
 
-    public function findAll($orderBy = null): array
+    public function findAll(array $orderBy = null): array
     {
-        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData[EntityEnums::TABLE_NAME]);
+        if (isset($orderBy['column'], $orderBy['order']) ) {
+            $query = $this->entityManager->getConnection()->prepare(self::SELECT_ALL . $this->entityData[EntityEnums::TABLE_NAME] . ' ORDER BY ' . $orderBy['column'] . ' ' . $orderBy['order']);
+        } else {
+            $query = $this->entityManager->getConnection()->prepare(self::SELECT_ALL . $this->entityData[EntityEnums::TABLE_NAME]);
+        }
+
         $query->execute();
         $results = $query->fetchAll();
         return $this->hydrateEntity($results);

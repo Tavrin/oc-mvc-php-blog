@@ -2,7 +2,7 @@
 
 let utils = window.utils;
 
-class Header {
+class HeaderNav {
     constructor() {
         this.burger = document.querySelector('#userDropdown');
         this.userLinks = document.querySelector('#userDropdownLinks');
@@ -32,4 +32,4 @@ class Header {
     }
 }
 
-new Header();
+new HeaderNav();
