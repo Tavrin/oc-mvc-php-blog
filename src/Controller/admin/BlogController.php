@@ -107,6 +107,14 @@ class BlogController extends Controller
 
         if ($editorForm->isSubmitted && $editorForm->isValid) {
 
+            $mediaFile = $editorForm->getData('media');
+            dump($mediaFile->getMime());
+
+
+            $mediaFile->put('/uploads/media', $mediaFile->getUploadName());
+
+            dd($mediaFile->getMime());
+
             if (!$blogManager->validateEditor($editorForm)) {
                 $this->redirect(self::EDIT_POST_LINK, ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }

@@ -22,7 +22,7 @@ class EditorForm extends Form
         $this->addTextInput('slug', ['class' => 'form-control', 'placeholder' => "Slug", 'value' => 'edit' === $options['type']? $entity->getSlug() : null]);
         $this->addSelectInput('category', $options['selection'], ['class' => 'form-control w-75', 'placeholder' => 'choisissez une catégorie', 'label' => 'catégorie :', 'targetField' => 'id', 'selected' => 'edit' === $options['type']? $entity->getCategory()->getId() : null]);
         $this->addDateTimeInput('publishedAt', ['class' => 'form-control', 'placeholder' => "Date de publication", 'value' => 'edit' === $options['type']? $entity->getPublishedAt()->format("Y-m-d\TH:i:s") : null]);
-        $this->addFileInput('media', ['class' => 'form-control mt-1 mb-1', 'label' => 'Media', 'entity' => false, 'accept' => 'image/*']);
+        $this->addFileInput('media', ['class' => 'form-control mt-1 mb-1', 'label' => 'Media', 'entity' => false, 'accept' => 'image/*', 'whitelist' => ['mimes' => 'WHITELIST_IMAGE, WHITELIST_VIDEO', 'type' => 'enum']]);
         $this->addHiddenInput('header', ['sanitize' => false]);
         $this->addHiddenInput('content', ['sanitize' => false]);
     }

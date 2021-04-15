@@ -6,6 +6,7 @@ namespace Core\controller;
 
 use Core\database\EntityEnums;
 use Core\database\EntityManager;
+use Core\file\FormFile;
 use Core\http\Request;
 use Core\http\Session;
 use Core\utils\ArrayUtils;
@@ -146,14 +147,13 @@ class Form
         $input .= ">" . PHP_EOL;
         $input .= $this->setSelectOptions($name, $selection, $options);
         $input .= '</select>';
-        $fieldData = $this->setDataOptions($name, $options);
+        $fieldData = $this->setDataOptions($name, $options, FormEnums::SELECT);
         $fieldData['render'] = $input;
         $fieldData['selection'] = $selection;
         $this->data[$name] = $fieldData;
-
     }
 
-    private function setSelectOptions(string $name, array $selection, array $options)
+    private function setSelectOptions(string $name, array $selection, array $options): string
     {
         $input = '    <option value="">' . ($options['placeholder'] ?? $name) . '</option>' . PHP_EOL;
         foreach ($selection as $item) {
@@ -188,6 +188,28 @@ class Form
     {
         $options['type'] = FormEnums::FILE['type'];
         $this->options['enctype'] = 'multipart/form-data';
+        if ($options['whitelist']) {
+            if (!$options['whitelist']['type'] || ('enum' !== $options['whitelist']['type']  && 'manual' !== $options['whitelist']['type'] )) {
+                throw new \LogicException('A whitelist needs a type [enum] or [manual]');
+            } elseif (!$options['whitelist']['mimes']) {
+                throw new \LogicException('A whitelist needs mime types');
+            }
+
+            if ('enum' === $options['whitelist']['type']) {
+                $mimes = explode(',', $options['whitelist']['mimes']);
+                foreach ($mimes as $mime) {
+                    $mime = trim($mime);
+                    if (!FormEnums::hasWhiteList($mime)) {
+                        throw new \LogicException('whitelist type [' . $mime . '] is not in the enums');
+                    }
+                }
+            }
+
+        } else {
+            $options['whitelist'] = false;
+        }
+
+        $options['whitelist'] ?? $options['whitelist'] = false;
         $this->setData(FormEnums::FILE, $name, $options);
     }
 
@@ -286,7 +308,7 @@ class Form
 
         $input .= ">";
 
-        $fieldData = $this->setDataOptions($name, $options);
+        $fieldData = $this->setDataOptions($name, $options, $type);
         $fieldData['render'] = $input;
         $this->data[$name] = $fieldData;
     }
@@ -311,7 +333,7 @@ class Form
      * @param $options
      * @return array
      */
-    private function setDataOptions($name, $options): array
+    private function setDataOptions($name, $options, $type): array
     {
         if (isset($options['required']) && false === $options['required']) {
             $fieldData['required'] = false;
@@ -320,6 +342,11 @@ class Form
         }
 
         $fieldData['result'] = '';
+
+        if ('file' === $type['type']) {
+            $fieldData['whitelist'] = $options['whitelist'];
+        }
+
         isset($options['sanitize']) ? $fieldData['sanitize'] = $options['sanitize'] : $fieldData['sanitize'] = true;
         isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : false;
         isset($options['entity']) ? $fieldData['entity'] = $options['entity'] : $fieldData['entity'] = $this->entity;
@@ -348,6 +375,7 @@ class Form
         if (false !== $currentRequest = $this->validateRequest($request)) {
 
             $this->isSubmitted = true;
+            $filesArray = [];
 
             foreach ($this->data as $fieldName => $fieldData) {
                 if ('file' === $fieldData['type']) {
@@ -356,7 +384,7 @@ class Form
                         return;
                     }
 
-                    $this->data[$fieldName]['result'] = $newFileData;
+                    $filesArray[$fieldName] = $newFileData;
                     continue;
                 }
 
@@ -385,6 +413,10 @@ class Form
                 $this->data[$fieldName]['result'] = $requestField;
             }
 
+            foreach ($filesArray as $name => $data) {
+                $this->data[$name]['result'] = new FormFile($data['tmp_name'], $this->data, $data['name'], $data['type']);
+            }
+
             $this->isValid = true;
 
         }
@@ -396,9 +428,32 @@ class Form
             return null;
         }
 
-        $newFileData['type'] =  mime_content_type($currentRequest[$fieldName]['tmp_name']);
-        $newFileData['name'] = StringUtils::slugify(pathinfo($currentRequest[$fieldName]['name'])['filename']) . '.' . pathinfo($currentRequest[$fieldName]['name'])['extension'];
-        $newFileData['tmp_name'] = $currentRequest[$fieldName]['tmp_name'];
+        $newFileData = $currentRequest[$fieldName];
+        $newFileData['type'] =  mime_content_type($newFileData['tmp_name']);
+        $newFileData['name'] = StringUtils::slugify(pathinfo($newFileData['name'])['filename']) . '.' . pathinfo($newFileData['name'])['extension'];
+
+        if ($fieldData['whitelist']) {
+            if ('manual' === $fieldData['whitelist']['type']) {
+                $mimes = explode(',', trim($fieldData['whitelist']['mimes']));
+                if (!in_array($newFileData['type'], $mimes)) {
+                    return null;
+                }
+            } elseif ('enum' === $fieldData['whitelist']['type']) {
+                $mimes = explode(',', strtoupper($fieldData['whitelist']['mimes']));
+                $totalMimes = [];
+                foreach ($mimes as $mime) {
+                    $mime = trim($mime);
+                    $formEnumTypes = FormEnums::getWhitelist($mime);
+                    foreach ($formEnumTypes as $formEnumType) {
+                        $totalMimes[] = $formEnumType;
+                    }
+                }
+
+                if (!in_array($newFileData['type'], $totalMimes)) {
+                    return null;
+                }
+            }
+        }
 
         if (($newFileData['type']) !== $currentRequest[$fieldName]['type']) {
             return null;

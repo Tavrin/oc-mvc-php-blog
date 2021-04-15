@@ -63,7 +63,7 @@ class Security
 
     public function verifyLoggedUser(Kernel $kernel)
     {
-        if( !isset($kernel->entityManager) || !isset($this->user)) {
+        if (!isset($kernel->entityManager) || !isset($this->user)) {
             return;
         }
 
