@@ -135,6 +135,7 @@ class Controller
     /**
      * @param object $entity
      * @param array $options
+     * @return Form
      */
     protected function createForm(object $entity, array $options = []): Form
     {

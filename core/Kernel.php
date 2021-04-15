@@ -15,6 +15,9 @@ use Core\controller\ControllerResolver;
 use Core\controller\ArgumentsResolver;
 use Core\routing\Router;
 use Core\utils\JsonParser;
+use Exception;
+use RuntimeException;
+use Throwable;
 
 
 /**
@@ -45,6 +48,8 @@ class Kernel
      */
     protected ArgumentsResolver $argumentResolver;
 
+    private ?Request $request = null;
+
     public function __construct()
     {
         $this->setServices();
@@ -64,7 +69,7 @@ class Kernel
             $this->argumentResolver = new ArgumentsResolver();
             $this->entityManager = DatabaseResolver::instantiateManager();
             $this->controllerResolver = new ControllerResolver();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->throwResponse($e);
         }
 
@@ -86,9 +91,10 @@ class Kernel
      */
     public function handleRequest(Request $request):Response
     {
+        $this->request = $request;
         try {
             return $this->route($request);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->throwResponse($e);
         }
     }
@@ -112,16 +118,21 @@ class Kernel
         $response = $controller(...$arguments);
 
         if (!$response instanceof Response) {
-            throw new \RuntimeException(sprintf('Mauvaise réponse'), 500);
+            throw new RuntimeException(sprintf('Mauvaise réponse'), 500);
         }
 
         return $response;
     }
 
-    public function throwResponse(\Throwable $e)
+    public function throwResponse(Throwable $e)
     {
-        $controller = Router::matchError($e);
-        $controller = ControllerResolver::createController($controller);
+        $controller = Router::matchError();
+        if (!$this->request) {
+            $this->request = Request::create();
+        }
+
+        $options['entityManager'] = false;
+        $controller = ControllerResolver::createController($controller, $this->request, $this->entityManager);
         $message = $e->getMessage();
         $code = $e->getCode();
         $controllerResponse = $controller($e, $message, $code);

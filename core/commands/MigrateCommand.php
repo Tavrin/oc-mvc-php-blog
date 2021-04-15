@@ -3,6 +3,7 @@
 
 namespace Core\commands;
 
+use PDOException;
 use function PHPUnit\Framework\assertInstanceOf;
 
 class MigrateCommand extends Command
@@ -37,7 +38,7 @@ class MigrateCommand extends Command
         $instantiatedClass = new $class();
         $result = $instantiatedClass->getSQL();
 
-        if ($result instanceof \PDOException) {
+        if ($result instanceof PDOException) {
             echo 'Une erreur est survenue durant la migration: ' . $result->getMessage() . PHP_EOL;
             exit();
         } else {

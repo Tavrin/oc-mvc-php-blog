@@ -6,6 +6,8 @@ namespace Core\controller;
 use Core\controller\resolvers\RequestAttributeResolver;
 use Core\controller\resolvers\RequestResolver;
 use Core\http\Request;
+use ReflectionMethod;
+use function is_array;
 
 class ArgumentsResolver
 {
@@ -42,8 +44,8 @@ class ArgumentsResolver
     {
         $arguments = [];
 
-        if (\is_array($controller)) {
-            $reflection = new \ReflectionMethod($controller[0], $controller[1]);
+        if (is_array($controller)) {
+            $reflection = new ReflectionMethod($controller[0], $controller[1]);
 
             foreach ($reflection->getParameters() as $key => $parameter) {
                 $arguments[$key]['name'] = $parameter->getName();

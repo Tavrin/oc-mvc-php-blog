@@ -5,17 +5,18 @@ namespace App\Controller;
 
 use Core\controller\Controller;
 use Core\http\Response;
+use Exception;
 
 
 class ErrorController extends Controller
 {
     /**
-     * @param \Exception|null $e
+     * @param Exception|null $e
      * @param string|null $message
      * @param null $code
      * @return Response
      */
-    public function indexAction(\Exception $e = null, string $message = null,  $code = null):Response
+    public function indexAction(Exception $e = null, string $message = null, $code = null):Response
     {
         $content['title'] = "Page d'erreur";
 

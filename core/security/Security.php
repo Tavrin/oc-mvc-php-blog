@@ -6,6 +6,7 @@ namespace Core\security;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Core\http\Session;
+use Core\Kernel;
 use Ramsey\Uuid\Uuid;
 
 
@@ -13,12 +14,12 @@ class Security
 {
     protected Session $session;
     private ?User $user = null;
-    private UserRepository $userRepository;
+    private ?UserRepository $userRepository;
 
     public function __construct()
     {
         $this->session = new Session();
-        $this->userRepository = new UserRepository();
+        $this->userRepository = null;
         $this->session->start();
         $this->setUser();
     }
@@ -60,11 +61,13 @@ class Security
         return false;
     }
 
-    public function verifyLoggedUser()
+    public function verifyLoggedUser(Kernel $kernel)
     {
-        if (!isset($this->user)) {
+        if( !isset($kernel->entityManager) || !isset($this->user)) {
             return;
         }
+
+        $this->userRepository = new UserRepository();
 
         if (null === $entityUser = $this->userRepository->findOneBy('email', $this->user->getEmail())) {
             $this->session->remove('user');

@@ -11,6 +11,9 @@ use Core\http\Session;
 use Core\utils\ArrayUtils;
 use Core\utils\ClassUtils;
 use Core\utils\StringUtils;
+use DateTime;
+use Exception;
+use function array_key_exists;
 
 class Form
 {
@@ -195,7 +198,7 @@ class Form
     public function setSubmitValue(string $text, array $options = [])
     {
         if (!$this->options['submit']) {
-            return false;
+            return;
         }
 
         $this->submit['value'] = $text;
@@ -335,7 +338,7 @@ class Form
 
     /**
      * @param Request $request
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(Request $request)
     {
@@ -466,7 +469,7 @@ class Form
      * @param array $fieldData
      * @param string $requestField
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     private function validateAndHydrateEntity(string $fieldName, array $fieldData, string $requestField): bool
     {
@@ -478,7 +481,7 @@ class Form
         $fieldType = gettype(StringUtils::changeTypeFromValue($requestField));
 
         if (isset($fieldData['type']) && 'datetime' === $fieldData['type'] && preg_match('#^(?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}?))$#', $requestField, $match)) {
-            $requestField = new \DateTime($match[0]);
+            $requestField = new DateTime($match[0]);
             $fieldType = strtolower(get_class($requestField));
         }
 
@@ -509,7 +512,7 @@ class Form
      */
     public function getData(string $fieldName)
     {
-        return \array_key_exists($fieldName, $this->data) ? $this->data[$fieldName]['result'] : null;
+        return array_key_exists($fieldName, $this->data) ? $this->data[$fieldName]['result'] : null;
     }
 
     public function getAllData()
