@@ -16,7 +16,6 @@ use Core\http\Response;
 class BlogController extends Controller
 {
     private const NEW_POST_LINK = '/admin/posts/new';
-    private const EDIT_POST_LINK = '/admin/posts/edit';
 
     public function indexAction(Request $request): Response
     {
@@ -101,30 +100,25 @@ class BlogController extends Controller
         }
 
         $selection = $blogManager->getSelection('category', ['placeholder' => 'name']);
-        $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'edit', 'wrapperClass' => 'mb-1']);
+        $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'edit', 'wrapperClass' => 'mb-1', 'errorClass' => 'form-control-error']);
 
         $editorForm->handle($request);
 
         if ($editorForm->isSubmitted && $editorForm->isValid) {
 
             $mediaFile = $editorForm->getData('media');
-            dump($mediaFile->getMime());
-
-
             $mediaFile->put('/uploads/media', $mediaFile->getUploadName());
 
-            dd($mediaFile->getMime());
-
             if (!$blogManager->validateEditor($editorForm)) {
-                $this->redirect(self::EDIT_POST_LINK, ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
+                $this->redirect("/admin/posts/{$slug}/edit", ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
             if ($blogManager->updatePost($post, $this->getUser())) {
                 $this->redirect('/admin', ['type' => 'success', 'message' => 'Article mis à jour avec succès']);
             }
 
-            $this->redirect(self::EDIT_POST_LINK, ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
+            $this->redirect("/admin/posts/{$slug}/edit", ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
         } elseif ($editorForm->isSubmitted) {
-            $this->redirect(self::EDIT_POST_LINK, ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
+            $this->redirect("/admin/posts/{$slug}/edit", ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
         }
 
         $content['action'] = 'edit';

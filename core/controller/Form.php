@@ -7,6 +7,7 @@ namespace Core\controller;
 use Core\database\EntityEnums;
 use Core\database\EntityManager;
 use Core\file\FormFile;
+use Core\FormHandleException;
 use Core\http\Request;
 use Core\http\Session;
 use Core\utils\ArrayUtils;
@@ -44,6 +45,8 @@ class Form
 
     public bool $isSubmitted = false;
 
+    public ?array $errors = null;
+
     /**
      * Form constructor.
      * @param \Core\http\Request $request
@@ -61,6 +64,7 @@ class Form
         isset($options['name']) ? $this->name = $options['name'] : false;
         (isset($options['submit']) && !$options['submit']) ? $this->options['submit'] = false : $this->options['submit'] = true;
         isset($options['wrapperClass']) ? $this->options['wrapperClass'] = $options['wrapperClass'] : $this->options['wrapperClass'] = '';
+        isset($options['errorClass']) ? $this->options['errorClass'] = $options['errorClass'] : $this->options['errorClass'] = null;
 
         isset($options['action']) ? $this->action = $options['action'] : $this->action = $request->getPathInfo();
         if (isset($options['sanitize']) && !$options['sanitize']) {
@@ -75,52 +79,58 @@ class Form
      * @param string $name
      * @param array $options
      */
-    public function addTextInput(string $name, array $options = [])
+    public function addTextInput(string $name, array $options = []): Form
     {
         $options['type'] = 'text';
         $this->setData(FormEnums::TEXT, $name, $options);
+        return $this;
     }
 
     /**
      * @param string $name
      * @param array $options
      */
-    public function addEmailInput(string $name, array $options = [])
+    public function addEmailInput(string $name, array $options = []): Form
     {
         $options['type'] = 'email';
         $this->setData(FormEnums::EMAIL, $name, $options);
+        return $this;
     }
 
     /**
      * @param string $name
      * @param array $options
+     * @return $this
      */
-    public function addDateTimeInput(string $name, array $options = [])
+    public function addDateTimeInput(string $name, array $options = []): Form
     {
         $options['type'] = 'datetime';
         $currentDate = date("Y-m-d\TH:i:s");
         $options['value'] ?? $options['value'] = $currentDate;
         $this->setData(FormEnums::DATETIME, $name, $options);
+        return $this;
     }
-
 
 
     /**
      * @param string $name
      * @param array $options
+     * @return $this
      */
-    public function addPasswordInput(string $name, array $options = [])
+    public function addPasswordInput(string $name, array $options = []): Form
     {
         $options['type'] = 'password';
         $this->setData(FormEnums::PASSWORD, $name, $options);
+        return $this;
     }
 
     /**
      * @param string $name
      * @param array $selection
      * @param array $options
+     * @return $this
      */
-    public function addSelectInput(string $name, array $selection, array $options = [])
+    public function addSelectInput(string $name, array $selection, array $options = []): Form
     {
         $options['type'] = 'select';
         $input = "<select name='{$name}' " ;
@@ -151,6 +161,8 @@ class Form
         $fieldData['render'] = $input;
         $fieldData['selection'] = $selection;
         $this->data[$name] = $fieldData;
+
+        return $this;
     }
 
     private function setSelectOptions(string $name, array $selection, array $options): string
@@ -177,14 +189,22 @@ class Form
     /**
      * @param string $name
      * @param array $options
+     * @return $this
      */
-    public function addHiddenInput(string $name, array $options = [])
+    public function addHiddenInput(string $name, array $options = []): Form
     {
         $options['type'] = 'hidden';
         $this->setData(FormEnums::HIDDEN, $name, $options);
+
+         return $this;
     }
 
-    public function addFileInput(string $name, array $options = [])
+    /**
+     * @param string $name
+     * @param array $options
+     * @return $this
+     */
+    public function addFileInput(string $name, array $options = []): Form
     {
         $options['type'] = FormEnums::FILE['type'];
         $this->options['enctype'] = 'multipart/form-data';
@@ -211,28 +231,36 @@ class Form
 
         $options['whitelist'] ?? $options['whitelist'] = false;
         $this->setData(FormEnums::FILE, $name, $options);
+
+        return $this;
     }
 
     /**
      * @param string $text
      * @param array $options
+     * @return $this|null
      */
-    public function setSubmitValue(string $text, array $options = [])
+    public function setSubmitValue(string $text, array $options = []): ?Form
     {
         if (!$this->options['submit']) {
-            return;
+            return null;
         }
 
         $this->submit['value'] = $text;
         isset($options['class']) ? $this->submit['class'] = $options['class'] : $this->submit['class'] = '';
+
+        return $this;
     }
 
     /**
      * @param string $css
+     * @return $this
      */
-    public function addCss(string $css)
+    public function addCss(string $css): Form
     {
         $this->css .= $css . ' ';
+
+        return $this;
     }
 
     /**
@@ -245,6 +273,8 @@ class Form
         $globalOptions = $this->options;
         $render = "<form action='{$this->action}' enctype='{$globalOptions['enctype']}' id='{$this->name}' method='{$this->method}' class='{$this->css}'>" . PHP_EOL;
         $render .= "    <input type=\"hidden\"  name=\"csrf\" value=\"{$token}\">" . PHP_EOL;
+
+        /** Render each field */
         foreach ($this->data as $input) {
             if ('hidden' === $input['type']) {
                 $render .= '        ' . $input['render'] . PHP_EOL;
@@ -254,8 +284,10 @@ class Form
                     '        ' . $input['render'] . '</div>'. PHP_EOL;
             }
         }
+
         $render .= "    <input type=\"hidden\"  name=\"formName\" value=\"{$this->name}\">" . PHP_EOL;
 
+        /** Submit button */
         if (isset($this->submit) && $this->options['submit']) {
             $render .= "    <input type=\"submit\"  class=\"{$this->submit['class']}\" value=\"{$this->submit['value']}\">" . PHP_EOL;
         } elseif ($this->options['submit']) {
@@ -273,16 +305,18 @@ class Form
      * @param string $name
      * @param array $options
      */
-    protected function setData(array $type, string $name, array $options)
+    protected function  setData(array $type, string $name, array $options)
     {
 
         if (true === $this->session->get('formError') && $this->session->get('formData') && array_key_exists($name, $this->session->get('formData'))) {
-            $options['value'] = $this->session->get('formData')[$name];
+            $formData = $this->session->get('formData');
+            $options['value'] = $formData[$name]['result'];
+            $options['error'] = ['status' => $formData[$name]['status'], 'error' => $formData[$name]['error']];
         }
 
         $input = "<input type='{$type['type']}' name='{$name}' " ;
 
-        isset($options['id']) ? true :  $options['id'] = $name;
+        $options['id'] ??  $options['id'] = $name;
         foreach ($options as $optionName => $option) {
             if (!in_array($optionName, $type['attributes'])) {
                 continue;
@@ -291,6 +325,10 @@ class Form
             if ('dataAttributes' === $optionName) {
                 $input .= $this->setDataAttributes($option);
                 continue;
+            }
+
+            if ($options['error'] && 'class' === $optionName && true === $options['error']['status'] && ($this->options['errorClass'] || $options['errorClass'])) {
+                $option .= ' ' . $this->options['errorClass']?? '' . $options['errorClass']?? '';
             }
 
             if (in_array($optionName,FormEnums::BOOL_FIELDS)) {
@@ -347,6 +385,7 @@ class Form
             $fieldData['whitelist'] = $options['whitelist'];
         }
 
+        isset($options['error']) ? $fieldData['error'] = $options['error'] : $fieldData['error'] = null;
         isset($options['sanitize']) ? $fieldData['sanitize'] = $options['sanitize'] : $fieldData['sanitize'] = true;
         isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : false;
         isset($options['entity']) ? $fieldData['entity'] = $options['entity'] : $fieldData['entity'] = $this->entity;
@@ -379,9 +418,9 @@ class Form
 
             foreach ($this->data as $fieldName => $fieldData) {
                 if ('file' === $fieldData['type']) {
-                    if (null === $newFileData = $this->handleFile($currentRequest->files, $fieldData, $fieldName)) {
-                        $this->setFormError($request);
-                        return;
+                    if (null === $newFileData = $this->handleFile($currentRequest->files[$fieldName], $fieldData)) {
+                        $this->errors[$fieldName] = ['error' => new FormHandleException($fieldData['type'], $fieldName, 'error during the request\'s file handling'), 'status' => true, 'result' => $currentRequest->files[$fieldName]];
+                        continue;
                     }
 
                     $filesArray[$fieldName] = $newFileData;
@@ -391,13 +430,13 @@ class Form
                 $currentRequest->request[$fieldName] = $this->sanitizeRequest( $currentRequest->request, $fieldData, $fieldName);
 
                 if ((!isset( $currentRequest->request[$fieldName]) || "" ==  $currentRequest->request[$fieldName]) && true === $fieldData['required']) {
-                    $this->setFormError($request);
-                    return;
+                    $this->errors[$fieldName] = ['error' => new FormHandleException($fieldData['type'], $fieldName, "Field ${fieldName} is missing from the request and is required"), 'status' => true, 'result' => $currentRequest->request[$fieldName] ?? ''];
+                    continue;
                 }
 
                 if (false === $requestField = $this->validateRequestField($fieldData,  $currentRequest->request[$fieldName])) {
-                    $this->setFormError($request);
-                    return;
+                    $this->errors[$fieldName] = ['error' => new FormHandleException($fieldData['type'], $fieldName, "Field ${fieldName} is invalid"), 'status' => true, 'result' => $requestField];
+                    continue;
                 }
 
                 if (false === $fieldData['entity']) {
@@ -406,11 +445,16 @@ class Form
                 }
 
                 if (false === $this->validateAndHydrateEntity($fieldName, $fieldData, $requestField)) {
-                    $this->setFormError($request);
-                    return;
+                    $this->errors[$fieldName]= ['error' => new FormHandleException($fieldData['type'], $fieldName, "Field ${fieldName} is not a valid entity property"), 'status' => true, 'result' => $requestField];
+                    continue;
                 }
 
                 $this->data[$fieldName]['result'] = $requestField;
+            }
+
+            if ($this->errors) {
+                $this->setFormError();
+                return;
             }
 
             foreach ($filesArray as $name => $data) {
@@ -422,13 +466,13 @@ class Form
         }
     }
 
-    private function handleFile(array $currentRequest, $fieldData, $fieldName): ?array
+    private function handleFile(array $currentField, $fieldData): ?array
     {
-        if (!is_uploaded_file($currentRequest[$fieldName]['tmp_name'])) {
+        if (!is_uploaded_file($currentField['tmp_name'])) {
             return null;
         }
 
-        $newFileData = $currentRequest[$fieldName];
+        $newFileData = $currentField;
         $newFileData['type'] =  mime_content_type($newFileData['tmp_name']);
         $newFileData['name'] = StringUtils::slugify(pathinfo($newFileData['name'])['filename']) . '.' . pathinfo($newFileData['name'])['extension'];
 
@@ -455,7 +499,7 @@ class Form
             }
         }
 
-        if (($newFileData['type']) !== $currentRequest[$fieldName]['type']) {
+        if ($newFileData['type'] !== $currentField['type'] || mb_strlen($newFileData['name'] > 250) || 0 === $newFileData['size']) {
             return null;
         }
 
@@ -473,10 +517,16 @@ class Form
         return $currentRequestField;
     }
 
-    public function setFormError(Request $request)
+    public function setFormError()
     {
+        foreach ($this->data as $fieldName => $fieldData) {
+            if (!array_key_exists($fieldName, $this->errors)) {
+                $this->errors[$fieldName] = ['result' => $fieldData['result'], 'status' => false, 'error' => null];
+            }
+        }
+
         $this->session->set('formError', true);
-        $this->session->set('formData', $request->request);
+        $this->session->set('formData', $this->errors);
     }
 
     /**
