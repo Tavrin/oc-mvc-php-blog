@@ -10,7 +10,7 @@
         "controller": "App\\Controller\\BlogController::indexAction"
     },
     {
-        "route": "blog_show",
+        "route": "blog_category",
         "path": "/blog/{category}",
         "controller": "App\\Controller\\BlogController::categoryAction"
     },

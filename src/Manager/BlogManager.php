@@ -4,10 +4,12 @@
 namespace App\Manager;
 
 use App\Entity\Post;
+use App\Repository\CategoryRepository;
 use App\Repository\PostRepository;
 use Core\database\DatabaseResolver;
 use Core\database\EntityManager;
 use Core\http\exceptions\ForbiddenException;
+use Core\http\exceptions\NotFoundException;
 
 
 class BlogManager
@@ -86,9 +88,18 @@ class BlogManager
         return true;
     }
 
-    public function hydrateListing(string $column, string $order, array $pagination = null): ?array
+    public function hydrateListing(string $column, string $order, array $pagination = null, string $category = null): ?array
     {
-        $posts = $this->postRepository->findAll(['column' => $column, 'order' => $order]);
+        if ($category) {
+            $categoryRepo = new CategoryRepository($this->em);
+            if (!$foundCategory = $categoryRepo->findOneBy('path', $category)) {
+                throw new NotFoundException('The category doesn\'t exist', 404);
+            }
+            $posts = $this->postRepository->findBy('category_id', $foundCategory->getId(), ['column' => $column, 'order' => $order]);
+        } else {
+            $posts = $this->postRepository->findAll(['column' => $column, 'order' => $order]);
+        }
+
         $content = [];
         $postEntityDataFields = $this->allEntityData['post']['fields'];
         foreach ($posts as $key => $post) {
@@ -114,7 +125,7 @@ class BlogManager
             }
             $firstItem = ($content['actualPage'] * $pagination['limit']) - $pagination['limit'];
             for ($i = $firstItem; $i < $firstItem + $pagination['limit']; $i++) {
-                if ($content['items'][$i]) {
+                if (isset($content['items'][$i])) {
                     $itemsToKeep[] = $content['items'][$i];
                 }
             }

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Entity\User;
+use App\Manager\BlogManager;
 use Core\controller\Controller;
 use Core\controller\Form;
 use Core\database\EntityManager;
@@ -21,8 +22,13 @@ class BlogController extends Controller
     {
         $em = $this->getManager();
 
-        $post = new PostRepository($em);
-        $posts = $post->findAll();
+        $query = 1;
+        if ($request->hasQuery('page')) {
+            $query = (int)$request->getQuery('page');
+        }
+
+        $blogManager = new BlogManager($this->getManager());
+        $posts = $blogManager->hydrateListing('created_at', 'DESC', ['page' => $query, 'limit' => 5]);
 
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
         if (empty($posts)) {
@@ -30,6 +36,23 @@ class BlogController extends Controller
         }
 
         $content['posts'] = $posts;
+
+        return $this->render('blog/index.html.twig',[
+            'content' => $content
+        ]);
+    }
+
+    public function categoryAction(Request $request, string $category): Response
+    {
+        $query = 1;
+        if ($request->hasQuery('page')) {
+            $query = (int)$request->getQuery('page');
+        }
+
+        $blogManager = new BlogManager($this->getManager());
+        $posts = $blogManager->hydrateListing('created_at', 'DESC', ['page' => $query, 'limit' => 5], $category);
+        $content['posts'] = $posts;
+        $content['breadcrumb'] = $request->getAttribute('breadcrumb');
 
         return $this->render('blog/index.html.twig',[
             'content' => $content

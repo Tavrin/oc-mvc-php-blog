@@ -30,7 +30,11 @@ abstract class Repository
 
     public function findBy(string $row, string $criteria, array $order = null, int $limit = null): array
     {
-        $query = $this->entityManager->getConnection()->prepare(self::SELECT_ALL . $this->entityData[EntityEnums::TABLE_NAME] . ' WHERE ' . $row . ' = :criteria');
+        if (isset($order['column'], $order['order']) ) {
+            $query = $this->entityManager->getConnection()->prepare(self::SELECT_ALL . $this->entityData[EntityEnums::TABLE_NAME] . ' WHERE ' . $row . ' = :criteria' . ' ORDER BY ' . $order['column'] . ' ' . $order['order']);
+        } else {
+            $query = $this->entityManager->getConnection()->prepare(self::SELECT_ALL . $this->entityData[EntityEnums::TABLE_NAME] . ' WHERE ' . $row . ' = :criteria');
+        }
         $query->execute([':criteria'=>$criteria]);
         $results = $query->fetchAll();
         return $this->hydrateEntity($results);
