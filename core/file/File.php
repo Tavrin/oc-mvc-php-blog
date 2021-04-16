@@ -16,7 +16,7 @@ class File extends \SplFileInfo
     public function getName()
     {}
 
-    public function put(string $path, string $name = null)
+    public function put(string $path, string $name = null): string
     {
         $targetPath = $this->getTargetPath($path, $name);
         rename($this->getPathname(), $targetPath);

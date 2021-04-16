@@ -6,6 +6,7 @@ namespace Core\controller;
 
 use Core\database\EntityEnums;
 use Core\database\EntityManager;
+use Core\file\FileException;
 use Core\file\FormFile;
 use Core\FormHandleException;
 use Core\http\Request;
@@ -418,8 +419,8 @@ class Form
 
             foreach ($this->data as $fieldName => $fieldData) {
                 if ('file' === $fieldData['type']) {
-                    if (null === $newFileData = $this->handleFile($currentRequest->files[$fieldName], $fieldData)) {
-                        $this->errors[$fieldName] = ['error' => new FormHandleException($fieldData['type'], $fieldName, 'error during the request\'s file handling'), 'status' => true, 'result' => $currentRequest->files[$fieldName]];
+                    if ($newFileData = $this->handleFile($currentRequest->files[$fieldName], $fieldData) instanceof FormHandleException) {
+                        $this->errors[$fieldName] = ['error' => $newFileData, 'status' => true, 'result' => $currentRequest->files[$fieldName]];
                         continue;
                     }
 
@@ -466,10 +467,11 @@ class Form
         }
     }
 
-    private function handleFile(array $currentField, $fieldData): ?array
+    private function handleFile(array $currentField, $fieldData)
     {
+        $fileError = null;
         if (!is_uploaded_file($currentField['tmp_name'])) {
-            return null;
+            return new FormHandleException('file', $currentField['name'], "File [${$currentField['type']}] doesn't exist" );
         }
 
         $newFileData = $currentField;
@@ -480,7 +482,7 @@ class Form
             if ('manual' === $fieldData['whitelist']['type']) {
                 $mimes = explode(',', trim($fieldData['whitelist']['mimes']));
                 if (!in_array($newFileData['type'], $mimes)) {
-                    return null;
+                    $fileError = new FormHandleException('file', $newFileData['name'], "File MIME [${$newFileData['type']}] doesn't correspond to manual whitelist" );
                 }
             } elseif ('enum' === $fieldData['whitelist']['type']) {
                 $mimes = explode(',', strtoupper($fieldData['whitelist']['mimes']));
@@ -493,16 +495,19 @@ class Form
                     }
                 }
 
-                if (!in_array($newFileData['type'], $totalMimes)) {
-                    return null;
+                if (!in_array($newFileData['type'], $totalMimes) && !isset($fileError)) {
+                    $fileError = new FormHandleException('file', $newFileData['name'], "File MIME [${$newFileData['type']}]doesn't correspond to enum whitelists" );
                 }
             }
         }
 
-        if ($newFileData['type'] !== $currentField['type'] || mb_strlen($newFileData['name'] > 250) || 0 === $newFileData['size']) {
-            return null;
+        if (($newFileData['type'] !== $currentField['type'] || mb_strlen($newFileData['name'] > 250) || 0 === $newFileData['size']) && !isset($fileError)) {
+            $fileError = new FormHandleException('file', $newFileData['name'], "File [${$newFileData['name']}] encountered en error");
         }
 
+        if (isset($fileError)) {
+            return $fileError;
+        }
 
         return $newFileData;
     }

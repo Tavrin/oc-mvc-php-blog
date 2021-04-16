@@ -16,8 +16,10 @@ class ErrorController extends Controller
      * @param null $code
      * @return Response
      */
-    public function indexAction(Exception $e = null, string $message = null, $code = null):Response
+    public function indexAction(Exception $e = null):Response
     {
+        $message = $e->getMessage();
+        $code = $e->getCode();
         $content['title'] = "Page d'erreur";
 
         if (isset($_ENV['ENV']) && $_ENV['ENV'] === 'dev') {
