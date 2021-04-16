@@ -53,6 +53,11 @@ class Post
     private ?string $path;
 
     /**
+     * @var string|null
+     */
+    private ?string $media;
+
+    /**
      * @var User|null
      */
     private ?User $author = null;
@@ -191,6 +196,16 @@ class Post
     public function setCategory(Category $category)
     {
         $this->category = $category;
+    }
+
+    public function setMedia(?string $media)
+    {
+        $this->media = $media;
+    }
+
+    public function getMedia(): ?string
+    {
+        return $this->media;
     }
 
     public function getPublishedAt(): DateTime

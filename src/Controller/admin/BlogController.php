@@ -61,11 +61,14 @@ class BlogController extends Controller
 
         if ($editorForm->isSubmitted && $editorForm->isValid) {
 
+            $mediaFile = $editorForm->getData('media');
+
             if (!$blogManager->validateEditor($editorForm)) {
-                $this->session->set('formError', true);
-                $this->session->set('formData', $request->request);
                 $this->redirect(self::NEW_POST_LINK, ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
+
+            $mediaFile->put('uploads/media', $mediaFile->getUploadName());
+            $post->setMedia($mediaFile->getRelativePath());
 
             if ($blogManager->savePost($post, $this->getUser())) {
                 $this->redirect('/admin', ['type' => 'success', 'message' => 'Article publié avec succès']);
@@ -107,11 +110,13 @@ class BlogController extends Controller
         if ($editorForm->isSubmitted && $editorForm->isValid) {
 
             $mediaFile = $editorForm->getData('media');
-            $mediaFile->put('/uploads/media', $mediaFile->getUploadName());
 
             if (!$blogManager->validateEditor($editorForm)) {
                 $this->redirect("/admin/posts/{$slug}/edit", ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
+
+            $mediaFile->put('uploads/media', $mediaFile->getUploadName());
+            $post->setMedia($mediaFile->getRelativePath());
             if ($blogManager->updatePost($post, $this->getUser())) {
                 $this->redirect('/admin', ['type' => 'success', 'message' => 'Article mis à jour avec succès']);
             }

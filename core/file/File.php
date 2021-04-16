@@ -18,7 +18,7 @@ class File extends \SplFileInfo
 
     public function put(string $path, string $name = null)
     {
-        $targetPath = $this->getFilePath($path, $name);
+        $targetPath = $this->getTargetPath($path, $name);
         rename($this->getPathname(), $targetPath);
 
         @chmod($targetPath, 0666 & ~umask());
@@ -27,7 +27,17 @@ class File extends \SplFileInfo
         return $targetPath;
     }
 
-    protected function getFilePath(string $path, string $name = null): string
+    public function getFilePath(): string
+    {
+        return $this->filePath;
+    }
+
+    public function getRelativePath(): string
+    {
+        return str_replace( ROOT_DIR . DIRECTORY_SEPARATOR . 'public','', $this->filePath,);
+    }
+
+    protected function getTargetPath(string $path, string $name = null): string
     {
         $path = ROOT_DIR . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . trim($path, '/\\');
         if (!is_dir($path) && false === @mkdir($path, 0777, true)) {

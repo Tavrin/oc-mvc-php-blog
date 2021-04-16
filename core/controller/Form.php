@@ -327,7 +327,7 @@ class Form
                 continue;
             }
 
-            if ($options['error'] && 'class' === $optionName && true === $options['error']['status'] && ($this->options['errorClass'] || $options['errorClass'])) {
+            if ((isset($options['error']) && true === $options['error']['status']) && 'class' === $optionName && (isset($this->options['errorClass']) || isset($options['errorClass']))) {
                 $option .= ' ' . $this->options['errorClass']?? '' . $options['errorClass']?? '';
             }
 
