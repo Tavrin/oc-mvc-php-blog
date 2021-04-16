@@ -445,13 +445,13 @@ class Form
                 $this->data[$fieldName]['result'] = $requestField;
             }
 
+            foreach ($filesArray as $name => $data) {
+                $this->data[$name]['result'] = new FormFile($data['tmp_name'], $this->data, $data['name'], $data['type']);
+            }
+
             if ($this->errors) {
                 $this->setFormError();
                 return;
-            }
-
-            foreach ($filesArray as $name => $data) {
-                $this->data[$name]['result'] = new FormFile($data['tmp_name'], $this->data, $data['name'], $data['type']);
             }
 
             $this->isValid = true;
@@ -488,37 +488,44 @@ class Form
         $newFileData['name'] = StringUtils::slugify(pathinfo($newFileData['name'])['filename']) . '.' . pathinfo($newFileData['name'])['extension'];
 
         if ($fieldData['whitelist']) {
-            if ('manual' === $fieldData['whitelist']['type']) {
-                $mimes = explode(',', trim($fieldData['whitelist']['mimes']));
-                if (!in_array($newFileData['type'], $mimes)) {
-                    $fileError = new FormHandleException('file', $newFileData['name'], "File MIME [${$newFileData['type']}] doesn't correspond to manual whitelist" );
-                }
-            } elseif ('enum' === $fieldData['whitelist']['type']) {
-                $mimes = explode(',', strtoupper($fieldData['whitelist']['mimes']));
-                $totalMimes = [];
-                foreach ($mimes as $mime) {
-                    $mime = trim($mime);
-                    $formEnumTypes = FormEnums::getWhitelist($mime);
-                    foreach ($formEnumTypes as $formEnumType) {
-                        $totalMimes[] = $formEnumType;
-                    }
-                }
-
-                if (!in_array($newFileData['type'], $totalMimes) && !isset($fileError)) {
-                    $fileError = new FormHandleException('file', $newFileData['name'], "File MIME [${$newFileData['type']}]doesn't correspond to enum whitelists" );
-                }
-            }
+            $fileError = $this->validateFileWhitelist($newFileData, $fieldData);
         }
 
         if (($newFileData['type'] !== $currentField['type'] || mb_strlen($newFileData['name'] > 250) || 0 === $newFileData['size']) && !isset($fileError)) {
             $fileError = new FormHandleException('file', $newFileData['name'], "File [${$newFileData['name']}] encountered en error");
         }
 
-        if (isset($fileError)) {
+        if (isset($fileError) && $fileError instanceof FormHandleException) {
             return $fileError;
         }
 
         return $newFileData;
+    }
+
+    public function validateFileWhitelist(array $newFileData, array $fieldData): ?FormHandleException
+    {
+        if ('manual' === $fieldData['whitelist']['type']) {
+            $mimes = explode(',', trim($fieldData['whitelist']['mimes']));
+            if (!in_array($newFileData['type'], $mimes)) {
+                return new FormHandleException('file', $newFileData['name'], "File MIME [${$newFileData['type']}] doesn't correspond to manual whitelist" );
+            }
+        } elseif ('enum' === $fieldData['whitelist']['type']) {
+            $mimes = explode(',', strtoupper($fieldData['whitelist']['mimes']));
+            $totalMimes = [];
+            foreach ($mimes as $mime) {
+                $mime = trim($mime);
+                $formEnumTypes = FormEnums::getWhitelist($mime);
+                foreach ($formEnumTypes as $formEnumType) {
+                    $totalMimes[] = $formEnumType;
+                }
+            }
+
+            if (!in_array($newFileData['type'], $totalMimes) && !isset($fileError)) {
+                return new FormHandleException('file', $newFileData['name'], "File MIME [${$newFileData['type']}]doesn't correspond to enum whitelists" );
+            }
+        }
+
+        return null;
     }
 
     private function sanitizeRequest($currentRequest, $fieldData, $fieldName)
