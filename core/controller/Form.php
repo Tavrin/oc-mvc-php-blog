@@ -428,15 +428,7 @@ class Form
                     continue;
                 }
 
-                $currentRequest->request[$fieldName] = $this->sanitizeRequest( $currentRequest->request, $fieldData, $fieldName);
-
-                if ((!isset( $currentRequest->request[$fieldName]) || "" ==  $currentRequest->request[$fieldName]) && true === $fieldData['required']) {
-                    $this->errors[$fieldName] = ['error' => new FormHandleException($fieldData['type'], $fieldName, "Field ${fieldName} is missing from the request and is required"), 'status' => true, 'result' => $currentRequest->request[$fieldName] ?? ''];
-                    continue;
-                }
-
-                if (false === $requestField = $this->validateRequestField($fieldData,  $currentRequest->request[$fieldName])) {
-                    $this->errors[$fieldName] = ['error' => new FormHandleException($fieldData['type'], $fieldName, "Field ${fieldName} is invalid"), 'status' => true, 'result' => $requestField];
+                if (false === $requestField = $this->validateAndSanitizeRequest($fieldData, $fieldName, $currentRequest)) {
                     continue;
                 }
 
@@ -465,6 +457,23 @@ class Form
             $this->isValid = true;
 
         }
+    }
+
+    private function validateAndSanitizeRequest($fieldData, $fieldName, $currentRequest)
+    {
+        $currentRequest->request[$fieldName] = $this->sanitizeRequest( $currentRequest->request, $fieldData, $fieldName);
+
+        if ((!isset( $currentRequest->request[$fieldName]) || "" ==  $currentRequest->request[$fieldName]) && true === $fieldData['required']) {
+            $this->errors[$fieldName] = ['error' => new FormHandleException($fieldData['type'], $fieldName, "Field ${fieldName} is missing from the request and is required"), 'status' => true, 'result' => $currentRequest->request[$fieldName] ?? ''];
+            return false;
+        }
+
+        if (false === $requestField = $this->validateRequestField($fieldData,  $currentRequest->request[$fieldName])) {
+            $this->errors[$fieldName] = ['error' => new FormHandleException($fieldData['type'], $fieldName, "Field ${fieldName} is invalid"), 'status' => true, 'result' => $requestField];
+            return false;
+        }
+
+        return $requestField;
     }
 
     private function handleFile(array $currentField, $fieldData)

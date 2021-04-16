@@ -2,6 +2,7 @@
 
 namespace Core;
 
+use Core\controller\ControllerException;
 use Core\database\DatabaseResolver;
 use Core\database\EntityManager;
 use Core\http\Request;
@@ -118,7 +119,7 @@ class Kernel
         $response = $controller(...$arguments);
 
         if (!$response instanceof Response) {
-            throw new RuntimeException(sprintf('Mauvaise réponse'), 500);
+            throw new ControllerException('No response sent back from controller', 500);
         }
 
         return $response;

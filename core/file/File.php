@@ -13,8 +13,10 @@ class File extends \SplFileInfo
         parent::__construct($filename);
     }
 
-    public function getName()
-    {}
+    public function getName(): string
+    {
+        return $this->getPathname();
+    }
 
     public function put(string $path, string $name = null): string
     {
