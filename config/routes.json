@@ -40,6 +40,22 @@
         "controller": "App\\Controller\\admin\\IndexController::indexAction"
     },
     {
+        "route": "admin_structure",
+        "path": "/admin/structure",
+        "controller": "App\\Controller\\admin\\IndexController::structureAction"
+    },
+    {
+        "route": "admin_categories",
+        "path": "/admin/structure/categories",
+        "controller": "App\\Controller\\admin\\CategoryController::indexAction"
+    },
+    {
+        "route": "new_category",
+        "path": "/admin/structure/categories/new",
+        "controller": "App\\Controller\\admin\\CategoryController::newAction"
+    },
+
+    {
         "route": "inscription",
         "path": "/register",
         "controller": "App\\Controller\\SecurityController::register"

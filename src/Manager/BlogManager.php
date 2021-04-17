@@ -88,6 +88,7 @@ class BlogManager
         return true;
     }
 
+    /** @noinspection DuplicatedCode */
     public function hydrateListing(string $column, string $order, array $pagination = null, string $category = null): ?array
     {
         if ($category) {

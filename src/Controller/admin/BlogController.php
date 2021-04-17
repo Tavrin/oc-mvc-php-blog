@@ -28,9 +28,11 @@ class BlogController extends Controller
         $blogManager = new BlogManager($em);
 
         $posts = $blogManager->hydrateListing('created_at', 'DESC', ['page' => $query, 'limit' => 5]);
+        $content['breadcrumb'] = $request->getAttribute('breadcrumb');
 
         return $this->render('admin/posts/index.html.twig', [
-            'posts' => $posts
+            'posts' => $posts,
+            'content' => $content
         ]);
     }
 

@@ -37,7 +37,7 @@ class Category
     /**
      * @var DateTime|null
      */
-    private ?DateTime $updatedAt;
+    private ?DateTime $updatedAt = null;
 
     public function __construct()
     {
@@ -100,6 +100,10 @@ class Category
 
     public function getUpdatedAt(): ?DateTime
     {
+        if (!$this->updatedAt) {
+            return null;
+        }
+
         return $this->updatedAt;
     }
 

@@ -1,0 +1,51 @@
+{
+    "name": "media",
+    "repository": "App\\Repository\\MediaRepository",
+    "entity": "App\\Entity\\Media",
+    "id": {
+        "type": "integer"
+    },
+    "table": "media",
+    "fields": {
+        "name": {
+            "fieldName": "name",
+            "type": "string",
+            "nullable": false
+        },
+        "alt": {
+            "fieldName": "alt",
+            "type": "string",
+            "nullable": true
+        },
+        "type": {
+            "fieldName": "type",
+            "type": "string",
+            "nullable": false
+        },
+        "path": {
+            "fieldName": "path",
+            "type": "string",
+            "nullable": false
+        },
+        "uuid": {
+            "fieldName": "uuid",
+            "type": "string",
+            "nullable": false
+        },
+        "status": {
+            "fieldName": "status",
+            "type": "bool",
+            "nullable": false
+        },
+        "createdAt": {
+            "fieldName": "created_at",
+            "type": "datetime",
+            "nullable": false
+        },
+        "updatedAt": {
+            "fieldName": "updated_at",
+            "type": "datetime",
+            "nullable": true
+        }
+    }
+}

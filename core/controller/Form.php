@@ -79,11 +79,24 @@ class Form
     /**
      * @param string $name
      * @param array $options
+     * @return $this
      */
     public function addTextInput(string $name, array $options = []): Form
     {
         $options['type'] = 'text';
         $this->setData(FormEnums::TEXT, $name, $options);
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     * @return $this
+     */
+    public function addTextareaInput(string $name, array $options = []): Form
+    {
+        $options['type'] = 'textarea';
+        $this->setData(FormEnums::TEXTAREA, $name, $options);
         return $this;
     }
 
@@ -306,7 +319,7 @@ class Form
      * @param string $name
      * @param array $options
      */
-    protected function  setData(array $type, string $name, array $options)
+    protected function setData(array $type, string $name, array $options)
     {
 
         if (true === $this->session->get('formError') && $this->session->get('formData') && array_key_exists($name, $this->session->get('formData'))) {
@@ -315,8 +328,32 @@ class Form
             $options['error'] = ['status' => $formData[$name]['status'], 'error' => $formData[$name]['error']];
         }
 
-        $input = "<input type='{$type['type']}' name='{$name}' " ;
+        'textarea' === $type['type'] ? $input = "<textarea name='{$name}'" : $input = "<input type='{$type['type']}' name='{$name}' " ;
+        $input .= $this->setInputOptions($type, $options, $name);
+        $input .= ">";
 
+        if ('textarea' === $type['type']) {
+            if(isset($options['value'])) {
+                $input .= PHP_EOL . $options['value'];
+            }
+
+            $input .= PHP_EOL . '</textarea>';
+        }
+
+        $fieldData = $this->setDataOptions($name, $options, $type);
+        $fieldData['render'] = $input;
+        $this->data[$name] = $fieldData;
+    }
+
+    /**
+     * @param array $type
+     * @param array $options
+     * @param string $name
+     * @return string
+     */
+    private function setInputOptions(array $type, array $options, string $name): string
+    {
+        $input = '';
         $options['id'] ??  $options['id'] = $name;
         foreach ($options as $optionName => $option) {
             if (!in_array($optionName, $type['attributes'])) {
@@ -344,14 +381,13 @@ class Form
             $input .= "required ";
         }
 
-
-        $input .= ">";
-
-        $fieldData = $this->setDataOptions($name, $options, $type);
-        $fieldData['render'] = $input;
-        $this->data[$name] = $fieldData;
+        return $input;
     }
 
+    /**
+     * @param $option
+     * @return string
+     */
     private function setDataAttributes($option): string
     {
         $input = '';
@@ -370,6 +406,7 @@ class Form
     /**
      * @param $name
      * @param $options
+     * @param $type
      * @return array
      */
     private function setDataOptions($name, $options, $type): array

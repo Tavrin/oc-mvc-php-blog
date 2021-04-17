@@ -57,10 +57,10 @@ class CreateEntityCommand extends Command
         $newEntity['name'] = $line;
         $newEntity['repository'] = 'App\\Repository\\' . ucfirst($newEntity['name']) . 'Repository';
         $newEntity['entity'] = 'App\\Entity\\' . ucfirst($newEntity['name']);
-
         echo 'Entity Database Table : ';
         $line = $this->getInput();
         $newEntity['table'] = $line;
+        $newEntity['id']['type'] = 'integer';
 
         echo PHP_EOL . 'Entity fields, type \'' . self::BREAK_KEYWORD . '\' when all the fields are added : ' . PHP_EOL;
 
@@ -199,7 +199,7 @@ class ' . ucfirst($newData['name']) . 'Repository extends Repository
      /**
      * @var int
      */
-     private $id;
+     private int $id;
 
 ';
 
@@ -247,7 +247,7 @@ class ' . ucfirst($newData['name']) . 'Repository extends Repository
         }
     }
 
-    private function getEntityTypes(array $field)
+    private function getEntityTypes(array $field): array
     {
         if ('association' === $field['type']) {
             $type = ucfirst($field['associatedEntity']);

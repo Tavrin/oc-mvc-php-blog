@@ -30,7 +30,7 @@ class SecurityController extends Controller
     {
         $user = new User();
         $userManager = new UserManager($this->getManager());
-        $form = new RegisterForm($request,$user, $this->session, ['name' => 'registerform']);
+        $form = new RegisterForm($request,$user, $this->session, ['name' => 'registerform', 'wrapperClass' => 'mb-1']);
 
         $form->handle($request);
 
@@ -83,7 +83,7 @@ class SecurityController extends Controller
         $userManager = new UserManager($em);
         $userTemplate = new User();
 
-        $form = new LoginForm($request,$userTemplate, $this->session, ['name' => 'loginform']);
+        $form = new LoginForm($request,$userTemplate, $this->session, ['name' => 'loginform', 'wrapperClass' => 'mb-1']);
 
         $form->handle($request);
 
@@ -116,7 +116,7 @@ class SecurityController extends Controller
 
         $userManager = new UserManager($this->getManager());
         $userTemplate = new User();
-        $form = $this->createForm($userTemplate);
+        $form = $this->createForm($userTemplate, ['wrapperClass' => 'mb-1']);
 
         $form->addEmailInput('email', ['placeholder' => 'adresse email associée au compte', 'class' => 'form-control', 'label' => 'email']);
         $form->setSubmitValue('accepter', ['class' => 'button-bb-wc']);
@@ -156,7 +156,7 @@ class SecurityController extends Controller
         }
 
         $userTemplate = new User();
-        $form = new ResetPasswordForm($request, $userManager, $this->session, ['action' => $request->getPathInfo() . '?token=' . $request->getQuery('token')]);
+        $form = new ResetPasswordForm($request, $userManager, $this->session, ['action' => $request->getPathInfo() . '?token=' . $request->getQuery('token'), 'wrapperClass' => 'mb-1']);
         $form->handle($request);
 
         if ($form->isValid) {
