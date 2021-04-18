@@ -25,12 +25,12 @@
         },
         "createdAt": {
             "fieldName": "created_at",
-            "type": "\\Datetime",
+            "type": "datetime",
             "nullable": false
         },
         "updatedAt": {
             "fieldName": "updated_at",
-            "type": "\\Datetime",
+            "type": "datetime",
             "nullable": true
         },
         "status": {

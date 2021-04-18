@@ -10,6 +10,9 @@ use App\Repository\PostRepository;
 use App\Repository\UserRepository;
 use Core\database\DatabaseResolver;
 use Core\database\EntityManager;
+use Core\http\exceptions\NotFoundException;
+use Core\utils\ArrayUtils;
+use Core\utils\Paginator;
 
 class AdminManager
 {
@@ -21,6 +24,7 @@ class AdminManager
         $this->em = $entityManager ?? DatabaseResolver::instantiateManager();
         $this->allEntityData = $this->em::getAllEntityData();
     }
+
     public function hydrateDashboard(): array
     {
         $content = [];
@@ -41,44 +45,89 @@ class AdminManager
     }
 
     /** @noinspection DuplicatedCode */
-    public function hydrateCategories(string $column, string $order, array $pagination = null): array
+    public function hydrateEntities(string $type, string $column, string $order, array $pagination = null, array $filter = null): array
     {
-        $categoryRepo = new CategoryRepository($this->em);
-        $categories = $categoryRepo->findAll(['column' => $column, 'order' => $order]);
-        $categoryEntityDataFields = $this->allEntityData['category']['fields'];
+        $entityData = $this->allEntityData[strtolower($type)];
+        $entityRepository = new $entityData['repository']();
+
+        if ($filter && ArrayUtils::keysInArray(['type', 'criteria', 'targetField'], $filter)) {
+            $entities = [];
+            if ('self' === $filter['type']) {
+                $entities = $entityRepository->findBy($filter['targetField'], $filter['criteria'], ['column' => $column, 'order' => $order]);
+
+            } elseif ('association' === $filter['type'] && $filter['targetField']) {
+                $filterRepository = new $this->allEntityData[strtolower($filter['targetTable'])]['repository']();
+                if (!$foundAssociation = $filterRepository->findOneBy($filter['targetField'], $filter['criteria'])) {
+                    return $entities;
+                }
+
+                foreach ($entityData['fields'] as $key => $field) {
+                    if ('association' === $field['type'] && strtolower($field['associatedEntity']) === strtolower($filter['targetTable'])) {
+                        $entities = $entityRepository->findBy($field['fieldName'], $foundAssociation->getId(), ['column' => $column, 'order' => $order]);
+                        break;
+                    }
+                }
+            }
+            if (!$entities) {
+                return $entities;
+            }
+        } else {
+            $entities = $entityRepository->findAll(['column' => $column, 'order' => $order]);
+        }
+
+        $categoryEntityDataFields = $this->allEntityData[$type]['fields'];
         $content = [];
-        foreach ($categories as $key => $category) {
+        foreach ($entities as $key => $entity) {
             foreach ($categoryEntityDataFields as $fieldName => $fieldData) {
                 $method = 'get' . ucfirst($fieldName);
-                $content['items'][$key][$fieldName] = $category->$method();
+                $content['items'][$key][$fieldName] = $entity->$method();
             }
-            $creationDate =  $category->getPublishedAt();
+            $creationDate =  $entity->getCreatedAt();
             $content['items'][$key]['createdAt'] = $creationDate->format("Y-m-d\TH:i:s");
 
-            if ($category->getUpdatedAt()) {
-                $updateDate =  $category->getUpdatedAt();
+            if ($entity->getUpdatedAt()) {
+                $updateDate =  $entity->getUpdatedAt();
                 $content['items'][$key]['updatedAt'] = $updateDate->format("Y-m-d\TH:i:s");
             }
 
             if ($pagination) {
-                $itemsToKeep = [];
-                $content['pages'] = intval(ceil(count($content['items']) / $pagination['limit']));
-                $content['actualPage'] = $pagination['page'];
-                if ($content['actualPage'] > $content['pages'] || $content['actualPage'] < 1) {
-                    $content['actualPage'] = 1;
-                }
-                $firstItem = ($content['actualPage'] * $pagination['limit']) - $pagination['limit'];
-                for ($i = $firstItem; $i < $firstItem + $pagination['limit']; $i++) {
-                    if (isset($content['items'][$i])) {
-                        $itemsToKeep[] = $content['items'][$i];
-                    }
-                }
-
-                $content['items'] = $itemsToKeep;
-
+                $content['items'] = Paginator::paginate($content, $pagination['page'], $pagination['limit']);
             }
         }
 
         return $content;
+    }
+
+    public function getSelection(string $entityName, array $options): ?array
+    {
+        if (!isset($this->allEntityData[$entityName])) {
+            return null;
+        }
+
+        $selection = [];
+
+        $entityRepo = new $this->allEntityData[$entityName]['repository'];
+        $entities = $entityRepo->findAll();
+        isset($options['id']) ? $idMethod = 'get' . ucfirst($options['id']) : $idMethod = 'getId';
+
+        foreach ($entities as $key => $entity) {
+            $selection[$key]['id'] = $entity->$idMethod();
+            if (isset($options['placeholder'])) {
+                $placeholderMethod = 'get' . $options['placeholder'];
+                $selection[$key]['placeholder'] = $entity->$placeholderMethod();
+            }
+        }
+
+        return $selection;
+    }
+
+    public function getFromType($type, string $entityName)
+    {
+
+    }
+
+    public function saveCategory($entity): bool
+    {
+        return true;
     }
 }

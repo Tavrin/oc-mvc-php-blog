@@ -7,6 +7,7 @@ namespace Core\file;
 class File extends \SplFileInfo
 {
     protected string $filePath;
+    protected ?string $relativePath = null;
     public function __construct($filename)
     {
         $this->filePath = $filename;
@@ -25,7 +26,7 @@ class File extends \SplFileInfo
 
         @chmod($targetPath, 0666 & ~umask());
         $this->filePath = $targetPath;
-
+        $this->relativePath = str_replace( ROOT_DIR . DIRECTORY_SEPARATOR . 'public','', $this->filePath,);
         return $targetPath;
     }
 
@@ -36,6 +37,10 @@ class File extends \SplFileInfo
 
     public function getRelativePath(): string
     {
+        if (isset($this->relativePath)) {
+            return $this->relativePath;
+        }
+
         return str_replace( ROOT_DIR . DIRECTORY_SEPARATOR . 'public','', $this->filePath,);
     }
 

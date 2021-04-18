@@ -10,6 +10,7 @@ use Core\database\DatabaseResolver;
 use Core\database\EntityManager;
 use Core\http\exceptions\ForbiddenException;
 use Core\http\exceptions\NotFoundException;
+use Core\utils\Paginator;
 
 
 class BlogManager
@@ -24,29 +25,6 @@ class BlogManager
         $this->postRepository = new PostRepository();
 
         $this->allEntityData = $this->em::getAllEntityData();
-    }
-
-    public function getSelection(string $entityName, array $options): ?array
-    {
-        if (!isset($this->allEntityData[$entityName])) {
-            return null;
-        }
-
-        $selection = [];
-
-        $entityRepo = new $this->allEntityData[$entityName]['repository'];
-        $entities = $entityRepo->findAll();
-        isset($options['id']) ? $idMethod = 'get' . ucfirst($options['id']) : $idMethod = 'getId';
-
-        foreach ($entities as $key => $entity) {
-            $selection[$key]['id'] = $entity->$idMethod();
-            if (isset($options['placeholder'])) {
-                $placeholderMethod = 'get' . $options['placeholder'];
-                $selection[$key]['placeholder'] = $entity->$placeholderMethod();
-            }
-        }
-
-        return $selection;
     }
 
     public function savePost($post, $user): bool
@@ -93,7 +71,7 @@ class BlogManager
     {
         if ($category) {
             $categoryRepo = new CategoryRepository($this->em);
-            if (!$foundCategory = $categoryRepo->findOneBy('path', $category)) {
+            if (!$foundCategory = $categoryRepo->findOneBy('slug', $category)) {
                 throw new NotFoundException('The category doesn\'t exist', 404);
             }
             $posts = $this->postRepository->findBy('category_id', $foundCategory->getId(), ['column' => $column, 'order' => $order]);
@@ -108,7 +86,7 @@ class BlogManager
                 $method = 'get' . ucfirst($fieldName);
                 $content['items'][$key][$fieldName] = $post->$method();
             }
-            $publishDate =  $post->getPublishedAt();
+            $publishDate =  $post->getCreatedAt();
             $content['items'][$key]['publishedAt'] = $publishDate->format("Y-m-d\TH:i:s");
 
             if ($post->getUpdatedAt()) {
@@ -118,21 +96,7 @@ class BlogManager
         }
 
         if ($pagination) {
-            $itemsToKeep = [];
-            $content['pages'] = intval(ceil(count($content['items']) / $pagination['limit']));
-            $content['actualPage'] = $pagination['page'];
-            if ($content['actualPage'] > $content['pages'] || $content['actualPage'] < 1) {
-                $content['actualPage'] = 1;
-            }
-            $firstItem = ($content['actualPage'] * $pagination['limit']) - $pagination['limit'];
-            for ($i = $firstItem; $i < $firstItem + $pagination['limit']; $i++) {
-                if (isset($content['items'][$i])) {
-                    $itemsToKeep[] = $content['items'][$i];
-                }
-            }
-
-            $content['items'] = $itemsToKeep;
-
+            $content['items'] = Paginator::paginate($content, $pagination['page'], $pagination['limit']);
         }
 
         return $content;

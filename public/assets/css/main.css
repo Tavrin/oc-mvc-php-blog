@@ -445,6 +445,14 @@ h1 {
     width: 0;
 }
 
+.w-10 {
+    width: 10%;
+}
+
+.w-15 {
+    width: 15%;
+}
+
 .w-25 {
     width: 25%;
 }
@@ -470,31 +478,31 @@ h1 {
     max-width: max-content;
 }
 
-.mw-0 {
+.maw-0 {
     max-width: 0;
 }
 
-.mw-25 {
+.maw-25 {
     max-width: 25%;
 }
 
-.mw-50 {
+.maw-50 {
     max-width: 50%;
 }
 
-.mw-70 {
+.maw-70 {
     max-width: 70%;
 }
 
-.mw-75 {
+.maw-75 {
     max-width: 75%;
 }
 
-.mw-80 {
+.maw-80 {
     max-width: 80%;
 }
 
-.mw-90 {
+.maw-90 {
     max-width: 90%;
 }
 
@@ -790,6 +798,30 @@ h1 {
     background: black;
     color: white;
     padding: .5rem 2rem .5rem 2rem;
+}
+
+.fade {
+    transition: opacity 15s linear;
+}
+
+/* Modal */
+.modal-bg {
+    background-color: rgba(0, 0, 0, 0.47);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    outline: none;
+}
+
+.modal {
+    background: white;
+    margin: 1.75rem auto;
+    transition: transform .3s ease-out;
+    padding: 1rem;
 }
 
 /* display */

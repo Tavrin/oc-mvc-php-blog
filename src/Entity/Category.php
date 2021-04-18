@@ -32,7 +32,7 @@ class Category
     /**
      * @var DateTime
      */
-    private DateTime $publishedAt;
+    private DateTime $createdAt;
 
     /**
      * @var DateTime|null
@@ -41,7 +41,7 @@ class Category
 
     public function __construct()
     {
-        $this->publishedAt = new DateTime();
+        $this->createdAt = new DateTime();
 
         if ($this->name) {
             $this->setPath(StringUtils::slugify($this->name));
@@ -88,14 +88,14 @@ class Category
         $this->path = $path;
     }
 
-    public function getPublishedAt(): DateTime
+    public function getCreatedAt(): DateTime
     {
-        return $this->publishedAt;
+        return $this->createdAt;
     }
 
-    public function setPublishedAt(DateTime $publishedAt)
+    public function setCreatedAt(DateTime $publishedAt)
     {
-        $this->publishedAt = $publishedAt;
+        $this->createdAt = $publishedAt;
     }
 
     public function getUpdatedAt(): ?DateTime

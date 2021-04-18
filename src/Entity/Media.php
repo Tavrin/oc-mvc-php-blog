@@ -29,14 +29,19 @@ class Media
     private ?string $alt;
 
     /**
-    * @var string
+    * @var MediaType
     */
-    private string $type;
+    private MediaType $type;
 
     /**
     * @var string
     */
     private string $path;
+
+    /**
+     * @var string
+     */
+    private string $slug;
 
     /**
     * @var string
@@ -88,12 +93,12 @@ class Media
         $this->alt = $alt;
     }
 
-    public function getType(): string
+    public function getType(): MediaType
     {
         return $this->type;
     }
 
-    public function setType(string $type)
+    public function setType(MediaType $type)
     {
         $this->type = $type;
     }
@@ -116,6 +121,16 @@ class Media
     public function setUuid(string $uuid)
     {
         $this->uuid = $uuid;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug)
+    {
+        $this->slug = $slug;
     }
 
     public function getStatus(): bool

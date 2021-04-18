@@ -38,6 +38,17 @@ class Response
         return $this;
     }
 
+    /**
+     * @param string $content
+     * @return $this
+     */
+    public function setJsonContent(array $content): Response
+    {
+        $this->content = json_encode($content);
+
+        return $this;
+    }
+
     public function getContent(): string
     {
         return $this->content;

@@ -24,7 +24,7 @@
                 "fieldName" : "description",
                 "type": "text"
             },
-        "publishedAt" :
+        "createdAt" :
             {
                 "fieldName" : "created_at",
                 "type": "datetime"

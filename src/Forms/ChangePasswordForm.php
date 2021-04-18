@@ -10,7 +10,7 @@ use Core\http\Session;
 
 class ChangePasswordForm extends Form
 {
-    public function __construct(Request $request, object $entity, Session $session, array $options)
+    public function __construct(Request $request, object $entity, Session $session, array $options = [])
     {
         parent::__construct($request, $entity, $session, $options);
 

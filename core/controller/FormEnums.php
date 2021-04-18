@@ -116,6 +116,25 @@ class FormEnums
         ]
     ];
 
+    public const BUTTON = [
+        'type' => 'button',
+        'attributes' => [
+            'dataAttributes',
+            'type',
+            'id',
+            'class',
+        ]
+    ];
+
+    public const DIV = [
+        'type' => 'div',
+        'attributes' => [
+            'dataAttributes',
+            'id',
+            'class',
+        ]
+    ];
+
     public const FILE = [
         'type' => 'file',
         'attributes' => [

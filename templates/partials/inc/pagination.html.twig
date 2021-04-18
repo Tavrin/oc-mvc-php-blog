@@ -1,9 +1,11 @@
-{% if posts.actualPage > 1 %}
-    <a href="/admin/posts?page={{ 1 }}" class="pr-1"><< <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">1</span> Première page</a>
-    <a href="/admin/posts?page={{ posts.actualPage - 1 }}" class="pr-1">< <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ posts.actualPage - 1 }}</span> Précédent</a>
-{% endif %}
-<span class="bcg-light3 pl-1 pr-1 pb-0-5 pt-0-5 br-25 fw-900">{{ posts.actualPage }}</span>
-{% if posts.actualPage < posts.pages %}
-    <a href="/admin/posts?page={{ posts.actualPage + 1 }}" class="pl-1">Suivant  <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ posts.actualPage + 1 }}</span> ></a>
-    <a href="/admin/posts?page={{ posts.pages }}" class="pl-1">Dernière page <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ posts.pages }}</span> >></a>
+{% if post.pages is defined and post.pages > 1 %}
+    {% if posts.actualPage > 1 %}
+        <a href="/admin/posts?page={{ 1 }}" class="pr-1"><< <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">1</span> Première page</a>
+        <a href="/admin/posts?page={{ posts.actualPage - 1 }}" class="pr-1">< <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ posts.actualPage - 1 }}</span> Précédent</a>
+    {% endif %}
+    <span class="bcg-light3 pl-1 pr-1 pb-0-5 pt-0-5 br-25 fw-900">{{ posts.actualPage }}</span>
+    {% if posts.actualPage < posts.pages %}
+        <a href="/admin/posts?page={{ posts.actualPage + 1 }}" class="pl-1">Suivant  <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ posts.actualPage + 1 }}</span> ></a>
+        <a href="/admin/posts?page={{ posts.pages }}" class="pl-1">Dernière page <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ posts.pages }}</span> >></a>
+    {% endif %}
 {% endif %}

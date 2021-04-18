@@ -18,12 +18,18 @@
             "nullable": true
         },
         "type": {
-            "fieldName": "type",
-            "type": "string",
-            "nullable": false
+            "fieldName": "media_type_id",
+            "type": "association",
+            "associatedEntity": "mediaType",
+            "repository": "App\\Repository\\MediaTypeRepository"
         },
         "path": {
             "fieldName": "path",
+            "type": "string",
+            "nullable": false
+        },
+        "slug": {
+            "fieldName": "slug",
             "type": "string",
             "nullable": false
         },

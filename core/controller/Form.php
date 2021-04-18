@@ -55,7 +55,7 @@ class Form
      * @param Session $session
      * @param array $options
      */
-    public function __construct(Request $request, object $entity, Session $session, array $options)
+    public function __construct(Request $request, object $entity, Session $session, array $options = [])
     {
         $this->session = $session;
         if (isset($options['method'])) {
@@ -218,6 +218,19 @@ class Form
      * @param array $options
      * @return $this
      */
+    public function addButton(string $name, array $options = []): Form
+    {
+        $options['type'] = 'button';
+        $this->setData(FormEnums::BUTTON, $name, $options);
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     * @return $this
+     */
     public function addFileInput(string $name, array $options = []): Form
     {
         $options['type'] = FormEnums::FILE['type'];
@@ -293,9 +306,9 @@ class Form
             if ('hidden' === $input['type']) {
                 $render .= '        ' . $input['render'] . PHP_EOL;
             } else {
-                $render .= "    <div class='{$globalOptions['wrapperClass']} {$input['wrapperClass']}'>" . PHP_EOL .
-                    "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL .
-                    '        ' . $input['render'] . '</div>'. PHP_EOL;
+                $render .= "    <div class='{$globalOptions['wrapperClass']} {$input['wrapperClass']}'>" . PHP_EOL;
+                if ('button' !== $input['type']) {$render .=    "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL;}
+                $render .=    '        ' . $input['render'] . '</div>'. PHP_EOL;
             }
         }
 
@@ -328,16 +341,25 @@ class Form
             $options['error'] = ['status' => $formData[$name]['status'], 'error' => $formData[$name]['error']];
         }
 
-        'textarea' === $type['type'] ? $input = "<textarea name='{$name}'" : $input = "<input type='{$type['type']}' name='{$name}' " ;
+        $options['id'] ??  $options['id'] = $name;
+
+        if ('textarea' === $type['type']) {
+            $input = "<textarea name='{$name}' ";
+        } elseif ('button' === $type['type']) {
+            $input = "<button ";
+        } else {
+            $input = "<input type='{$type['type']}' name='{$name}' ";
+        }
+
         $input .= $this->setInputOptions($type, $options, $name);
         $input .= ">";
 
-        if ('textarea' === $type['type']) {
+        if ('textarea' === $type['type'] || 'button' === $type['type']) {
             if(isset($options['value'])) {
                 $input .= PHP_EOL . $options['value'];
             }
 
-            $input .= PHP_EOL . '</textarea>';
+            $input .= PHP_EOL . "</{$type['type']}>";
         }
 
         $fieldData = $this->setDataOptions($name, $options, $type);
@@ -354,7 +376,6 @@ class Form
     private function setInputOptions(array $type, array $options, string $name): string
     {
         $input = '';
-        $options['id'] ??  $options['id'] = $name;
         foreach ($options as $optionName => $option) {
             if (!in_array($optionName, $type['attributes'])) {
                 continue;
@@ -446,17 +467,18 @@ class Form
      */
     public function handle(Request $request)
     {
-        $this->session->remove('formError');
-        $this->session->remove('formData');
-
         if (false !== $currentRequest = $this->validateRequest($request)) {
+
+            $this->session->remove('formError');
+            $this->session->remove('formData');
 
             $this->isSubmitted = true;
             $filesArray = [];
 
             foreach ($this->data as $fieldName => $fieldData) {
                 if ('file' === $fieldData['type']) {
-                    if ($newFileData = $this->handleFile($currentRequest->files[$fieldName], $fieldData) instanceof FormHandleException) {
+                    $newFileData = $this->handleFile($currentRequest->files[$fieldName], $fieldData);
+                    if ($newFileData instanceof FormHandleException){
                         $this->errors[$fieldName] = ['error' => $newFileData, 'status' => true, 'result' => $currentRequest->files[$fieldName]];
                         continue;
                     }
@@ -483,7 +505,9 @@ class Form
             }
 
             foreach ($filesArray as $name => $data) {
-                $this->data[$name]['result'] = new FormFile($data['tmp_name'], $this->data, $data['name'], $data['type']);
+                if ($data){
+                    $this->data[$name]['result'] = new FormFile($data['tmp_name'], $this->data, $data['name'], $data['type']);
+                }
             }
 
             if ($this->errors) {

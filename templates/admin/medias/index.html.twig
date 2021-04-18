@@ -1,0 +1,35 @@
+{% extends 'layout/admin_index_base.html.twig' %}
+
+{% block main %}
+    <main>
+        <div class="maw-90 m-auto mt-3 mb-3 d-f fd-c">
+            <section class="w-100 m-auto pt-3">
+                <div class="ta-l">
+                    <h1 class="fw-600">Médias : {{ content.mediaType|default('') }}</h1>
+                </div>
+                <div class="ta-r">
+                    <a href="/admin/structure/medias/{{ content.mediaType }}/new" class="m-0-5 button-bb-wc br-5 fw-600">Nouveau média</a>
+                </div>
+                <div class="d-f fd-c flex-w grid-3 jc-sa mt-1 pb-3">
+                    {% for media in content.items %}
+                        <div class="bcg-light3 p-1 br-10 w-15 d-f fd-c ac-c">
+                            <span class="fs-1 mb-0-5 fw-700 fb-15">{{ media.name }}</span>
+                            <img src="{{ media.path }}" alt="">
+
+                            <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">
+                                <button class="m-0-5 button-bb-wc br-5 fw-600 js-toggle" data-type="display" data-target-id="actionDropdown{{ loop.index }}">Action</button>
+                                 <ul class="dropdown d-n" id="actionDropdown{{ loop.index }}">
+                                    <li><a href="/admin/structure/medias/{{ content.mediaType }}/{{ media.slug }}/edit" class="">Modifier</a></li>
+                                    <li><a href="/admin/structure/medias//{{ content.mediaType }}/{{ post.slug }}/delete" class="">Supprimer</a></li>
+                                </ul>
+                            </span>
+                        </div>
+                        {% endfor %}
+                    <div>
+                        {% include '/partials/inc/pagination.html.twig' %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+{% endblock %}

@@ -257,7 +257,7 @@ class ' . ucfirst($newData['name']) . 'Repository extends Repository
 
         if (true === $field['nullable']) {
             $types['$phpDoctype'] = $type . '|null';
-            $type = '?' . $type;
+            $type = '?' . $type . ' = null';
         } else {
             $types['$phpDoctype'] = $type;
         }

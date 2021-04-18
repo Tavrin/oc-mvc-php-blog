@@ -34,7 +34,6 @@ class ControllerResolver
     {
         [$class, $method] = explode('::', $controllerPath, 2);
 
-
         $class = new $class($request, $entityManager);
 
 

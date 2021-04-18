@@ -63,7 +63,7 @@
               "associatedEntity": "category",
               "repository": "App\\Repository\\CategoryRepository"
             },
-        "publishedAt" :
+        "createdAt" :
             {
               "fieldName" : "created_at",
               "type": "datetime"

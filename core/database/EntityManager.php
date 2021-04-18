@@ -77,7 +77,7 @@ class EntityManager
             $entityData[$parsedData['name']] = $parsedData;
         }
 
-        return $entityData;
+        return array_combine(array_map('strtolower', array_keys($entityData)), $entityData);
     }
 
     public function getChildrenEntities(object $entity, array $entityData = null): ?array
