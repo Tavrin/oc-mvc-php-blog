@@ -60,6 +60,26 @@
         "controller": "App\\Controller\\admin\\CategoryController::editAction"
     },
     {
+        "route": "admin_users",
+        "path": "/admin/users",
+        "controller": "App\\Controller\\admin\\UserController::indexAction"
+    },
+    {
+        "route": "new_user",
+        "path": "/admin/users/new",
+        "controller": "App\\Controller\\admin\\UserController::newAction"
+    },
+    {
+        "route": "edit_user",
+        "path": "/admin/users/{slug}/edit",
+        "controller": "App\\Controller\\admin\\UserController::editAction"
+    },
+    {
+        "route": "delete_user",
+        "path": "/admin/users/{slug}/delete",
+        "controller": "App\\Controller\\admin\\UserController::deleteAction"
+    },
+    {
         "route": "admin_mediaTypes",
         "path": "/admin/structure/medias",
         "controller": "App\\Controller\\admin\\MediaTypeController::indexAction"

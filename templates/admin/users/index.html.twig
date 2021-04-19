@@ -1,0 +1,50 @@
+{% extends 'layout/admin_index_base.html.twig' %}
+
+{% block main %}
+    <main>
+        <div class="maw-90 m-auto mt-3 mb-3 d-f fd-c">
+            <section class="w-100 m-auto pt-3">
+                <div class="ta-l">
+                    <h1 class="fw-600">Utilisateurs</h1>
+                </div>
+                <div class="ta-r">
+                    <a href="/admin/users/new" class="m-0-5 button-bb-wc br-5 fw-600">Nouvel utilisateur</a>
+                </div>
+                <div class="d-f fd-r flex-w grid-3 jc-sa mt-1 pb-3">
+                    <div class="bcg-light2 pb-1 br-10 w-100 d-f fd-c ac-c">
+                        <div class="ai-c pt-1 fs-1c3 fw-700 d-f fd-r jc-sa bcg-light3">
+                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-15">Nom d'utilisateur</span>
+                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-15">Email</span>
+                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-5">Statut</span>
+                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Role</span>
+                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Date d'inscription</span>
+                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Dernière connexion</span>
+                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Operation</span>
+                        </div>
+                        {% for user in content.items %}
+                            <div class="ai-c fs-1c3 fw-700 d-f fd-r jc-sa hrem-5 {% if not loop.last %} bb-dg {% endif %}">
+                                <span class="text-muted fs-1 mb-0-5 fw-500 fb-15">{{ user.username }}</span>
+                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-15">{{ user.email }}</span>
+                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-5">{{ user.status ? 'activé' : 'desactivé'}}</span>
+
+                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{% for role in user.roles %} {{ role }}{% endfor %}</span>
+                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ user.createdAt|date("d/m/Y: H:i") }}</span>
+                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ user.lastConnexion|date("d/m/Y: H:i") }}</span>
+                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">
+                                <button class="m-0-5 button-bb-wc br-5 fw-600 js-toggle" data-type="display" data-target-id="actionDropdown{{ loop.index }}">Action</button>
+                                 <ul class="dropdown d-n" id="actionDropdown{{ loop.index }}">
+                                    <li><a href="/admin/users/{{ user.slug }}/edit" class="">Modifier</a></li>
+                                    <li><a href="/admin/users/{{ user.slug }}/delete" class="">Supprimer</a></li>
+                                </ul>
+                            </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {% include '/partials/inc/pagination.html.twig' %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+{% endblock %}

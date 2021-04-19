@@ -150,7 +150,9 @@ class Form
         $options['type'] = 'select';
         $input = "<select name='{$name}' " ;
 
-        isset($options['id']) ? true :  $options['id'] = $name;
+        if ((isset($options['entitySelect']) && true === $options['entitySelect']) || !isset($options['entitySelect'] )) {
+            $options['id'] ?? $options['id'] = $name;
+        }
         foreach ($options as $optionName => $option) {
 
             if (!in_array($optionName, FormEnums::SELECT['attributes'])) {
@@ -186,7 +188,7 @@ class Form
         foreach ($selection as $item) {
             $selected = '';
             if (is_array($item) && isset($item['id'])) {
-                if ($options['selected'] && $options['selected'] === $item['id']) {
+                if (isset($options['selected']) && $options['selected'] === $item['id']) {
                     $selected = 'selected="' . $item['id'] . '"';
                 } elseif (true === $this->session->get('formError') && $formData = $this->session->get('formData')) {
                     if (array_key_exists($name, $formData)) {
@@ -482,10 +484,14 @@ class Form
     public function handle(Request $request)
     {
         $this->updateToken();
-        if (false !== $currentRequest = $this->validateRequest($request)) {
 
-            $this->session->remove('formError');
-            $this->session->remove('formData');
+        $this->session->remove('formError');
+        $this->session->remove('formData');
+        $currentRequest = $this->validateRequest($request);
+        if ($currentRequest instanceof FormHandleException) {
+            $this->errors['request'] = ['error' => $currentRequest, 'status' => true, 'result' => $request];
+            return;
+            }
 
             $this->isSubmitted = true;
             $filesArray = [];
@@ -535,7 +541,7 @@ class Form
 
             $this->isValid = true;
 
-        }
+
     }
 
     protected function updateToken()
@@ -641,15 +647,17 @@ class Form
 
     /**
      * @param Request $request
-     * @return Request|false
+     * @return FormHandleException|Request
      */
     private function validateRequest(Request $request)
     {
         $oldToken = $this->session->get('csrf-old');
-        if (!isset($request->request)
-            || (isset($this->name) && (!isset($request->request['formName']) || $this->name !== $request->getRequest('formName'))
-            || ( !isset($request->request['csrf']) || !isset($oldToken) || $request->getRequest('csrf') !== $oldToken))) {
-            return false;
+        if (!isset($request->request)) {
+            return new FormHandleException('request', 'the request doesn\'t exist');
+        } elseif (isset($this->name) && (!isset($request->request['formName']) || $this->name !== $request->getRequest('formName'))) {
+            return new FormHandleException('requestName', 'the request names don\'t match');
+            } elseif ( !isset($request->request['csrf']) || !isset($oldToken) || $request->getRequest('csrf') !== $oldToken) {
+            return new FormHandleException('csrf', 'the csrf tokens don\'t match');
         }
 
         return $request;
@@ -692,11 +700,12 @@ class Form
             return false;
         }
 
-        $fieldType = gettype(StringUtils::changeTypeFromValue($requestField));
+        $newTypeData = StringUtils::changeTypeFromValue($requestField);
+        $fieldType = gettype($newTypeData);
 
         if (isset($fieldData['type']) && 'datetime' === $fieldData['type'] && preg_match('#^(?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}?))$#', $requestField, $match)) {
-            $requestField = new DateTime($match[0]);
-            $fieldType = strtolower(get_class($requestField));
+            $newTypeData = new DateTime($match[0]);
+            $fieldType = strtolower(get_class($newTypeData));
         }
 
         $entityField = $this->allEntityData[$entityName][EntityEnums::FIELDS_CATEGORY][$fieldData['fieldName']];
@@ -716,7 +725,7 @@ class Form
         }
 
         $entityMethod = 'set' . ucfirst($fieldData['fieldName']);
-        $fieldData['entity']->$entityMethod($associatedEntity ?? $requestField);
+        $fieldData['entity']->$entityMethod($associatedEntity ?? $newTypeData);
         return true;
     }
 
@@ -729,7 +738,7 @@ class Form
         return array_key_exists($fieldName, $this->data) ? $this->data[$fieldName]['result'] : null;
     }
 
-    public function getAllData()
+    public function getAllData(): array
     {
         return $this->data;
     }

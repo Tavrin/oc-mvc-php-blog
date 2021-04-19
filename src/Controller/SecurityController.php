@@ -25,12 +25,13 @@ class SecurityController extends Controller
 
     /**
      * @throws \PHPMailer\PHPMailer\Exception
+     * @throws \Exception
      */
     public function register(Request $request): Response
     {
         $user = new User();
         $userManager = new UserManager($this->getManager());
-        $form = new RegisterForm($request,$user, $this->session, ['name' => 'registerform', 'wrapperClass' => 'mb-1']);
+        $form = new RegisterForm($request,$user, $this->session, ['name' => 'registerForm', 'wrapperClass' => 'mb-1']);
 
         $form->handle($request);
 
@@ -86,18 +87,17 @@ class SecurityController extends Controller
         $form = new LoginForm($request,$userTemplate, $this->session, ['name' => 'loginform', 'wrapperClass' => 'mb-1']);
 
         $form->handle($request);
-
         if ($form->isValid) {
             if (!$user = $userManager->verifyUserLogin($userTemplate)) {
                 $this->redirect(self::LOGIN_PATH, ['type' => 'danger', 'message' => 'La connexion a échouée, veuillez réessayer']);
             }
 
+            $userManager->setLastConnexion($user);
             $this->session->set('user', $user);
             $this->redirect('/', ['type' => 'success', 'message' => 'Connexion réussie !']);
         }
 
         $content['title'] = 'Connexion';
-        $content['breadcrumb'] = $request->getAttribute('breadcrumb');
 
         return $this->render('pages/login.html.twig',[
             'content' => $content,

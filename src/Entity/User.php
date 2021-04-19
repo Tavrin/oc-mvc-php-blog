@@ -34,6 +34,11 @@ class User
     /**
      * @var string
      */
+    private string $uuid;
+
+    /**
+     * @var string
+     */
     private string $email;
 
     /**
@@ -49,25 +54,49 @@ class User
     /**
      * @var string|null
      */
-    private ?string $token;
+    private ?string $token = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $slug;
+
+    /**
+     * @var string|null
+     */
+    private ?string $path;
 
     /**
      * @var array|null
      */
     private ?array $roles = null;
+
     /**
-     * @var \DateTime
+     * @var Media|null
      */
-    private \DateTime $publishedAt;
+    private ?Media $media = null;
+
+    /**
+     * @var \DateTime|null
+     */
+    private ?\DateTime $createdAt = null;
 
     /**
      * @var \DateTime|null
      */
     private ?\DateTime $updatedAt = null;
 
+    /**
+     * @var \DateTime|null
+     */
+    private ?\DateTime $lastConnexion = null;
+
     public function __construct()
     {
-        $this->publishedAt = new \DateTime();
+        if (!$this->getCreatedAt()) {
+            $this->createdAt = new \DateTime();
+        }
+
         $this->roles[] = 'ROLE_USER';
     }
 
@@ -79,6 +108,16 @@ class User
     public function setId(int $id)
     {
         $this->id = $id;
+    }
+
+    public function getUuid(): string
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(string $uuid)
+    {
+        $this->uuid = $uuid;
     }
 
     public function getFirstName(): ?string
@@ -177,14 +216,44 @@ class User
         $this->roles = $roles;
     }
 
-    public function getPublishedAt(): ?\DateTime
+    public function getSlug(): ?string
     {
-        return $this->publishedAt;
+        return $this->slug;
     }
 
-    public function setPublishedAt(\DateTime $publishedAt)
+    public function setSlug(string $slug)
     {
-        $this->publishedAt = $publishedAt;
+        $this->slug = $slug;
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(string $path)
+    {
+        $this->path = $path;
+    }
+
+    public function setMedia(?Media $media)
+    {
+        $this->media = $media;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
     }
 
     public function getUpdatedAt(): ?\DateTime
@@ -195,5 +264,20 @@ class User
     public function setUpdatedAt(?\DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    public function getLastConnexion(): ?\DateTime
+    {
+        return $this->lastConnexion;
+    }
+
+    public function setLastConnexion(?\DateTime $lastConnexion)
+    {
+        $this->lastConnexion = $lastConnexion;
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->getRoles());
     }
 }

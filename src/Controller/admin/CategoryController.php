@@ -6,6 +6,7 @@ use App\Entity\Category;
 use App\Forms\CategoryEditorForm;
 use App\Manager\AdminManager;
 use Core\controller\Controller;
+use Core\http\exceptions\NotFoundException;
 use Core\http\Request;
 use Core\http\Response;
 
@@ -50,7 +51,6 @@ class CategoryController extends Controller
             $this->redirect('/admin/structure/categories/new', ['type' => 'danger', 'message' => "La catégorie n'a pas pu être ajoutée"]);
         }
 
-        $content['breadcrumb'] = $request->getAttribute('breadcrumb');
         $content['action'] = 'new';
         $content['title'] = 'Nouvelle catégorie';
 
@@ -60,8 +60,39 @@ class CategoryController extends Controller
         ]);
     }
 
-    function editAction(Request $request)
+    /**
+     * @throws \Exception
+     */
+    function editAction(Request $request, $slug)
     {
+        $adminManager = new AdminManager($this->getManager());
 
+        if (!$category = $adminManager->findOneByCriteria('category', 'slug', $slug)) {
+            throw new NotFoundException('The category doesn\'t exist');
+        }
+
+        $categoryName = $category->getName();
+        $categoryForm = new CategoryEditorForm($request,$category, $this->session, ['name' => 'newCategory', 'type' => 'edit', 'wrapperClass' => 'mb-1']);
+        $categoryForm->handle($request);
+
+        if ($categoryForm->isSubmitted && $categoryForm->isValid) {
+            $media = $categoryForm->getData('mediaHiddenInput');
+            $category->setMedia($adminManager->findOneByCriteria('media', 'path', $media));
+            if (true === $adminManager->updateEntity($category)) {
+                $this->redirect('/admin/structure/categories', ['type' => 'success', 'message' => "Catégorie ${$categoryName} modifiée avec succès"]);
+            } else {
+                $this->redirect('/admin/structure/categories/' . $slug . '/edit', ['type' => 'danger', 'message' => "La catégorie n'a pas pu être modifiée"]);
+            }
+        } elseif ($categoryForm->isSubmitted) {
+            $this->redirect('/admin/structure/categories/' . $slug . '/edit', ['type' => 'danger', 'message' => "La catégorie n'a pas pu être modifiée"]);
+        }
+
+        $content['action'] = 'edit';
+        $content['title'] = 'éditer la catégorie : ' . $categoryName;
+
+        return $this->render('admin/categories/editor.html.twig', [
+            'form' => $categoryForm->renderForm(),
+            'content' => $content ?? null
+        ]);
     }
 }

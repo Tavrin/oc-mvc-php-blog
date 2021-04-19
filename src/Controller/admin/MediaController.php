@@ -77,7 +77,7 @@ class MediaController extends Controller
         }
 
         $mediaForm = new MediaForm($request, $media, $this->session, ['type' => 'edit']);
-        $mediaManager = new MediaManager($this->getManager());
+        $adminManager = new AdminManager($this->getManager());
 
         $mediaForm->handle($request);
 
@@ -90,7 +90,7 @@ class MediaController extends Controller
 
                 $mediaFile->put('uploads/media/' . $type . '/', $media->getSlug() . '.' . $mediaFile->getUploadExtension());
                 $media->setPath($mediaFile->getRelativePath());
-                if (true === $mediaManager->updateMedia($media)) {
+                if (true === $adminManager->updateEntity($media)) {
                     $mediaName = $media->getName();
                     $this->redirect("/admin/structure/medias/{$type}", ['type' => 'success', 'message' => 'Media type ' . $mediaName . ' modifié avec succès']);
                 }

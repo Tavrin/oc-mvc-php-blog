@@ -100,7 +100,7 @@ class AdminManager
         return $content;
     }
 
-    public function getSelection(string $entityName, array $options): ?array
+    public function getEntitySelection(string $entityName, array $options): ?array
     {
         if (!isset($this->allEntityData[$entityName])) {
             return null;
@@ -146,13 +146,18 @@ class AdminManager
     {
         $entity->setPath('/blog/' . $entity->getSlug());
         $entity->setStatus(true);
-        $uuid = Uuid::uuid4()->toString();
-        $entity->setUuid($uuid);
+        $entity->setUuid(Uuid::uuid4()->toString());
         if (!$entity->getSlug()) {
             $entity->setSlug(StringUtils::slugify($entity->getName()));
         }
 
         $this->em->save($entity);
+        return $this->em->flush();
+    }
+
+    public function updateEntity(object $entity): bool
+    {
+        $this->em->update($entity);
         return $this->em->flush();
     }
 

@@ -756,6 +756,10 @@ h1 {
     flex-basis: auto;
 }
 
+.fb-5 {
+    flex-basis: 5%;
+}
+
 .fb-10 {
     flex-basis: 10%;
 }
@@ -764,6 +768,9 @@ h1 {
     flex-basis: 15%;
 }
 
+.fb-20 {
+    flex-basis: 20%;
+}
 
 .fb-25 {
     flex-basis: 25%;

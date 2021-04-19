@@ -6,12 +6,12 @@ namespace App\Controller;
 
 use Core\controller\Controller;
 use Core\http\Request;
+use Core\http\Response;
 
 class IndexController extends Controller
 {
-    public function indexAction(Request $request)
+    public function indexAction(Request $request): Response
     {
-        $this->session->getAll();
         $content['title'] = 'Homepage';
         return $this->render('pages/home.html.twig',[
             'content' => $content

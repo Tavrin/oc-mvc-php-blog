@@ -52,7 +52,7 @@ class BlogController extends Controller
         $post = new Post();
         $blogManager = new BlogManager($em);
         $adminManager = new AdminManager($em);
-        $selection = $adminManager->getSelection('category', ['placeholder' => 'name']);
+        $selection = $adminManager->getEntitySelection('category', ['placeholder' => 'name']);
 
         $content = null;
         $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'new', 'wrapperClass' => 'mb-1']);
@@ -111,7 +111,7 @@ class BlogController extends Controller
             $this->redirect($redirectPath, ['type' => 'danger', 'message' => 'l\'article n\'a pas été trouvé en base de données']);
         }
 
-        $selection = $adminManager->getSelection('category', ['placeholder' => 'name']);
+        $selection = $adminManager->getEntitySelection('category', ['placeholder' => 'name']);
         $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'edit', 'wrapperClass' => 'mb-1', 'errorClass' => 'form-control-error']);
 
         $editorForm->handle($request);
