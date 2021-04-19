@@ -697,6 +697,9 @@ class Form
     {
         $entityName = strtolower(ClassUtils::getClassNameFromObject($fieldData['entity']));
         if (!isset($this->allEntityData[$entityName]['fields'][$fieldData['fieldName']])) {
+            dump($fieldData['fieldName']);
+            dump($entityName);
+            dd($this->allEntityData[$entityName]);
             return false;
         }
 
@@ -721,6 +724,7 @@ class Form
 
         if ((EntityEnums::TYPE_ASSOCIATION !== $entityField[EntityEnums::FIELD_TYPE] && $fieldType !== $entityField[EntityEnums::FIELD_TYPE]) ||
             (EntityEnums::TYPE_ASSOCIATION === $entityField[EntityEnums::FIELD_TYPE] && !isset($associatedEntity))) {
+            dd('test2');
             return false;
         }
 

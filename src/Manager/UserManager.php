@@ -158,7 +158,6 @@ class UserManager
     {
         $password = $userTemplate->getPassword();
         $passwordConfirm = $userForm->getData('passwordConfirm');
-
         if (!password_verify($passwordConfirm, $password)) {
             return false;
         }

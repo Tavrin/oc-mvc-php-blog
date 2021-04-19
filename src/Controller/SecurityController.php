@@ -156,16 +156,18 @@ class SecurityController extends Controller
         }
 
         $userTemplate = new User();
-        $form = new ResetPasswordForm($request, $userManager, $this->session, ['action' => $request->getPathInfo() . '?token=' . $request->getQuery('token'), 'wrapperClass' => 'mb-1']);
+        $form = new ResetPasswordForm($request, $userTemplate, $this->session, ['action' => $request->getPathInfo() . '?token=' . $request->getQuery('token'), 'wrapperClass' => 'mb-1']);
         $form->handle($request);
 
-        if ($form->isValid) {
+        if ($form->isSubmitted && $form->isValid) {
             if ($userManager->resetPassword($form, $user, $userTemplate)) {
                 $userManager->newToken($user, 'update');
                 $this->redirect('/login', ['type' => 'success', 'message' => 'Modification réussie']);
             }
 
             $this->redirect('/', ['type' => 'danger', 'message' => "La modification n'a pas pu aboutir"]);
+        } elseif ($form->isSubmitted) {
+            dd($form->errors);
         }
 
         return $this->render('pages/reset.html.twig', [

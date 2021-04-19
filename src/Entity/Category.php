@@ -56,7 +56,7 @@ class Category
     /**
      * @var bool
      */
-    private ?bool $status;
+    private ?bool $status = true;
 
     /**
      * @var DateTime
