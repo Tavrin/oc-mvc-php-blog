@@ -140,6 +140,7 @@ class FormEnums
         'attributes' => [
             'dataAttributes',
             'required',
+            'onchange',
             'value',
             'id',
             'style',

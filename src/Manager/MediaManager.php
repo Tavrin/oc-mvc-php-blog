@@ -7,6 +7,7 @@ namespace App\Manager;
 use App\Repository\MediaTypeRepository;
 use Core\database\DatabaseResolver;
 use Core\database\EntityManager;
+use Core\http\exceptions\ForbiddenException;
 use Core\utils\StringUtils;
 use Ramsey\Uuid\Uuid;
 
@@ -32,11 +33,20 @@ class MediaManager
         return false;
     }
 
+    public function updateMedia(object $entity): bool
+    {
+        $this->em->update($entity);
+        return $this->em->flush();
+    }
+
     public function saveMediaType(object $entity): ?bool
     {
         $uuid = Uuid::uuid4()->toString();
         $entity->setUuid($uuid);
-        $entity->setSlug(StringUtils::slugify($entity->getName()));
+        if (!$entity->getSlug()) {
+            $entity->setSlug(StringUtils::slugify($entity->getName()));
+        }
+
         $entity->setStatus(true);
 
         $this->em->save($entity);

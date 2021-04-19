@@ -20,7 +20,8 @@ class MediaForm extends Form
             ->addTextInput('slug', ['class' => 'form-control', 'placeholder' => "Nom machine", 'label' => 'Slug', 'value' => 'edit' === $options['type']? $entity->getSlug() : null])
             ->addDateTimeInput('createdAt', ['class' => 'form-control', 'placeholder' => "Date de création", 'value' => 'edit' === $options['type']? $entity->getCreatedAt()->format("Y-m-d\TH:i:s") : null])
             ->addDateTimeInput('updatedAt', ['class' => 'form-control', 'placeholder' => "Date de modification", 'value' => 'edit' === $options['type']? $entity->getUpdatedAt()->format("Y-m-d\TH:i:s") : null])
-            ->addFileInput('mediaFile',['class' => 'form-control mt-1 mb-1', 'label' => 'Media', 'entity' => false, 'accept' => 'image/*', 'whitelist' => ['mimes' => 'WHITELIST_IMAGE', 'type' => 'enum']])
+            ->addDiv('mediaShow', ['class' => 'hrem-6 js-filler', 'dataAttributes' => ['type' => 'image', 'id' => 'previewImage', 'class' => 'mh-100 mw-100', 'src' => 'edit' === $options['type']? $entity->getPath() : ''], 'wrapperClass' => 'mt-1', 'label' => 'Prévisualisation de l\'image'])
+            ->addFileInput('mediaFile',['class' => 'form-control mt-1 mb-1 js-binder', 'dataAttributes' => ['type' => 'image', 'from' => 'file', 'target' => 'previewImage'], 'label' => 'Media', 'entity' => false, 'accept' => 'image/*', 'whitelist' => ['mimes' => 'WHITELIST_IMAGE', 'type' => 'enum']])
             ->setSubmitValue('accepter', ['class' => 'button-bb-wc mt-1 ta-c'])
         ;
 

@@ -13,6 +13,8 @@ use Core\database\EntityManager;
 use Core\http\exceptions\NotFoundException;
 use Core\utils\ArrayUtils;
 use Core\utils\Paginator;
+use Core\utils\StringUtils;
+use Ramsey\Uuid\Uuid;
 
 class AdminManager
 {
@@ -75,10 +77,10 @@ class AdminManager
             $entities = $entityRepository->findAll(['column' => $column, 'order' => $order]);
         }
 
-        $categoryEntityDataFields = $this->allEntityData[$type]['fields'];
+        $entityDataFields = $this->allEntityData[$type]['fields'];
         $content = [];
         foreach ($entities as $key => $entity) {
-            foreach ($categoryEntityDataFields as $fieldName => $fieldData) {
+            foreach ($entityDataFields as $fieldName => $fieldData) {
                 $method = 'get' . ucfirst($fieldName);
                 $content['items'][$key][$fieldName] = $entity->$method();
             }
@@ -126,8 +128,42 @@ class AdminManager
 
     }
 
+    public function deleteEntity(string $entityName, $criteria, string $row): bool
+    {
+        $entityData = $this->allEntityData[strtolower($entityName)];
+        $entityRepository = $entityData['repository'];
+        $entityRepository = new $entityRepository($this->em);
+        if (!$entity = $entityRepository->findOneBy($row, $criteria)) {
+            throw new NotFoundException();
+        }
+
+        $this->em->remove($entity);
+        $this->em->flush();
+        return true;
+    }
+
     public function saveCategory($entity): bool
     {
-        return true;
+        $entity->setPath('/blog/' . $entity->getSlug());
+        $entity->setStatus(true);
+        $uuid = Uuid::uuid4()->toString();
+        $entity->setUuid($uuid);
+        if (!$entity->getSlug()) {
+            $entity->setSlug(StringUtils::slugify($entity->getName()));
+        }
+
+        $this->em->save($entity);
+        return $this->em->flush();
+    }
+
+    public function findOneByCriteria(string $entityName,string $row, string $criteria)
+    {
+        if (!isset($this->allEntityData[$entityName])) {
+            return null;
+        }
+
+        $entityRepo = new $this->allEntityData[$entityName]['repository'];
+        return $entityRepo->findOneBy($row, $criteria);
+
     }
 }

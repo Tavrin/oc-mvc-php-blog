@@ -53,9 +53,9 @@ class Post
     private ?string $path;
 
     /**
-     * @var string|null
+     * @var Media|null
      */
-    private ?string $media;
+    private ?Media $media = null;
 
     /**
      * @var User|null
@@ -198,12 +198,12 @@ class Post
         $this->category = $category;
     }
 
-    public function setMedia(?string $media)
+    public function setMedia(?Media $media)
     {
         $this->media = $media;
     }
 
-    public function getMedia(): ?string
+    public function getMedia(): ?Media
     {
         return $this->media;
     }
@@ -223,7 +223,7 @@ class Post
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTime $updatedAt)
+    public function setUpdatedAt(?DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }
@@ -233,7 +233,7 @@ class Post
         return $this->status;
     }
 
-    public function setStatus(bool $status)
+    public function setStatus(?bool $status)
     {
         $this->status = $status;
     }

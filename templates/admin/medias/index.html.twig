@@ -10,7 +10,7 @@
                 <div class="ta-r">
                     <a href="/admin/structure/medias/{{ content.mediaType }}/new" class="m-0-5 button-bb-wc br-5 fw-600">Nouveau média</a>
                 </div>
-                <div class="d-f fd-c flex-w grid-3 jc-sa mt-1 pb-3">
+                <div class="d-f fd-r flex-w grid-3 jc-sb mt-1 pb-3">
                     {% for media in content.items %}
                         <div class="bcg-light3 p-1 br-10 w-15 d-f fd-c ac-c">
                             <span class="fs-1 mb-0-5 fw-700 fb-15">{{ media.name }}</span>
@@ -20,7 +20,7 @@
                                 <button class="m-0-5 button-bb-wc br-5 fw-600 js-toggle" data-type="display" data-target-id="actionDropdown{{ loop.index }}">Action</button>
                                  <ul class="dropdown d-n" id="actionDropdown{{ loop.index }}">
                                     <li><a href="/admin/structure/medias/{{ content.mediaType }}/{{ media.slug }}/edit" class="">Modifier</a></li>
-                                    <li><a href="/admin/structure/medias//{{ content.mediaType }}/{{ post.slug }}/delete" class="">Supprimer</a></li>
+                                    <li><a href="/admin/structure/medias/{{ content.mediaType }}/{{ media.slug }}/delete" class="">Supprimer</a></li>
                                 </ul>
                             </span>
                         </div>

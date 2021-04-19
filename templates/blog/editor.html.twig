@@ -1,18 +1,13 @@
-{% extends 'layout/base.html.twig' %}
+{% extends 'layout/admin_index_base.html.twig' %}
 
 {% block head %}
     {{ parent() }}
     {% include 'partials/inc/editor-import.html.twig' %}
 {% endblock %}
 
-{% block header %}
-    {% include 'partials/admin_header.html.twig' %}
-    {% include 'partials/inc/flash.html.twig' %}
-{% endblock %}
-
-
 {% block main %}
-<main class="">
+{% include 'partials/inc/media_modal.html.twig' %}
+    <main class="">
     <div class="maw-70 m-auto mt-3 mb-3 d-f fd-c">
         <section id="home-presentation" class="d-f jc-c m-auto pt-3 pb-3 mb-3">
             <div class="ta-l">

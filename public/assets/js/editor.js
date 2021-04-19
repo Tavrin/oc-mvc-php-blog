@@ -1,6 +1,13 @@
 let editors = document.querySelectorAll('.editor');
-let saveCount = 0;
+let saveCount = {
+    'totalEditors' : 0,
+    'currentSaved' : 0
+};
+
+window.targetForm = null;
+
 editors.forEach((el) => {
+    saveCount['totalEditors']++;
     let targetForm = null;
     let targetInput = null;
     let content = null;
@@ -11,7 +18,7 @@ editors.forEach((el) => {
     const saveButton = document.getElementById(el.dataset.button);
 
     if (saveButton.dataset.target) {
-        document.querySelector(`#${saveButton.dataset.target}`) ? targetForm = document.querySelector(`#${saveButton.dataset.target}`): targetForm = null;
+        document.querySelector(`#${saveButton.dataset.target}`) ? window.targetForm = document.querySelector(`#${saveButton.dataset.target}`): window.targetForm = null;
     }
 
     if (el.dataset.target) {
@@ -108,10 +115,18 @@ editors.forEach((el) => {
             .then((outputData) => {
                 outputData.id = el.id;
                 targetInput.value = JSON.stringify(outputData);
-                targetForm.requestSubmit();
+                saveCount['currentSaved']++;
+                submitForm();
             }).catch((error) => {
                 console.log('Saving failed: ', error);
             });
     });
 });
+
+let submitForm = () => {
+    if (saveCount['totalEditors'] === saveCount['currentSaved']) {
+        targetForm.requestSubmit();
+    }
+}
+
 

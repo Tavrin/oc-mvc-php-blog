@@ -42,8 +42,9 @@ class Response
      * @param string $content
      * @return $this
      */
-    public function setJsonContent(array $content): Response
+    public function setJsonContent(array $content, int $status = 200): Response
     {
+        $this->setStatusCode($status);
         $this->content = json_encode($content);
 
         return $this;
@@ -70,6 +71,7 @@ class Response
         } else {
             $this->statusText = 'Unknown Status';
         }
+
         return $this;
     }
 

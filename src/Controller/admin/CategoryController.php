@@ -34,28 +34,34 @@ class CategoryController extends Controller
     {
         $category = new Category();
         $adminManager = new AdminManager($this->getManager());
-        $categoryForm = new CategoryEditorForm($request,$category, $this->session, ['name' => 'newCategory','submit' => false, 'type' => 'new', 'wrapperClass' => 'mb-1']);
+        $categoryForm = new CategoryEditorForm($request,$category, $this->session, ['name' => 'newCategory', 'type' => 'new', 'wrapperClass' => 'mb-1']);
         $categoryForm->handle($request);
 
         if ($categoryForm->isSubmitted) {
             if ($categoryForm->isValid) {
+                $media = $categoryForm->getData('mediaHiddenInput');
+                $category->setMedia($adminManager->findOneByCriteria('media', 'path', $media));
                 if (true === $adminManager->saveCategory($category)) {
-                    $mediaName = $category->getName();
-                    $this->redirect('/admin/structure/medias', ['type' => 'success', 'message' => "Media type ${$mediaName} ajouté avec succès"]);
+                    $categoryName = $category->getName();
+                    $this->redirect('/admin/structure/categories', ['type' => 'success', 'message' => "Catégorie ${$categoryName} ajoutée avec succès"]);
                 }
             }
 
-            $this->redirect('/admin/structure/medias/new', ['type' => 'danger', 'message' => "Le média n'a pas pu être ajouté"]);
+            $this->redirect('/admin/structure/categories/new', ['type' => 'danger', 'message' => "La catégorie n'a pas pu être ajoutée"]);
         }
 
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
         $content['action'] = 'new';
         $content['title'] = 'Nouvelle catégorie';
 
-
         return $this->render('admin/categories/editor.html.twig', [
             'form' => $categoryForm->renderForm(),
             'content' => $content ?? null
         ]);
+    }
+
+    function editAction(Request $request)
+    {
+
     }
 }

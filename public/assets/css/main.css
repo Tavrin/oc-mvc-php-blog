@@ -565,7 +565,23 @@ h1 {
 }
 
 /* height rem */
+.hrem-2 {
+    height: 2rem;
+}
+
+.hrem-3 {
+    height: 3rem;
+}
+
+.hrem-4 {
+    height: 4rem;
+}
+
 .hrem-5 {
+    height: 5rem;
+}
+
+.hrem-6 {
     height: 6rem;
 }
 /*max-height */
@@ -791,6 +807,19 @@ h1 {
 
 .br-50 {
     border-radius: 50%;
+}
+
+/* object-fet */
+.of-con {
+    object-fit: contain;
+}
+
+.of-cov {
+    object-fit: cover;
+}
+
+.of-f {
+    object-fit: fill;
 }
 
 /*buttons */

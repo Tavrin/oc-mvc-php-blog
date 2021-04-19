@@ -16,6 +16,7 @@ use Core\utils\ClassUtils;
 use Core\utils\StringUtils;
 use DateTime;
 use Exception;
+use Ramsey\Uuid\Uuid;
 use function array_key_exists;
 
 class Form
@@ -231,6 +232,19 @@ class Form
      * @param array $options
      * @return $this
      */
+    public function addDiv(string $name, array $options = []): Form
+    {
+        $options['type'] = 'div';
+        $this->setData(FormEnums::DIV, $name, $options);
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     * @return $this
+     */
     public function addFileInput(string $name, array $options = []): Form
     {
         $options['type'] = FormEnums::FILE['type'];
@@ -345,8 +359,8 @@ class Form
 
         if ('textarea' === $type['type']) {
             $input = "<textarea name='{$name}' ";
-        } elseif ('button' === $type['type']) {
-            $input = "<button ";
+        } elseif ('button' === $type['type'] || 'div' === $type['type']) {
+            $input = "<{$type['type']} ";
         } else {
             $input = "<input type='{$type['type']}' name='{$name}' ";
         }
@@ -354,7 +368,7 @@ class Form
         $input .= $this->setInputOptions($type, $options, $name);
         $input .= ">";
 
-        if ('textarea' === $type['type'] || 'button' === $type['type']) {
+        if ('textarea' === $type['type'] || 'button' === $type['type'] || 'div' === $type['type']) {
             if(isset($options['value'])) {
                 $input .= PHP_EOL . $options['value'];
             }
@@ -467,6 +481,7 @@ class Form
      */
     public function handle(Request $request)
     {
+        $this->updateToken();
         if (false !== $currentRequest = $this->validateRequest($request)) {
 
             $this->session->remove('formError');
@@ -476,6 +491,9 @@ class Form
             $filesArray = [];
 
             foreach ($this->data as $fieldName => $fieldData) {
+                if ('div' === $fieldData['type'] || 'button' === $fieldData['type']) {
+                    continue;
+                }
                 if ('file' === $fieldData['type']) {
                     $newFileData = $this->handleFile($currentRequest->files[$fieldName], $fieldData);
                     if ($newFileData instanceof FormHandleException){
@@ -506,7 +524,7 @@ class Form
 
             foreach ($filesArray as $name => $data) {
                 if ($data){
-                    $this->data[$name]['result'] = new FormFile($data['tmp_name'], $this->data, $data['name'], $data['type']);
+                    $this->data[$name]['result'] = new FormFile($data['tmp_name'], $this->data, $data['name'], $data['type'], $data['extension']);
                 }
             }
 
@@ -518,6 +536,15 @@ class Form
             $this->isValid = true;
 
         }
+    }
+
+    protected function updateToken()
+    {
+        $token = Uuid::uuid4();
+
+        $oldToken = $this->session->get('csrf-new');
+        $this->session->set('csrf-old', $oldToken);
+        $this->session->set('csrf-new', $token->toString());
     }
 
     private function validateAndSanitizeRequest($fieldData, $fieldName, $currentRequest)
@@ -547,6 +574,7 @@ class Form
         $newFileData = $currentField;
         $newFileData['type'] =  mime_content_type($newFileData['tmp_name']);
         $newFileData['name'] = StringUtils::slugify(pathinfo($newFileData['name'])['filename']) . '.' . pathinfo($newFileData['name'])['extension'];
+        $newFileData['extension'] = pathinfo($newFileData['name'])['extension'];
 
         if ($fieldData['whitelist']) {
             $fileError = $this->validateFileWhitelist($newFileData, $fieldData);
@@ -618,10 +646,9 @@ class Form
     private function validateRequest(Request $request)
     {
         $oldToken = $this->session->get('csrf-old');
-
         if (!isset($request->request)
             || (isset($this->name) && (!isset($request->request['formName']) || $this->name !== $request->getRequest('formName'))
-            || ( !isset($request->request['csrf']) || !isset($oldToken) || $request->getRequest('csrf') !== $oldToken->toString()))) {
+            || ( !isset($request->request['csrf']) || !isset($oldToken) || $request->getRequest('csrf') !== $oldToken))) {
             return false;
         }
 

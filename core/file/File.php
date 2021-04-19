@@ -66,4 +66,9 @@ class File extends \SplFileInfo
     {
         return mime_content_type($this->filePath);
     }
+
+    public function delete()
+    {
+        unlink($this->getFilePath());
+    }
 }

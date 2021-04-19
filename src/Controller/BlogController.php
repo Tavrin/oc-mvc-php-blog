@@ -28,14 +28,11 @@ class BlogController extends Controller
         }
 
         $blogManager = new BlogManager($this->getManager());
-        $posts = $blogManager->hydrateListing('created_at', 'DESC', ['page' => $query, 'limit' => 5]);
+        $content = $blogManager->hydrateListing('created_at', 'DESC', ['page' => $query, 'limit' => 5]);
 
-        $content['breadcrumb'] = $request->getAttribute('breadcrumb');
-        if (empty($posts)) {
+        if (empty($content)) {
             throw new NotFoundException("pas d'article de blog trouvé", 404);
         }
-
-        $content['posts'] = $posts;
 
         return $this->render('blog/index.html.twig',[
             'content' => $content
@@ -50,9 +47,7 @@ class BlogController extends Controller
         }
 
         $blogManager = new BlogManager($this->getManager());
-        $posts = $blogManager->hydrateListing('created_at', 'DESC', ['page' => $query, 'limit' => 5], $category);
-        $content['posts'] = $posts;
-        $content['breadcrumb'] = $request->getAttribute('breadcrumb');
+        $content = $blogManager->hydrateListing('created_at', 'DESC', ['page' => $query, 'limit' => 5], $category);
 
         return $this->render('blog/index.html.twig',[
             'content' => $content

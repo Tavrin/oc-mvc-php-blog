@@ -26,11 +26,7 @@ class Security
 
     public function setCSRFToken()
     {
-        $token = Uuid::uuid4();
 
-        $oldToken = $this->session->get('csrf-new');
-        $this->session->set('csrf-old', $oldToken);
-        $this->session->set('csrf-new', $token);
     }
 
     private function setUser(){

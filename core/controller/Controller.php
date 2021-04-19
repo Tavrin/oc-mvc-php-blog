@@ -100,10 +100,10 @@ class Controller
         return $constants;
     }
 
-    public function sendJson(array $data): Response
+    public function sendJson(array $data, int $status = 200): Response
     {
         $response = new Response();
-        $response->setJsonContent($data);
+        $response->setJsonContent($data, $status);
 
         return $response;
     }

@@ -66,20 +66,20 @@ class BlogManager
         return true;
     }
 
-    /** @noinspection DuplicatedCode */
     public function hydrateListing(string $column, string $order, array $pagination = null, string $category = null): ?array
     {
+        $content = [];
         if ($category) {
             $categoryRepo = new CategoryRepository($this->em);
             if (!$foundCategory = $categoryRepo->findOneBy('slug', $category)) {
                 throw new NotFoundException('The category doesn\'t exist', 404);
             }
             $posts = $this->postRepository->findBy('category_id', $foundCategory->getId(), ['column' => $column, 'order' => $order]);
+            $content['category'] = $foundCategory;
         } else {
             $posts = $this->postRepository->findAll(['column' => $column, 'order' => $order]);
         }
 
-        $content = [];
         $postEntityDataFields = $this->allEntityData['post']['fields'];
         foreach ($posts as $key => $post) {
             foreach ($postEntityDataFields as $fieldName => $fieldData) {

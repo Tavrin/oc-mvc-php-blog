@@ -57,8 +57,14 @@ abstract class Repository
             $entities[$entityKey]->setId($result[EntityEnums::ID_FIELD_NAME]) ;
 
             foreach ($this->entityData[EntityEnums::FIELDS_CATEGORY] as $key => $field) {
-                $insertData = $result[$field[EntityEnums::FIELD_NAME]];
                 $method = "set" . ucfirst($key);
+
+                if (!isset($result[$field[EntityEnums::FIELD_NAME]])) {
+                    $entities[$entityKey]->$method(null);
+                    continue;
+                }
+
+                $insertData = $result[$field[EntityEnums::FIELD_NAME]];
 
                 if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_DATE) {
                     $fieldData = new \DateTime($insertData);

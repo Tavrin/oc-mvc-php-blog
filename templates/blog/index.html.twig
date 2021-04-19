@@ -9,18 +9,20 @@
                     <h1 class="fw-600">Tous les articles</h1>
                 </div>
                 <div class="d-f fd-r flex-w grid-3 jc-sb mt-1 pb-3">
-                    {% if content.posts.items is defined and content.posts.items is not empty %}
-                        {% for post in content.posts.items %}
+                    {% if content.items is defined and content.items is not empty %}
+                        {% for post in content.items %}
                             <div>
                                 {% if post.media is defined and post.media is not empty %}
                                     <img src="{{ post.media }}" alt="">
+                                {% elseif post.category.media is defined and post.category.media is not empty %}
+                                    <img src="{{ post.category.media.path }}" alt="">
                                 {% else %}
                                     <img src="http://via.placeholder.com/376x220" alt="">
                                 {% endif %}
                                 <p class="pt-1 pb-1 fs-1c3 fw-700">
                                     <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500"><a href="{{ post.category.path }}">{{ post.category.name }}</a></span>
                                     {{ post.title }}
-                                    <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500"> {{ post.publishedAt|date("d-m-Y") }}</span>
+                                    <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500"> {{ post.createdAt|date("d-m-Y") }}</span>
                                 </p>
                             </div>
                         {% endfor %}

@@ -10,6 +10,7 @@ use App\Manager\BlogManager;
 use App\Repository\CategoryRepository;
 use App\Repository\PostRepository;
 use Core\controller\Controller;
+use Core\file\FileException;
 use Core\http\Request;
 use App\Entity\Post;
 use Core\http\Response;
@@ -42,6 +43,9 @@ class BlogController extends Controller
 
     }
 
+    /**
+     * @throws \Exception
+     */
     public function newAction(Request $request): Response
     {
         $em = $this->getManager();
@@ -71,8 +75,8 @@ class BlogController extends Controller
                 $this->redirect(self::NEW_POST_LINK, ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
 
-            $mediaFile->put('uploads/media', $mediaFile->getUploadName());
-            $post->setMedia($mediaFile->getRelativePath());
+            $media = $editorForm->getData('mediaHiddenInput');
+            $post->setMedia($adminManager->findOneByCriteria('media', 'path', $media));
 
             if ($blogManager->savePost($post, $this->getUser())) {
                 $this->redirect('/admin', ['type' => 'success', 'message' => 'Article publié avec succès']);
@@ -113,17 +117,15 @@ class BlogController extends Controller
         $editorForm->handle($request);
 
         if ($editorForm->isSubmitted && $editorForm->isValid) {
-
-            $mediaFile = $editorForm->getData('media');
-
             if (!$blogManager->validateEditor($editorForm)) {
                 $this->redirect("/admin/posts/{$slug}/edit", ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
 
-            $mediaFile->put('uploads/media', $mediaFile->getUploadName());
-            $post->setMedia($mediaFile->getRelativePath());
+            $media = $editorForm->getData('mediaHiddenInput');
+            $post->setMedia($adminManager->findOneByCriteria('media', 'path', $media));
+
             if ($blogManager->updatePost($post, $this->getUser())) {
-                $this->redirect('/admin', ['type' => 'success', 'message' => 'Article mis à jour avec succès']);
+                $this->redirect('/admin/posts', ['type' => 'success', 'message' => 'Article mis à jour avec succès']);
             }
 
             $this->redirect("/admin/posts/{$slug}/edit", ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);

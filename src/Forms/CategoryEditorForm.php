@@ -18,9 +18,11 @@ class CategoryEditorForm extends \Core\controller\Form
             ->addTextInput('metaTitle', ['class' => 'form-control', 'placeholder' => "Méta titre",  'value' => 'edit' === $options['type']? $entity->getMetaTitle() : null])
             ->addTextInput('metaDescription', ['class' => 'form-control', 'placeholder' => "Méta description",  'value' => 'edit' === $options['type']? $entity->getMetaDescription() : null])
             ->addTextInput('slug', ['class' => 'form-control', 'placeholder' => "Slug", 'value' => 'edit' === $options['type']? $entity->getSlug() : null])
-            ->addDateTimeInput('publishedAt', ['class' => 'form-control', 'placeholder' => "Date de publication", 'value' => 'edit' === $options['type']? $entity->getPublishedAt()->format("Y-m-d\TH:i:s") : null])
+            ->addDateTimeInput('createdAt', ['class' => 'form-control', 'placeholder' => "Date de publication", 'value' => 'edit' === $options['type']? $entity->getPublishedAt()->format("Y-m-d\TH:i:s") : null])
+            ->addHiddenInput('mediaHiddenInput', ['entity' => false, 'class' => 'js-binder', 'dataAttributes' => ['type' => 'image', 'from' => 'modal', 'target' => 'previewImage']])
             ->addButton('mediaLibrary', ['class' => 'js-modal button-bb-wc m-1', 'value' => 'Galerie média', 'type' => 'button', 'dataAttributes' => ['target-modal' => 'mediaModal']])
-            ->addFileInput('media', ['class' => 'form-control mt-1 mb-1', 'label' => 'Image par défaut', 'entity' => false, 'accept' => 'image/*', 'whitelist' => ['mimes' => 'WHITELIST_IMAGE, WHITELIST_VIDEO', 'type' => 'enum']])
-            ->addTextareaInput('description',['class' => 'form-control', 'placeholder' => "Description de la catégorie", 'label' => 'Description', 'rows' => 5]);
+            ->addDiv('mediaShow', ['class' => 'hrem-6 js-filler', 'dataAttributes' => ['type' => 'image', 'id' => 'previewImage', 'class' => 'mh-100 mw-100', 'src' => 'edit' === $options['type']? $entity->getPath() : ''], 'wrapperClass' => 'mt-1', 'label' => 'Prévisualisation de l\'image'])
+            ->addTextareaInput('description',['class' => 'form-control', 'placeholder' => "Description de la catégorie", 'label' => 'Description', 'rows' => 5])
+            ->setSubmitValue('accepter', ['class' => 'button-bb-wc mt-1 ta-c']);
     }
 }

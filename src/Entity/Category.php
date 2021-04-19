@@ -25,9 +25,38 @@ class Category
     private ?string $path = null;
 
     /**
+     * @var string
+     */
+    private string $slug;
+
+    /**
+     * @var string
+     */
+    private string $uuid;
+
+    /**
+     * @var Media|null
+     */
+    private ?Media $media = null;
+
+    /**
      * @var string|null
      */
     private ?string $description = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $metaTitle;
+    /**
+     * @var string|null
+     */
+    private ?string $metaDescription;
+
+    /**
+     * @var bool
+     */
+    private ?bool $status;
 
     /**
      * @var DateTime
@@ -42,10 +71,7 @@ class Category
     public function __construct()
     {
         $this->createdAt = new DateTime();
-
-        if ($this->name) {
-            $this->setPath(StringUtils::slugify($this->name));
-        }
+        $this->status = false;
     }
 
     public function getId(): ?int
@@ -78,6 +104,26 @@ class Category
         $this->description = $description;
     }
 
+    public function getMetaTitle(): ?string
+    {
+        return $this->metaTitle;
+    }
+
+    public function setMetaTitle(?string $metaTitle)
+    {
+        $this->metaTitle = $metaTitle;
+    }
+
+    public function getMetaDescription(): ?string
+    {
+        return $this->metaDescription;
+    }
+
+    public function setMetaDescription(?string $metaDescription)
+    {
+        $this->metaDescription = $metaDescription;
+    }
+
     public function getPath(): ?string
     {
         return $this->path;
@@ -86,6 +132,46 @@ class Category
     public function setPath(string $path)
     {
         $this->path = $path;
+    }
+
+    public function getUuid(): string
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(string $uuid)
+    {
+        $this->uuid = $uuid;
+    }
+
+    public function getStatus(): ?bool
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?bool $status)
+    {
+        $this->status = $status;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug)
+    {
+        $this->slug = $slug;
+    }
+
+    public function setMedia(?Media $media)
+    {
+        $this->media = $media;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
     }
 
     public function getCreatedAt(): DateTime
@@ -107,7 +193,7 @@ class Category
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTime $updatedAt)
+    public function setUpdatedAt(?DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }
