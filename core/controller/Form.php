@@ -679,6 +679,7 @@ class Form
         } elseif (isset($this->name) && (!isset($request->request['formName']) || $this->name !== $request->getRequest('formName'))) {
             $request = new FormHandleException('requestName', 'the request names don\'t match');
         } elseif ( !isset($request->request['csrf']) || !isset($oldToken) || $request->getRequest('csrf') !== $oldToken) {
+            $this->isSubmitted = true;
             $request = new FormHandleException('csrf', 'the csrf tokens don\'t match');
         }
 

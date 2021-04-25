@@ -98,7 +98,7 @@ class SecurityController extends Controller
             $this->session->set('user', $user);
             $this->redirect('/', ['type' => 'success', 'message' => 'Connexion réussie !']);
         } elseif ($form->isSubmitted) {
-            dd($form->errors);
+            $this->redirect(self::LOGIN_PATH, ['type' => 'danger', 'message' => 'La connexion a échouée, veuillez réessayer']);
         }
 
         $content['title'] = 'Connexion';
