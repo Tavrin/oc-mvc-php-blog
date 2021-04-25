@@ -16,7 +16,6 @@ use Core\http\Response;
 class BlogController extends Controller
 {
     private const NEW_POST_LINK = '/admin/posts/new';
-    private const EDIT_POST_LINK = '/admin/posts/edit';
 
     public function indexAction(Request $request): Response
     {
@@ -48,7 +47,7 @@ class BlogController extends Controller
         $selection = $blogManager->getSelection('category', ['placeholder' => 'name']);
 
         $content = null;
-        $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'new']);
+        $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'new', 'wrapperClass' => 'mb-1']);
         if ($this->session->get('formError') && $formData =$this->session->get('formData')) {
             if (array_key_exists('header', $formData)) {
                 $content['item']['header'] = $formData['header'];
@@ -62,11 +61,14 @@ class BlogController extends Controller
 
         if ($editorForm->isSubmitted && $editorForm->isValid) {
 
+            $mediaFile = $editorForm->getData('media');
+
             if (!$blogManager->validateEditor($editorForm)) {
-                $this->session->set('formError', true);
-                $this->session->set('formData', $request->request);
                 $this->redirect(self::NEW_POST_LINK, ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
+
+            $mediaFile->put('uploads/media', $mediaFile->getUploadName());
+            $post->setMedia($mediaFile->getRelativePath());
 
             if ($blogManager->savePost($post, $this->getUser())) {
                 $this->redirect('/admin', ['type' => 'success', 'message' => 'Article publié avec succès']);
@@ -101,22 +103,27 @@ class BlogController extends Controller
         }
 
         $selection = $blogManager->getSelection('category', ['placeholder' => 'name']);
-        $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'edit']);
+        $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'edit', 'wrapperClass' => 'mb-1', 'errorClass' => 'form-control-error']);
 
         $editorForm->handle($request);
 
         if ($editorForm->isSubmitted && $editorForm->isValid) {
 
+            $mediaFile = $editorForm->getData('media');
+
             if (!$blogManager->validateEditor($editorForm)) {
-                $this->redirect(self::EDIT_POST_LINK, ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
+                $this->redirect("/admin/posts/{$slug}/edit", ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
+
+            $mediaFile->put('uploads/media', $mediaFile->getUploadName());
+            $post->setMedia($mediaFile->getRelativePath());
             if ($blogManager->updatePost($post, $this->getUser())) {
                 $this->redirect('/admin', ['type' => 'success', 'message' => 'Article mis à jour avec succès']);
             }
 
-            $this->redirect(self::EDIT_POST_LINK, ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
+            $this->redirect("/admin/posts/{$slug}/edit", ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
         } elseif ($editorForm->isSubmitted) {
-            $this->redirect(self::EDIT_POST_LINK, ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
+            $this->redirect("/admin/posts/{$slug}/edit", ['type' => 'danger', 'message' => 'Des éléments du formulaire ne sont pas valides ou bien sont manquants']);
         }
 
         $content['action'] = 'edit';

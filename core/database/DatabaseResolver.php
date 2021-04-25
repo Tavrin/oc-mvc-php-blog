@@ -18,12 +18,12 @@ class DatabaseResolver
         return new EntityManager($url);
     }
 
-    public static function getDatabaseUrl()
+    public static function getDatabaseUrl(): ?string
     {
         $parsedUrl = JsonParser::parseFile(ROOT_DIR . '/config/configuration.json');
 
         if (empty($parsedUrl['database']['url'])) {
-            return false;
+            return null;
         }
 
         $parsedUrl = $parsedUrl['database']['url'];

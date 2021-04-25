@@ -7,7 +7,7 @@ namespace Core\database;
 abstract class Repository
 {
 
-    protected EntityManager $entityManager;
+    protected ?EntityManager $entityManager = null;
 
     protected string $entityName;
 

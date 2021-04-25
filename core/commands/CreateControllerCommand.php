@@ -44,8 +44,7 @@ class CreateControllerCommand extends Command
             $this->setRoute($newController);
         }
 
-        echo 'New Controller saved at :' . $newController['filepath'] . PHP_EOL;
-        PHP_EOL;
+        echo 'New Controller saved at :' . $newController['filepath'] . PHP_EOL . PHP_EOL;
         exit();
 
     }

@@ -6,6 +6,7 @@ namespace Core\commands;
 
 use Core\database\EntityEnums;
 use Core\database\EntityManager;
+use DateTime;
 
 class CreateEntityCommand extends Command
 {
@@ -269,7 +270,7 @@ class ' . ucfirst($newData['name']) . 'Repository extends Repository
     private function createMigrationFile(array $newData)
     {
         $doubleLine = PHP_EOL . PHP_EOL;
-        $timestamp = new \DateTime();
+        $timestamp = new DateTime();
         $timestamp = $timestamp->getTimestamp();
         $migrationTitle = 'Version' . $timestamp;
 

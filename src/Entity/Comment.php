@@ -5,6 +5,7 @@ namespace App\Entity;
 
 
 use App\Enums\CommentStatus;
+use DateTime;
 
 class Comment
 {
@@ -34,18 +35,18 @@ class Comment
     private User $user;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
-    private \DateTime $publishedAt;
+    private DateTime $publishedAt;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
-    private \DateTime $updatedAt;
+    private DateTime $updatedAt;
 
     public function __construct()
     {
-        $this->publishedAt = new \DateTime();
+        $this->publishedAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -88,22 +89,22 @@ class Comment
         $this->post = $post;
     }
 
-    public function getPublishedAt(): \DateTime
+    public function getPublishedAt(): DateTime
     {
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(\DateTime $publishedAt)
+    public function setPublishedAt(DateTime $publishedAt)
     {
         $this->publishedAt = $publishedAt;
     }
 
-    public function getUpdatedAt(): \DateTime
+    public function getUpdatedAt(): DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTime $updatedAt)
+    public function setUpdatedAt(DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }

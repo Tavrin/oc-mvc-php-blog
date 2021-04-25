@@ -104,6 +104,7 @@ class BlogManager
                 $content['items'][$key]['updatedAt'] = $updateDate->format("Y-m-d\TH:i:s");
             }
         }
+
         if ($pagination) {
             $itemsToKeep = [];
             $content['pages'] = intval(ceil(count($content['items']) / $pagination['limit']));

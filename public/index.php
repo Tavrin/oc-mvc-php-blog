@@ -10,9 +10,8 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(ROOT_DIR, '.env.local');
 
 $dotenv->load();
-
-$kernel = new Kernel();
 $request = Request::create();
+$kernel = new Kernel($request);
 $response = $kernel->handleRequest($request);
 $response->send();
 exit();

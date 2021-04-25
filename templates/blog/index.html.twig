@@ -12,7 +12,11 @@
                     {% if content.posts is defined and content.posts is not empty %}
                         {% for post in content.posts %}
                             <div>
-                                <img src="http://via.placeholder.com/376x220" alt="">
+                                {% if post.media is defined and post.media is not empty %}
+                                    <img src="{{ post.media }}" alt="">
+                                {% else %}
+                                    <img src="http://via.placeholder.com/376x220" alt="">
+                                {% endif %}
                                 <p class="pt-1 pb-1 fs-1c3 fw-700">
                                     <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">{{ post.category.name }}</span>
                                     {{ post.listingText ?: post.title }}

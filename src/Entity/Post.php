@@ -3,6 +3,8 @@
 
 namespace App\Entity;
 
+use DateTime;
+
 class Post
 {
     /**
@@ -51,6 +53,11 @@ class Post
     private ?string $path;
 
     /**
+     * @var string|null
+     */
+    private ?string $media;
+
+    /**
      * @var User|null
      */
     private ?User $author = null;
@@ -61,14 +68,14 @@ class Post
     private ?Category $category;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
-    private \DateTime $publishedAt;
+    private DateTime $publishedAt;
 
     /**
-     * @var \DateTime|null
+     * @var DateTime|null
      */
-    private ?\DateTime $updatedAt = null;
+    private ?DateTime $updatedAt = null;
 
     /**
      * @var bool
@@ -78,7 +85,7 @@ class Post
     public function __construct()
     {
         $this->status = false;
-        $this->publishedAt = new \DateTime();
+        $this->publishedAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -191,22 +198,32 @@ class Post
         $this->category = $category;
     }
 
-    public function getPublishedAt(): \DateTime
+    public function setMedia(?string $media)
+    {
+        $this->media = $media;
+    }
+
+    public function getMedia(): ?string
+    {
+        return $this->media;
+    }
+
+    public function getPublishedAt(): DateTime
     {
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(\DateTime $publishedAt)
+    public function setPublishedAt(DateTime $publishedAt)
     {
         $this->publishedAt = $publishedAt;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getUpdatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTime $updatedAt)
+    public function setUpdatedAt(DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }

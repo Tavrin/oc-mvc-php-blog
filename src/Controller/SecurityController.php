@@ -12,13 +12,14 @@ use App\Forms\RegisterForm;
 use App\Forms\ResetPasswordForm;
 use App\Manager\UserManager;
 use App\Repository\UserRepository;
+use Core\controller\Controller;
 use Core\controller\Form;
 use Core\email\Email;
 use Core\http\Request;
 use Core\http\Response;
 use Ramsey\Uuid\Uuid;
 
-class SecurityController extends \Core\controller\Controller
+class SecurityController extends Controller
 {
     private const LOGIN_PATH = '/login';
 
