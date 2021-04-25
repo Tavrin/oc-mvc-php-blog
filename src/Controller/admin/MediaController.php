@@ -19,6 +19,7 @@ use Core\utils\StringUtils;
 
 class MediaController extends Controller
 {
+    public const UPLOAD_ROOT = 'uploads/media/';
     public function indexAction(Request $request, string $type = null): Response
     {
         $em = $this->getManager();
@@ -59,7 +60,7 @@ class MediaController extends Controller
         if ($form->isSubmitted && $form->isValid) {
             $mediaManager = new MediaManager($this->getManager());
             $mediaFile = $form->getData('mediaFile');
-            $mediaFile->put('uploads/media/' . $type . '/', $media->getSlug() . '.' . $mediaFile->getUploadExtension());
+            $mediaFile->put(self::UPLOAD_ROOT . $type . '/', $media->getSlug() . '.' . $mediaFile->getUploadExtension());
             $media->setPath($mediaFile->getRelativePath());
             if (true === $mediaManager->saveMedia($media, $type)) {
                 $mediaName = $media->getName();
@@ -75,9 +76,6 @@ class MediaController extends Controller
             'form' => $form->renderForm(),
             'content' => $content
         ]);
-    }
-    public function showAction(Request $request, string $type)
-    {
     }
 
     /**
@@ -103,7 +101,7 @@ class MediaController extends Controller
                 $oldFile = new PublicFile($media->getPath());
                 $oldFile->delete();
 
-                $mediaFile->put('uploads/media/' . $type . '/', $media->getSlug() . '.' . $mediaFile->getUploadExtension());
+                $mediaFile->put(self::UPLOAD_ROOT . $type . '/', $media->getSlug() . '.' . $mediaFile->getUploadExtension());
                 $media->setPath($mediaFile->getRelativePath());
                 if (true === $adminManager->updateEntity($media)) {
                     $mediaName = $media->getName();
@@ -123,7 +121,7 @@ class MediaController extends Controller
         ]);
     }
 
-    public function deleteAction(Request $request, string $type, string $slug)
+    public function deleteAction(Request $request, string $slug)
     {
         $redirectPath = $request->getServer('HTTP_REFERER') ?? '/';
         $adminManager = new AdminManager($this->getManager());
@@ -133,7 +131,7 @@ class MediaController extends Controller
         $this->redirect($redirectPath, ['type' => 'success', 'message' => 'Suppression réussie']);
     }
 
-    public function indexApiAction(Request $request, string $type): Response
+    public function indexApiAction(string $type): Response
     {
         $em = $this->getManager();
         $adminManager = new AdminManager($em);
@@ -162,7 +160,7 @@ class MediaController extends Controller
         if ($form->isSubmitted && $form->isValid) {
             $file = $form->getData('mediaFile');
             $media->setSlug(StringUtils::slugify($media->getSlug()));
-            $file->put('uploads/media/' . $type . '/', $media->getSlug() . '.' . $file->getUploadExtension());
+            $file->put(self::UPLOAD_ROOT . $type . '/', $media->getSlug() . '.' . $file->getUploadExtension());
             $media->setPath($file->getRelativePath());
             if (true === $mediaManager->saveMedia($media, $type)) {
                 return $this->sendJson(['response' => 'ok', 'code' => 200]);

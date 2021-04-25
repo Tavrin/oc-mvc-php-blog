@@ -373,7 +373,7 @@ class Form
             $input = "<input type='{$type['type']}' name='{$name}' ";
         }
 
-        $input .= $this->setInputOptions($type, $options, $name);
+        $input .= $this->setInputOptions($type, $options);
         $input .= ">";
 
         if ('textarea' === $type['type'] || 'button' === $type['type'] || 'div' === $type['type']) {
@@ -395,7 +395,7 @@ class Form
      * @param string $name
      * @return string
      */
-    private function setInputOptions(array $type, array $options, string $name): string
+    private function setInputOptions(array $type, array $options): string
     {
         $input = '';
         foreach ($options as $optionName => $option) {

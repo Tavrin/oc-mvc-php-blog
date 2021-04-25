@@ -1,6 +1,6 @@
 "use strict";
 
-export class formRender {
+export class FormRender {
     constructor() {
         this.form =  document.createElement('form');
     }

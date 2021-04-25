@@ -20,11 +20,10 @@ use Ramsey\Uuid\Uuid;
 class AdminManager
 {
     private ?EntityManager $em;
-    private array $allEntityData = [];
 
     public function __construct(EntityManager $entityManager = null)
     {
-        $this->em = $entityManager ?? DatabaseResolver::instantiateManager();
+        $this->em = $entityManager;
     }
 
     public function hydrateDashboard(PostRepository $postRepository, UserRepository $userRepository, CommentRepository $commentRepository): array

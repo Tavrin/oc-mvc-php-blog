@@ -14,6 +14,7 @@ use Core\utils\Paginator;
 
 class BlogController extends Controller
 {
+    public const FIRST_PAGE = '?page=1';
     public function indexAction(Request $request): Response
     {
         $em = $this->getManager();
@@ -24,12 +25,12 @@ class BlogController extends Controller
         $paginator = new Paginator();
         $blogManager = new BlogManager($this->getManager(), $postRepository);
         if (false === $query = $adminManager->initializeAndValidatePageQuery($request)) {
-            $this->redirect($request->getPathInfo() . '?page=1');
+            $this->redirect($request->getPathInfo() . self::FIRST_PAGE);
         }
 
         $content = $blogManager->hydrateListing($entityData, $adminManager, $paginator, ['page' => $query, 'limit' => 9], 'created_at', 'DESC', null, true);
         if ($content['actualPage'] > $content['pages']) {
-            $this->redirect($request->getPathInfo() . '?page=1');
+            $this->redirect($request->getPathInfo() . self::FIRST_PAGE);
         }
 
         $content['categories'] = $categoryRepository->findAll();
@@ -58,7 +59,7 @@ class BlogController extends Controller
         $categoryRepository = new CategoryRepository($em);
         $categoryId = $adminManager->findOneByCriteria($categoryRepository, 'slug', $category );
         if (!$categoryId) {
-            $this->redirect('/blog' . '?page=1');
+            $this->redirect('/blog' . self::FIRST_PAGE);
         }
 
         $content = $blogManager->hydrateListing($entityData, $adminManager, $paginator, ['page' => $query, 'limit' => 9], 'created_at', 'DESC', $categoryId->getId(), true);

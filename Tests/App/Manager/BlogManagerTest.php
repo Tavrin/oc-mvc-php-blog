@@ -31,13 +31,13 @@ class BlogManagerTest extends TestCase
 
         $expected = true;
         $actual = $this->entity->validateEditor($form);
-        $this->assertEquals($actual,$expected);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testValidateEditorEmpty()
     {
-        $header = '{"time":1619358298917,"blocks":[],"version":"2.20.2","id":"editorjsChapo"}';
-        $content = '{"time":1619358298917,"blocks":[{"type":"paragraph","data":{"text":"fggfpokbdpk","alignment":"left"}}],"version":"2.20.2","id":"editorjsChapo"}';
+        $header = '{"time":111111,"blocks":[],"version":"2.20.2","id":"editorjsChapo"}';
+        $content = '{"time":22222,"blocks":[{"type":"paragraph","data":{"text":"fggfpokbdpk","alignment":"left"}}],"version":"2.20.2","id":"editorjsContent"}';
         $form = $this->createMock(Form::class);
         $form
             ->expects($this->exactly(2))
@@ -47,7 +47,7 @@ class BlogManagerTest extends TestCase
 
         $expected = false;
         $actual = $this->entity->validateEditor($form);
-        $this->assertEquals($actual,$expected);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testSavePost()

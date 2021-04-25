@@ -1,5 +1,5 @@
 "use strict";
-import {formRender} from './formRender.js';
+import {FormRender} from './formRender.js';
 let utils = window.utils;
 
 
@@ -86,7 +86,7 @@ class Modal {
                 })
 
                 document.querySelectorAll('.modal-media-button').forEach((e) => {
-                    e.addEventListener('click', (e) => {this.modalButtonGetMedias(e)})
+                    e.addEventListener('click', () => {this.modalButtonGetMedias(e)})
                 });
                 this.loaded.gallery = true;
             });
@@ -107,9 +107,9 @@ class Modal {
                     document.querySelector('#ajaxStatusNew').style.display = 'none';
                 }
                 this.loaded.form = true;
-                let renderer = new formRender();
+                let renderer = new FormRender();
                 let form = renderer.renderFromDefault(data.data);
-                form.querySelector('#renderNewMediaButton').addEventListener('click', (e) => {this.createNewMedia(e, form)})
+                form.querySelector('#renderNewMediaButton').addEventListener('click', () => {this.createNewMedia(e, form)})
                 this.formView.appendChild(form);
             });
         }

@@ -11,7 +11,7 @@ use Core\http\Response;
 
 class IndexController extends Controller
 {
-    public function indexAction(Request $request): Response
+    public function indexAction(): Response
     {
         $categoryRepository = new CategoryRepository($this->getManager());
         $content['categories'] = $categoryRepository->findAll();

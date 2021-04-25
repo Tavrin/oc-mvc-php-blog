@@ -64,16 +64,4 @@ class MediaTypeController extends Controller
             'form' => $form->renderForm()
         ]);
     }
-
-    public function showAction(Request $request)
-    {
-    }
-
-    public function editAction(Request $request)
-    {
-    }
-
-    public function deleteAction(Request $request)
-    {
-    }
 }
