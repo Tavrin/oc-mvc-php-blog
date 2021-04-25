@@ -137,7 +137,8 @@ class MediaController extends Controller
         $adminManager = new AdminManager($em);
         $mediaData = $this->getManager()->getEntityData('media');
         $mediaType = $adminManager->findOneByCriteria(new MediaTypeRepository($em), 'slug', $type);
-        $content['items'] = $adminManager->findByCriteria(new MediaRepository($em), $mediaData['fields']['type']['fieldName'],$mediaType->getId(), 'created_at','DESC', true, $mediaData);
+        $content = $adminManager->findByCriteria(new MediaRepository($em), $mediaData['fields']['type']['fieldName'],$mediaType->getId(), 'created_at');
+        $content['items'] = $adminManager->hydrateEntities($content, $mediaData);
         if (empty($content)) {
             return $this->sendJson(['status' => 404, 'error' => 'content not found'], 404);
         }

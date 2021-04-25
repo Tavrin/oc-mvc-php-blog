@@ -28,7 +28,8 @@ class BlogController extends Controller
             $this->redirect($request->getPathInfo() . self::FIRST_PAGE);
         }
 
-        $content = $blogManager->hydrateListing($entityData, $adminManager, $paginator, ['page' => $query, 'limit' => 9], 'created_at', 'DESC', null, true);
+        $content = $blogManager->hydrateListing($entityData, $paginator, ['page' => $query, 'limit' => 9], 'created_at', 'DESC');
+        $content['items'] = $adminManager->hydrateEntities($content['items'], $entityData);
         if ($content['actualPage'] > $content['pages']) {
             $this->redirect($request->getPathInfo() . self::FIRST_PAGE);
         }
@@ -62,7 +63,8 @@ class BlogController extends Controller
             $this->redirect('/blog' . self::FIRST_PAGE);
         }
 
-        $content = $blogManager->hydrateListing($entityData, $adminManager, $paginator, ['page' => $query, 'limit' => 9], 'created_at', 'DESC', $categoryId->getId(), true);
+        $content = $blogManager->hydrateListing($entityData, $paginator, ['page' => $query, 'limit' => 9], 'created_at', 'DESC', $categoryId->getId());
+        $content['items'] = $adminManager->hydrateEntities($content['items'], $entityData);
         $content['categories'] = $categoryRepository->findAll();
 
         return $this->render('blog/index.html.twig',[

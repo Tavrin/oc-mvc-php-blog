@@ -493,9 +493,9 @@ class Form
     {
         if (false === $isJson) {
             $this->updateToken();
+            $this->session->remove('formData');
         }
 
-        $this->session->remove('formData');
         $currentRequest = $this->validateRequest($request, $isJson);
         if ($currentRequest instanceof FormHandleException) {
             $this->errors['request'] = ['error' => $currentRequest, 'status' => true, 'result' => $request];
@@ -745,7 +745,6 @@ class Form
 
         if ((EntityEnums::TYPE_ASSOCIATION !== $entityField[EntityEnums::FIELD_TYPE] && $fieldType !== $entityField[EntityEnums::FIELD_TYPE]) ||
             (EntityEnums::TYPE_ASSOCIATION === $entityField[EntityEnums::FIELD_TYPE] && !isset($associatedEntity))) {
-            dd('test2');
             return false;
         }
 

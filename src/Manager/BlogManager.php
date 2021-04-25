@@ -75,7 +75,7 @@ class BlogManager
         return true;
     }
 
-    public function hydrateListing(array $entityData, AdminManager $adminManager, Paginator $paginator = null, array $paginationOptions = null, string $column = null, string $order = null, string $category = null, $hydrate = false): ?array
+    public function hydrateListing(array $entityData, Paginator $paginator = null, array $paginationOptions = null, string $column = null, string $order = null, string $category = null): ?array
     {
         isset($category) ? $categoryField = $entityData['fields']['category']['fieldName'] : $categoryField = null;
 

@@ -61,6 +61,9 @@ abstract class Repository
         return $result[0];
     }
 
+    /**
+     * @throws \Exception
+     */
     public function hydrateEntity(array $results): array
     {
         $entities = [];
@@ -70,52 +73,51 @@ abstract class Repository
 
             foreach ($this->entityData[EntityEnums::FIELDS_CATEGORY] as $key => $field) {
                 $method = "set" . ucfirst($key);
-
-                if (!isset($result[$field[EntityEnums::FIELD_NAME]])) {
-                    $entities[$entityKey]->$method(null);
-                    continue;
-                }
-
-                $insertData = $result[$field[EntityEnums::FIELD_NAME]];
-
-                if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_DATE) {
-                    $fieldData = new \DateTime($insertData);
-                    $entities[$entityKey]->$method($fieldData);
-                    continue;
-                }
-
-                if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_ASSOCIATION) {
-                    $repository = $field[EntityEnums::ENTITY_REPOSITORY];
-                    $repository = new $repository($this->entityManager);
-                    $associatedEntity = $repository->findBy(EntityEnums::ID_FIELD_NAME, $insertData);
-                    if (isset($associatedEntity) && !empty($associatedEntity)) {
-                        $entities[$entityKey]->$method($associatedEntity[0]);
-                    } else {
-                        $entities[$entityKey]->$method(null);
-                    }
-
-                    continue;
-                }
-
-                if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_JSON) {
-                    $decodedData = json_decode($insertData);
-                    $entities[$entityKey]->$method($decodedData);
-                    continue;
-                }
-
-                if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_BOOLEAN || $field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_BOOL) {
-                    1 == $insertData ? $insertData = true : $insertData =  false;
-                    $entities[$entityKey]->$method($insertData);
-                    continue;
-                }
-
-                $entities[$entityKey]->$method($insertData);
-
-
+                $property = $this->setProperty($result, $field);
+                $entities[$entityKey]->$method($property);
             }
         }
 
         return $entities;
+    }
+
+    private function setProperty($result, $field)
+    {
+        if (!isset($result[$field[EntityEnums::FIELD_NAME]])) {
+            return null;
+        }
+
+        $insertData = $result[$field[EntityEnums::FIELD_NAME]];
+
+        if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_DATE) {
+            $insertData = new \DateTime($insertData);
+        }
+
+        if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_ASSOCIATION) {
+            $insertData = $this->setAssociation($field, $insertData);
+        }
+
+        if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_JSON) {
+            $insertData = json_decode($insertData);
+        }
+
+        if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_BOOLEAN || $field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_BOOL) {
+            1 == $insertData ? $insertData = true : $insertData =  false;
+        }
+
+        return $insertData;
+    }
+
+    private function setAssociation($field, $insertData)
+    {
+        $repository = $field[EntityEnums::ENTITY_REPOSITORY];
+        $repository = new $repository($this->entityManager);
+        $associatedEntity = $repository->findBy(EntityEnums::ID_FIELD_NAME, $insertData);
+        if (isset($associatedEntity) && !empty($associatedEntity)) {
+            return $associatedEntity[0];
+        } else {
+            return null;
+        }
     }
 
     public function findAll(string $column = null, string $order = null, int $limit = null, int $offset = 0): array

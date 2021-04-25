@@ -144,15 +144,9 @@ class AdminManager
         return $this->em->flush();
     }
 
-    public function findByCriteria(object $entityRepository,string $row, string $criteria, string $column = 'id', string $order = 'DESC', $hydrate = false, array $entityData = null, array $pagination = null)
+    public function findByCriteria(object $entityRepository,string $row, string $criteria, string $column = 'id', string $order = 'DESC')
     {
-        $entities = $entityRepository->findBy($row, $criteria, $column, $order);
-
-        if (true === $hydrate && !empty($entityData)) {
-            $entities = $this->hydrateEntities($entities, $entityData, $pagination);
-        }
-
-        return $entities;
+        return $entityRepository->findBy($row, $criteria, $column, $order);
     }
 
     public function findOneByCriteria(object $entityRepository,string $row, string $criteria)

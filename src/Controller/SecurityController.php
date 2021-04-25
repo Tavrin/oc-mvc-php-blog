@@ -170,7 +170,7 @@ class SecurityController extends Controller
 
             $this->redirect('/', ['type' => 'danger', 'message' => "La modification n'a pas pu aboutir"]);
         } elseif ($form->isSubmitted) {
-            dd($form->errors);
+            $this->redirect('/', ['type' => 'danger', 'message' => "La modification n'a pas pu aboutir"]);
         }
 
         return $this->render('pages/reset.html.twig', [

@@ -74,8 +74,8 @@ class Modal {
                     let imageInfo = document.createElement('div');
                     imageInfo.innerHTML = `
                         <p>${element.name}</p>
-                        <button class="button-bb-wc modal-media-button" data-path="${element.path}" >Sélectionner</button>
-                        `
+                        <button class="button-bb-wc modal-media-button" data-path="${element['path']}" >Sélectionner</button>
+                        `;
                     containerItem.classList = 'maw-22 d-f p-1 fd-c ai-c jc-sb';
                     let item = document.createElement('img');
                     item.src = element['path'];
@@ -136,7 +136,7 @@ class Modal {
 
     modalButtonGetMedias(e) {
         let inputTarget = document.querySelector('#mediaHiddenInput');
-        inputTarget.value = e.currentTarget.dataset.path;
+        inputTarget.value = e.dataset.path;
         let event = new Event('change');
         inputTarget.dispatchEvent(event);
     }

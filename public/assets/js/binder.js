@@ -25,7 +25,6 @@ class Binder {
     setTextEvent(elem) {
         elem.addEventListener('keyup', () => {
             if (this.target && 'string' === typeof this.target) {
-                console.log(this.target);
                 this.target = document.querySelector(`#${this.target}`);
             }
 
@@ -38,14 +37,9 @@ class Binder {
     }
 
     setImageEvent(elem) {
-        console.log('test');
-        console.log(elem);
         elem.addEventListener('change', (e) => {
-            console.log('test change');
-            console.log(e.currentTarget);
             if (this.target && 'string' === typeof this.target) {
                 this.target = document.querySelector(`#${this.target}`);
-                console.log(this.target);
             }
 
             if (elem.dataset.from === 'file') {

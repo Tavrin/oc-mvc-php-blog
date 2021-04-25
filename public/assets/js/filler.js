@@ -11,7 +11,6 @@ class Filler {
         elem.dataset.class ? this.class = elem.dataset.class : this.class = '';
         elem.dataset.src ? this.src = elem.dataset.src : this.src = '//:0';
         elem.dataset.options ? this.options = JSON.parse(elem.dataset.options) : this.options = null;
-        console.log(this);
         this.fillElement(elem);
     }
 
@@ -25,7 +24,6 @@ class Filler {
         let item = document.createElement('img');
         item.id = this.id;
         item.alt= "Image preview";
-        console.log(this.src);
         item.src = this.src;
         item.classList = (this.class);
         if ('http://:0/' === item.src) {
