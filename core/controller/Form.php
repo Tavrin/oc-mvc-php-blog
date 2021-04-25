@@ -190,9 +190,9 @@ class Form
             if (is_array($item) && isset($item['id'])) {
                 if (isset($options['selected']) && $options['selected'] === $item['id']) {
                     $selected = 'selected="' . $item['id'] . '"';
-                } elseif (true === $this->session->get('formError') && $formData = $this->session->get('formData')) {
-                    if (array_key_exists($name, $formData)) {
-                        $selected = 'selected="' . $formData[$name]. '"';
+                } elseif ($this->session->has('formData') && $formData = $this->session->get('formData')) {
+                    if (array_key_exists($name, $formData['data']) && $this->name === $formData['formName']) {
+                        $selected = 'selected="' . $formData['data'][$name]. '"';
                     }
                 }
 
@@ -338,7 +338,11 @@ class Form
         }
         $render .= "</form>";
         $form['render'] = $render;
-        $form['data'] = $this->data;
+        $form['data']['fields'] = $this->data;
+        $form['data']['action'] = $this->action;
+        $form['data']['options'] = $this->options;
+        $form['data']['fields']['formName'] = ['name' => 'formName', 'value' => $this->name, 'type' => 'hidden'];
+        $form['data']['fields']['csrf'] = ['name' => 'csrf', 'value' => $token, 'type' => 'hidden'];
         $form['name'] = $this->name;
         return $form;
     }
@@ -351,10 +355,12 @@ class Form
     protected function setData(array $type, string $name, array $options)
     {
 
-        if (true === $this->session->get('formError') && $this->session->get('formData') && array_key_exists($name, $this->session->get('formData'))) {
+        if ($this->session->has('formData') && 'password' !== $type['type']) {
             $formData = $this->session->get('formData');
-            $options['value'] = $formData[$name]['result'];
-            $options['error'] = ['status' => $formData[$name]['status'], 'error' => $formData[$name]['error']];
+            if ($this->name === $formData['formName'] && array_key_exists($name, $formData['data'])) {
+                $options['value'] = $formData['data'][$name]['result'];
+                $options['error'] = ['status' => $formData['data'][$name]['status'], 'error' => $formData['data'][$name]['error']];
+            }
         }
 
         $options['id'] ??  $options['id'] = $name;
@@ -464,6 +470,8 @@ class Form
         isset($options['sanitize']) ? $fieldData['sanitize'] = $options['sanitize'] : $fieldData['sanitize'] = true;
         isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : false;
         isset($options['entity']) ? $fieldData['entity'] = $options['entity'] : $fieldData['entity'] = $this->entity;
+        isset($options['value']) ? $fieldData['value'] = $options['value'] : $fieldData['value'] = null;
+        isset($options['class']) ? $fieldData['class'] = explode(' ', $options['class']) : $fieldData['class'] = null;
         isset($options['targetField']) ? $fieldData['targetField'] = $options['targetField'] : false;
         isset($options['fieldName']) ? $fieldData['fieldName'] = $options['fieldName'] : $fieldData['fieldName'] = $name;
         isset($options['type']) ? $fieldData['type'] = $options['type'] : false;
@@ -481,13 +489,14 @@ class Form
      * @param Request $request
      * @throws Exception
      */
-    public function handle(Request $request)
+    public function handle(Request $request, bool $isJson = false)
     {
-        $this->updateToken();
+        if (false === $isJson) {
+            $this->updateToken();
+        }
 
-        $this->session->remove('formError');
         $this->session->remove('formData');
-        $currentRequest = $this->validateRequest($request);
+        $currentRequest = $this->validateRequest($request, $isJson);
         if ($currentRequest instanceof FormHandleException) {
             $this->errors['request'] = ['error' => $currentRequest, 'status' => true, 'result' => $request];
             return;
@@ -540,8 +549,17 @@ class Form
             }
 
             $this->isValid = true;
+    }
 
-
+    public function jsonHandle(Request $request)
+    {
+        $currentRequest = $this->validateRequest($request, true);
+        if ($currentRequest instanceof FormHandleException) {
+            echo json_encode(['response' => 'nope']);
+            exit();
+        }
+        $this->isSubmitted = true;
+        $this->isValid = true;
     }
 
     protected function updateToken()
@@ -625,6 +643,10 @@ class Form
 
     private function sanitizeRequest($currentRequest, $fieldData, $fieldName)
     {
+        if (!isset($currentRequest[$fieldName])) {
+            return null;
+        }
+
         $currentRequestField = $currentRequest[$fieldName];
         if ($fieldData['sanitize']) {
             $currentRequestField = htmlspecialchars($currentRequestField);
@@ -641,17 +663,19 @@ class Form
             }
         }
 
-        $this->session->set('formError', true);
-        $this->session->set('formData', $this->errors);
+        $formData['data'] = $this->errors;
+        $formData['formName'] = $this->name;
+        $this->session->set('formData', $formData);
     }
 
     /**
      * @param Request $request
      * @return FormHandleException|Request
      */
-    private function validateRequest(Request $request)
+    private function validateRequest(Request $request, bool $isJson = false)
     {
-        $oldToken = $this->session->get('csrf-old');
+        false === $isJson ? $oldToken = $this->session->get('csrf-old') : $oldToken = $this->session->get('csrf-new');
+
         if (!isset($request->request)) {
             return new FormHandleException('request', 'the request doesn\'t exist');
         } elseif (isset($this->name) && (!isset($request->request['formName']) || $this->name !== $request->getRequest('formName'))) {
@@ -697,9 +721,6 @@ class Form
     {
         $entityName = strtolower(ClassUtils::getClassNameFromObject($fieldData['entity']));
         if (!isset($this->allEntityData[$entityName]['fields'][$fieldData['fieldName']])) {
-            dump($fieldData['fieldName']);
-            dump($entityName);
-            dd($this->allEntityData[$entityName]);
             return false;
         }
 

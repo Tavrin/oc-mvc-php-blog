@@ -7,7 +7,6 @@ namespace App\Manager;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Core\controller\Form;
-use Core\database\DatabaseResolver;
 use Core\database\EntityManager;
 use Core\http\Request;
 use Core\security\Security;
@@ -19,11 +18,13 @@ class UserManager
     public const USER_DEFAULT_PATH = '/membres/';
     private ?EntityManager $em;
     private Security $security;
+    private ?UserRepository $userRepository;
 
-    public function __construct(EntityManager $entityManager = null)
+    public function __construct(EntityManager $entityManager = null, UserRepository $userRepository = null)
     {
-        $this->em = $entityManager ?? DatabaseResolver::instantiateManager();
+        $this->em = $entityManager;
         $this->security = new Security();
+        $this->userRepository = $userRepository;
     }
     public function updateStatus(User $user, bool $status)
     {
@@ -57,9 +58,7 @@ class UserManager
             return false;
         }
 
-        $userRepository = new UserRepository($this->em);
-
-        $user = $userRepository->findOneBy($query, $request->getQuery($query));
+        $user = $this->userRepository->findOneBy($query, $request->getQuery($query));
 
         if (!isset($user)) {
             return false;
@@ -102,9 +101,8 @@ class UserManager
 
     public function getUserBy(User $userTemplate, string $criteria)
     {
-        $userRepo = new UserRepository($this->em);
         $userMethod = 'get' . ucfirst($criteria);
-        $user = $userRepo->findOneBy($criteria, $userTemplate->$userMethod());
+        $user = $this->userRepository->findOneBy($criteria, $userTemplate->$userMethod());
 
         if (!isset($user)) {
             return false;
@@ -114,8 +112,7 @@ class UserManager
     }
     public function verifyUserLogin(User $userTemplate)
     {
-        $userRepo = new UserRepository($this->em);
-        $user = $userRepo->findOneBy('email', $userTemplate->getEmail());
+        $user = $this->userRepository->findOneBy('email', $userTemplate->getEmail());
 
         if (!isset($user) || !$user->getStatus() || !password_verify( $userTemplate->getPassword(), $user->getPassword())) {
             return false;

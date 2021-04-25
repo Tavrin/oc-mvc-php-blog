@@ -4,6 +4,8 @@
 namespace Core\utils;
 
 
+use Core\database\Repository;
+
 class Paginator
 {
     /**
@@ -12,7 +14,7 @@ class Paginator
      * @param int $limit
      * @return array|null
      */
-    public static function paginate(array $content, int $currentPage, int $limit): ?array
+    public function paginateArray(array $content, int $currentPage, int $limit): ?array
     {
         $itemsToKeep = [];
         $content['pages'] = intval(ceil(count($content['items']) / $limit));
@@ -28,5 +30,17 @@ class Paginator
         }
 
         return $itemsToKeep;
+    }
+
+    public function paginate(Repository $repository, int $currentPage, int $limit, string $column = null, string $order = null, string $row = null, string $criteria = null): ?array
+    {
+        $offset = ($currentPage * $limit) - $limit;
+        $itemsCount = $repository->count()[0];
+        isset($row, $criteria) ? $items = $repository->findBy($row, $criteria, $column, $order, $limit, $offset) : $items = $repository->findAll($column, $order, $limit, $offset);
+        $content['pages'] = intval(ceil($itemsCount / $limit));
+        $content['actualPage'] = $currentPage;
+        $content['items'] = $items;
+
+        return $content;
     }
 }

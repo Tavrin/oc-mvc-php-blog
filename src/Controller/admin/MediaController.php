@@ -7,19 +7,34 @@ use App\Forms\MediaForm;
 use App\Manager\AdminManager;
 use App\Manager\MediaManager;
 use App\Repository\MediaRepository;
+use App\Repository\MediaTypeRepository;
 use Core\controller\Controller;
 use Core\file\File;
 use Core\file\PublicFile;
 use Core\http\exceptions\NotFoundException;
 use Core\http\Request;
 use Core\http\Response;
+use Core\utils\Paginator;
+use Core\utils\StringUtils;
 
 class MediaController extends Controller
 {
     public function indexAction(Request $request, string $type = null): Response
     {
-        $adminManager = new AdminManager($this->getManager());
-        $content = $adminManager->hydrateEntities('media', 'created_at', 'DESC', null, ['type' => 'association', 'targetTable' => 'mediaType','targetField' => 'slug', 'criteria' => $type]);
+        $em = $this->getManager();
+        $mediaRepository = new MediaRepository($em);
+        $paginator = new Paginator();
+        $adminManager = new AdminManager($em);
+        $mediaData = $em->getEntityData('media');
+        $mediaType = $adminManager->findOneByCriteria(new MediaTypeRepository($em), 'slug', $type);
+        if (false === $query = $adminManager->initializeAndValidatePageQuery($request)) {
+            $this->redirect($request->getPathInfo() . '?page=1');
+        }
+
+        $content = $paginator->paginate($mediaRepository, $query, 16,'created_at', 'DESC', $mediaData['fields']['type']['fieldName'], $mediaType->getId());
+        if ($content['actualPage'] > $content['pages']) {
+            $this->redirect($request->getPathInfo() . '?page=1');
+        }
 
         $content['mediaType'] = $type;
         return $this->render('/admin/medias/index.html.twig',[
@@ -112,20 +127,50 @@ class MediaController extends Controller
     {
         $redirectPath = $request->getServer('HTTP_REFERER') ?? '/';
         $adminManager = new AdminManager($this->getManager());
-        $adminManager->deleteEntity('media', $slug, 'slug');
+        $mediaRepository = new MediaRepository($this->getManager());
+        $adminManager->deleteEntity($mediaRepository, $slug, 'slug');
 
         $this->redirect($redirectPath, ['type' => 'success', 'message' => 'Suppression réussie']);
     }
 
     public function indexApiAction(Request $request, string $type): Response
     {
-        $adminManager = new AdminManager($this->getManager());
-        $content = $adminManager->hydrateEntities('media', 'created_at', 'DESC', null, ['type' => 'association', 'targetTable' => 'mediaType','targetField' => 'slug', 'criteria' => $type]);
+        $em = $this->getManager();
+        $adminManager = new AdminManager($em);
+        $mediaData = $this->getManager()->getEntityData('media');
+        $mediaType = $adminManager->findOneByCriteria(new MediaTypeRepository($em), 'slug', $type);
+        $content['items'] = $adminManager->findByCriteria(new MediaRepository($em), $mediaData['fields']['type']['fieldName'],$mediaType->getId(), 'created_at','DESC', true, $mediaData);
         if (empty($content)) {
             return $this->sendJson(['status' => 404, 'error' => 'content not found'], 404);
         }
 
         $content['mediaType'] = $type;
         return $this->sendJson(['response' => $content]);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function newApiAction(Request $request, string $type): Response
+    {
+        $media = new Media();
+        $form = new MediaForm($request, $media, $this->session, ['type' => 'new']);
+        $mediaManager = new MediaManager($this->getManager());
+
+        $form->handle($request, true);
+
+        if ($form->isSubmitted && $form->isValid) {
+            $file = $form->getData('mediaFile');
+            $media->setSlug(StringUtils::slugify($media->getSlug()));
+            $file->put('uploads/media/' . $type . '/', $media->getSlug() . '.' . $file->getUploadExtension());
+            $media->setPath($file->getRelativePath());
+            if (true === $mediaManager->saveMedia($media, $type)) {
+                return $this->sendJson(['response' => 'ok', 'code' => 200]);
+            }
+        } elseif ($form->isSubmitted) {
+            return $this->sendJson(['response' => json_encode($form->errors), 'code' => 500], 500);
+        }
+
+        return $this->sendJson(['response' => $form->renderForm(), 'code' => 200]);
     }
 }

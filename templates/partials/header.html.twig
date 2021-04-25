@@ -23,6 +23,13 @@
     </nav>
     <nav class=" bt-g pt-0-5">
         <ul class=" d-f fd-r jc-sb td-n">
+            {% if content.categories is defined and content.categories is not empty %}
+                {% for category in content.categories %}
+                    <li>
+                        <a href="{{ category.path }}">{{ category.name }}</a>
+                    </li>
+                {% endfor %}
+            {% else %}
             <li>
                 <a href="/blog/backend-dev">Backend Dev</a>
             </li>
@@ -41,6 +48,7 @@
             <li>
                 <a href="#">Digital Painting</a>
             </li>
+            {% endif %}
         </ul>
     </nav>
     {% include 'partials/inc/breadcrumb.html.twig' %}

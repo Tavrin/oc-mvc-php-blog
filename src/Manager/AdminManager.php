@@ -11,6 +11,7 @@ use App\Repository\UserRepository;
 use Core\database\DatabaseResolver;
 use Core\database\EntityManager;
 use Core\http\exceptions\NotFoundException;
+use Core\http\Request;
 use Core\utils\ArrayUtils;
 use Core\utils\Paginator;
 use Core\utils\StringUtils;
@@ -24,16 +25,10 @@ class AdminManager
     public function __construct(EntityManager $entityManager = null)
     {
         $this->em = $entityManager ?? DatabaseResolver::instantiateManager();
-        $this->allEntityData = $this->em::getAllEntityData();
     }
 
-    public function hydrateDashboard(): array
+    public function hydrateDashboard(PostRepository $postRepository, UserRepository $userRepository, CommentRepository $commentRepository): array
     {
-        $content = [];
-        $postRepository = new PostRepository();
-        $userRepository = new UserRepository();
-        $commentRepository = new CommentRepository();
-
         $content['posts']['items'] = $postRepository->findAll();
         $content['posts']['count'] = count($content['posts']['items']);
 
@@ -46,69 +41,50 @@ class AdminManager
         return $content;
     }
 
-    /** @noinspection DuplicatedCode */
-    public function hydrateEntities(string $type, string $column, string $order, array $pagination = null, array $filter = null): array
+    public function initializeAndValidatePageQuery(Request $request)
     {
-        $entityData = $this->allEntityData[strtolower($type)];
-        $entityRepository = new $entityData['repository']();
-
-        if ($filter && ArrayUtils::keysInArray(['type', 'criteria', 'targetField'], $filter)) {
-            $entities = [];
-            if ('self' === $filter['type']) {
-                $entities = $entityRepository->findBy($filter['targetField'], $filter['criteria'], ['column' => $column, 'order' => $order]);
-
-            } elseif ('association' === $filter['type'] && $filter['targetField']) {
-                $filterRepository = new $this->allEntityData[strtolower($filter['targetTable'])]['repository']();
-                if (!$foundAssociation = $filterRepository->findOneBy($filter['targetField'], $filter['criteria'])) {
-                    return $entities;
-                }
-
-                foreach ($entityData['fields'] as $key => $field) {
-                    if ('association' === $field['type'] && strtolower($field['associatedEntity']) === strtolower($filter['targetTable'])) {
-                        $entities = $entityRepository->findBy($field['fieldName'], $foundAssociation->getId(), ['column' => $column, 'order' => $order]);
-                        break;
-                    }
-                }
-            }
-            if (!$entities) {
-                return $entities;
-            }
+        if ($request->hasQuery('page')) {
+            $query = (int)$request->getQuery('page');
         } else {
-            $entities = $entityRepository->findAll(['column' => $column, 'order' => $order]);
+            $query = false;
+        }
+        if ($query <= 0) {
+            $query = false;
         }
 
-        $entityDataFields = $this->allEntityData[$type]['fields'];
+        return $query;
+    }
+
+    public function hydrateEntities(array $entities, array $entityData, array $pagination = null): array
+    {
         $content = [];
+
         foreach ($entities as $key => $entity) {
-            foreach ($entityDataFields as $fieldName => $fieldData) {
+            foreach ($entityData['fields'] as $fieldName => $fieldData) {
                 $method = 'get' . ucfirst($fieldName);
-                $content['items'][$key][$fieldName] = $entity->$method();
+                $content[$key][$fieldName] = $entity->$method();
             }
+
             $creationDate =  $entity->getCreatedAt();
-            $content['items'][$key]['createdAt'] = $creationDate->format("Y-m-d\TH:i:s");
+            $content[$key]['createdAt'] = $creationDate->format("Y-m-d\TH:i:s");
 
             if ($entity->getUpdatedAt()) {
                 $updateDate =  $entity->getUpdatedAt();
-                $content['items'][$key]['updatedAt'] = $updateDate->format("Y-m-d\TH:i:s");
+                $content[$key]['updatedAt'] = $updateDate->format("Y-m-d\TH:i:s");
             }
 
             if ($pagination) {
-                $content['items'] = Paginator::paginate($content, $pagination['page'], $pagination['limit']);
+                $content = $pagination['paginator']->paginateArray($content, $pagination['page'], $pagination['limit']);
             }
         }
 
         return $content;
     }
 
-    public function getEntitySelection(string $entityName, array $options): ?array
+    public function getEntitySelection(object $entityRepo, array $options): ?array
     {
-        if (!isset($this->allEntityData[$entityName])) {
-            return null;
-        }
-
         $selection = [];
 
-        $entityRepo = new $this->allEntityData[$entityName]['repository'];
         $entities = $entityRepo->findAll();
         isset($options['id']) ? $idMethod = 'get' . ucfirst($options['id']) : $idMethod = 'getId';
 
@@ -123,16 +99,8 @@ class AdminManager
         return $selection;
     }
 
-    public function getFromType($type, string $entityName)
+    public function deleteEntity(object $entityRepository, $criteria, string $row): bool
     {
-
-    }
-
-    public function deleteEntity(string $entityName, $criteria, string $row): bool
-    {
-        $entityData = $this->allEntityData[strtolower($entityName)];
-        $entityRepository = $entityData['repository'];
-        $entityRepository = new $entityRepository($this->em);
         if (!$entity = $entityRepository->findOneBy($row, $criteria)) {
             throw new NotFoundException();
         }
@@ -142,17 +110,33 @@ class AdminManager
         return true;
     }
 
-    public function saveCategory($entity): bool
+    public function saveCategory(object $entity): bool
     {
+        if (!$entity->getSlug()) {
+        $entity->setSlug(StringUtils::slugify($entity->getName()));
+        } else {
+            $entity->setSlug(StringUtils::slugify($entity->getSlug()));
+        }
+
         $entity->setPath('/blog/' . $entity->getSlug());
         $entity->setStatus(true);
         $entity->setUuid(Uuid::uuid4()->toString());
-        if (!$entity->getSlug()) {
-            $entity->setSlug(StringUtils::slugify($entity->getName()));
-        }
 
         $this->em->save($entity);
         return $this->em->flush();
+    }
+
+    public function updateCategory(object $entity): bool
+    {
+        if (!$entity->getSlug()) {
+            $entity->setSlug(StringUtils::slugify($entity->getName()));
+        } else {
+            $entity->setSlug(StringUtils::slugify($entity->getSlug()));
+        }
+
+        $entity->setPath('/blog/' . $entity->getSlug());
+
+        return $this->updateEntity($entity);
     }
 
     public function updateEntity(object $entity): bool
@@ -161,14 +145,20 @@ class AdminManager
         return $this->em->flush();
     }
 
-    public function findOneByCriteria(string $entityName,string $row, string $criteria)
+    public function findByCriteria(object $entityRepository,string $row, string $criteria, string $column = 'id', string $order = 'DESC', $hydrate = false, array $entityData = null, array $pagination = null)
     {
-        if (!isset($this->allEntityData[$entityName])) {
-            return null;
+        $entities = $entityRepository->findBy($row, $criteria, $column, $order);
+
+        if (true === $hydrate && !empty($entityData)) {
+            $entities = $this->hydrateEntities($entities, $entityData, $pagination);
         }
 
-        $entityRepo = new $this->allEntityData[$entityName]['repository'];
-        return $entityRepo->findOneBy($row, $criteria);
+        return $entities;
+    }
+
+    public function findOneByCriteria(object $entityRepository,string $row, string $criteria)
+    {
+        return $entityRepository->findOneBy($row, $criteria);
 
     }
 }

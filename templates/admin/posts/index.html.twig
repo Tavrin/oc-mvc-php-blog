@@ -21,11 +21,11 @@
                             <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Date de modification</span>
                             <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Operation</span>
                         </div>
-                        {% for post in posts.items %}
+                        {% for post in content.items %}
                         <div class="ai-c fs-1c3 fw-700 d-f fd-r jc-sa hrem-5 {% if not loop.last %} bb-dg {% endif %}">
                             <span class="text-muted fs-1 mb-0-5 fw-500 fb-15">{{ post.title }}</span>
                             {% if post.path is defined and post.path is not empty %}
-                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-15">{{ '/' ~ app.constants.host ~ '/' ~ post.path }}</span>
+                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-15">{{ '/' ~ app.constants.host ~ post.path }}</span>
                             {% else %}
                                 <span class="text-muted fs-09 mb-0-5 fw-500 fb-15">{{ app.constants.host ~ '/'~ post.category.path ~ '/' ~post.slug }}</span>
                             {% endif %}

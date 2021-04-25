@@ -15,17 +15,17 @@ class Post
     /**
      * @var string|null
      */
-    private ?string $title;
+    private ?string $title = null;
 
     /**
      * @var string|null
      */
-    private ?string $header;
+    private ?string $header = null;
 
     /**
      * @var string|null
      */
-    private ?string $content;
+    private ?string $content = null;
 
     /**
      * @var array|null
@@ -35,22 +35,22 @@ class Post
     /**
      * @var string|null
      */
-    private ?string $metaTitle;
+    private ?string $metaTitle = null;
 
     /**
      * @var string|null
      */
-    private ?string $metaDescription;
+    private ?string $metaDescription = null;
 
     /**
      * @var string|null
      */
-    private ?string $slug;
+    private ?string $slug = null;
 
     /**
      * @var string|null
      */
-    private ?string $path;
+    private ?string $path = null;
 
     /**
      * @var Media|null
@@ -68,9 +68,9 @@ class Post
     private ?Category $category = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private DateTime $createdAt;
+    private ?DateTime $createdAt = null;
 
     /**
      * @var DateTime|null
@@ -208,12 +208,12 @@ class Post
         return $this->media;
     }
 
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTime $publishedAt)
+    public function setCreatedAt(?DateTime $publishedAt)
     {
         $this->createdAt = $publishedAt;
     }

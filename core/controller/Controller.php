@@ -69,6 +69,7 @@ class Controller
 
         $parameters['app'] = $this->getConstants();
         $parameters['app']['path'] = $this->request->getAttribute('breadcrumb');
+        $parameters['app']['currentPath'] = $this->request->getPathInfo();
         $this->setControllerContent($template, $parameters);
 
         $response->setContent($this->renderContent);

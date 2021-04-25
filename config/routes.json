@@ -115,6 +115,11 @@
         "controller": "App\\Controller\\admin\\MediaController::indexApiAction"
     },
     {
+        "route": "api_new_media",
+        "path": "/api/medias/{type}/new",
+        "controller": "App\\Controller\\admin\\MediaController::newApiAction"
+    },
+    {
         "route": "inscription",
         "path": "/register",
         "controller": "App\\Controller\\SecurityController::register"

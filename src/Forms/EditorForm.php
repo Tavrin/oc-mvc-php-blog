@@ -31,9 +31,9 @@ class EditorForm extends Form
             ->addTextInput('slug', ['class' => 'form-control', 'placeholder' => "Slug", 'value' => 'edit' === $options['type']? $entity->getSlug() : null])
             ->addSelectInput('category', $options['selection'], ['class' => 'form-control w-75', 'placeholder' => 'choisissez une catégorie', 'label' => 'catégorie :', 'targetField' => 'id', 'selected' => $category])
             ->addDateTimeInput('createdAt', ['class' => 'form-control', 'placeholder' => "Date de publication", 'value' => 'edit' === $options['type']? $entity->getCreatedAt()->format("Y-m-d\TH:i:s") : null])
-            ->addHiddenInput('mediaHiddenInput', ['entity' => false, 'class' => 'js-binder', 'dataAttributes' => ['type' => 'image', 'from' => 'modal', 'target' => 'previewImage']])
+            ->addHiddenInput('mediaHiddenInput', ['entity' => false, 'class' => 'js-binder', 'required' => false,'dataAttributes' => ['type' => 'image', 'from' => 'modal', 'target' => 'previewImage']])
             ->addButton('mediaLibrary', ['class' => 'js-modal button-bb-wc m-1', 'value' => 'Galerie média', 'type' => 'button', 'dataAttributes' => ['target-modal' => 'mediaModal']])
-            ->addDiv('mediaShow', ['class' => 'hrem-6 js-filler', 'dataAttributes' => ['type' => 'image', 'id' => 'previewImage', 'class' => 'mh-100 mw-100', 'src' => 'edit' === $options['type']? $media : ''], 'wrapperClass' => 'mt-1', 'label' => 'Prévisualisation de l\'image'])
+            ->addDiv('mediaShow', ['class' => 'hrem-10 js-filler pt-1', 'dataAttributes' => ['type' => 'image', 'id' => 'previewImage', 'class' => 'mh-100 mw-100', 'src' => 'edit' === $options['type']? $media : ''], 'wrapperClass' => 'mt-1', 'label' => 'Prévisualisation du média principal'])
             ->addHiddenInput('header', ['sanitize' => false])
             ->addHiddenInput('content', ['sanitize' => false]);
     }

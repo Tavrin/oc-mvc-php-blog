@@ -45,6 +45,8 @@ class MediaManager
         $entity->setUuid($uuid);
         if (!$entity->getSlug()) {
             $entity->setSlug(StringUtils::slugify($entity->getName()));
+        } else {
+            $entity->setSlug(StringUtils::slugify($entity->getSlug()));
         }
 
         $entity->setStatus(true);

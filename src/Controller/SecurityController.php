@@ -59,7 +59,8 @@ class SecurityController extends Controller
     public function confirmEmailAction(Request $request)
     {
         $em = $this->getManager();
-        $userManager = new UserManager($em);
+        $userRepository = new UserRepository($this->getManager());
+        $userManager = new UserManager($em, $userRepository);
 
         if (! $user = $userManager->confirmUser($request)) {
             $this->redirect('/');
@@ -81,7 +82,8 @@ class SecurityController extends Controller
         }
 
         $em = $this->getManager();
-        $userManager = new UserManager($em);
+        $userRepository = new UserRepository($this->getManager());
+        $userManager = new UserManager($em, $userRepository);
         $userTemplate = new User();
 
         $form = new LoginForm($request,$userTemplate, $this->session, ['name' => 'loginform', 'wrapperClass' => 'mb-1']);
@@ -114,7 +116,8 @@ class SecurityController extends Controller
             $this->redirect('/');
         }
 
-        $userManager = new UserManager($this->getManager());
+        $userRepository = new UserRepository($this->getManager());
+        $userManager = new UserManager($this->getManager(), $userRepository);
         $userTemplate = new User();
         $form = $this->createForm($userTemplate, ['wrapperClass' => 'mb-1']);
 
@@ -144,8 +147,8 @@ class SecurityController extends Controller
      */
     public function reset(Request $request): Response
     {
-        $em = $this->getManager();
-        $userManager = new UserManager($em);
+        $userRepository = new UserRepository($this->getManager());
+        $userManager = new UserManager($this->getManager(), $userRepository);
 
         if (!$request->hasQuery('token')) {
             $this->redirect('/');
