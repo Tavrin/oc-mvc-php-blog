@@ -491,11 +491,7 @@ class Form
      */
     public function handle(Request $request, bool $isJson = false)
     {
-        if (false === $isJson) {
-            $this->updateToken();
-            $this->session->remove('formData');
-        }
-
+        $this->updateSession($isJson);
         $currentRequest = $this->validateRequest($request, $isJson);
         if ($currentRequest instanceof FormHandleException) {
             $this->errors['request'] = ['error' => $currentRequest, 'status' => true, 'result' => $request];
@@ -520,21 +516,7 @@ class Form
                     continue;
                 }
 
-                if (false === $requestField = $this->validateAndSanitizeRequest($fieldData, $fieldName, $currentRequest)) {
-                    continue;
-                }
-
-                if (false === $fieldData['entity']) {
-                    $this->data[$fieldName]['result'] = $requestField;
-                    continue;
-                }
-
-                if (false === $this->validateAndHydrateEntity($fieldName, $fieldData, $requestField)) {
-                    $this->errors[$fieldName]= ['error' => new FormHandleException($fieldData['type'], $fieldName, "Field ${fieldName} is not a valid entity property"), 'status' => true, 'result' => $requestField];
-                    continue;
-                }
-
-                $this->data[$fieldName]['result'] = $requestField;
+                $this->checkField($fieldName, $fieldData, $currentRequest);
             }
 
             foreach ($filesArray as $name => $data) {
@@ -551,15 +533,31 @@ class Form
             $this->isValid = true;
     }
 
-    public function jsonHandle(Request $request)
+    private function checkField($fieldName, $fieldData, $currentRequest)
     {
-        $currentRequest = $this->validateRequest($request, true);
-        if ($currentRequest instanceof FormHandleException) {
-            echo json_encode(['response' => 'nope']);
-            exit();
+        if (false === $requestField = $this->validateAndSanitizeRequest($fieldData, $fieldName, $currentRequest)) {
+            return;
         }
-        $this->isSubmitted = true;
-        $this->isValid = true;
+
+        if (false === $fieldData['entity']) {
+            $this->data[$fieldName]['result'] = $requestField;
+            return;
+        }
+
+        if (false === $this->validateAndHydrateEntity($fieldName, $fieldData, $requestField)) {
+            $this->errors[$fieldName]= ['error' => new FormHandleException($fieldData['type'], $fieldName, "Field ${fieldName} is not a valid entity property"), 'status' => true, 'result' => $requestField];
+            return;
+        }
+
+        $this->data[$fieldName]['result'] = $requestField;
+    }
+
+    private function updateSession(bool $isJson)
+    {
+        if (false === $isJson) {
+            $this->updateToken();
+            $this->session->remove('formData');
+        }
     }
 
     protected function updateToken()

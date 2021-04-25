@@ -85,10 +85,6 @@ class BlogManager
             isset($categoryField, $category) ? $content = $this->postRepository->findBy($categoryField, $category, $column, $order) : $content = $this->postRepository->findAll($column, $order);
         }
 
-        if (true === $hydrate) {
-            $content['items'] = $adminManager->hydrateEntities($content['items'], $entityData);
-        }
-
         return $content;
     }
 }

@@ -97,6 +97,8 @@ class SecurityController extends Controller
             $userManager->setLastConnexion($user);
             $this->session->set('user', $user);
             $this->redirect('/', ['type' => 'success', 'message' => 'Connexion réussie !']);
+        } elseif ($form->isSubmitted) {
+            dd($form->errors);
         }
 
         $content['title'] = 'Connexion';
