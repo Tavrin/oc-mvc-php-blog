@@ -675,11 +675,11 @@ class Form
         false === $isJson ? $oldToken = $this->session->get('csrf-old') : $oldToken = $this->session->get('csrf-new');
 
         if (!isset($request->request)) {
-            return new FormHandleException('request', 'the request doesn\'t exist');
+            $request = new FormHandleException('request', 'the request doesn\'t exist');
         } elseif (isset($this->name) && (!isset($request->request['formName']) || $this->name !== $request->getRequest('formName'))) {
-            return new FormHandleException('requestName', 'the request names don\'t match');
-            } elseif ( !isset($request->request['csrf']) || !isset($oldToken) || $request->getRequest('csrf') !== $oldToken) {
-            return new FormHandleException('csrf', 'the csrf tokens don\'t match');
+            $request = new FormHandleException('requestName', 'the request names don\'t match');
+        } elseif ( !isset($request->request['csrf']) || !isset($oldToken) || $request->getRequest('csrf') !== $oldToken) {
+            $request = new FormHandleException('csrf', 'the csrf tokens don\'t match');
         }
 
         return $request;
