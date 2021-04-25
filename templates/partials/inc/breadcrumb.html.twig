@@ -1,6 +1,6 @@
-{% if content.breadcrumb is defined and content.breadcrumb is not empty %}
+{% if app.path is defined and app.path is not empty %}
     <ul class="m-3">
-    {% for breadcrumb in content.breadcrumb %}
+    {% for breadcrumb in app.path%}
         <li class="d-ib text-muted fs-07">
             <a href="{{ breadcrumb.path }}">{{ breadcrumb.name }}</a>
         </li>

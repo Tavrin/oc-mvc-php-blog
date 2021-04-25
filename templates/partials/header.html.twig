@@ -1,4 +1,4 @@
-<header class="m-auto mw-70">
+<header class="m-auto maw-70">
     <nav class="">
         <ul class="pb-1 pt-1 d-f fd-r jc-sb td-n">
             <li>
@@ -23,24 +23,32 @@
     </nav>
     <nav class=" bt-g pt-0-5">
         <ul class=" d-f fd-r jc-sb td-n">
+            {% if content.categories is defined and content.categories is not empty %}
+                {% for category in content.categories %}
+                    <li>
+                        <a href="{{ category.path }}">{{ category.name }}</a>
+                    </li>
+                {% endfor %}
+            {% else %}
             <li>
-                Backend Dev
+                <a href="/blog/backend-dev">Backend Dev</a>
             </li>
             <li>
-                Frontend Dev
+                <a href="/blog/frontend-dev">Frontend Dev</a>
             </li>
             <li>
-                Game Dev
+                <a href="#">Game Dev</a>
             </li>
             <li>
-                Web Design
+                <a href="#">Web Design</a>
             </li>
             <li>
-                Game Design
+                <a href="#">Game Design</a>
             </li>
             <li>
-                Digital Painting
+                <a href="#">Digital Painting</a>
             </li>
+            {% endif %}
         </ul>
     </nav>
     {% include 'partials/inc/breadcrumb.html.twig' %}

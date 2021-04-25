@@ -8,13 +8,15 @@ class FormFile extends File
 {
     private ?string $uploadName = null;
     private ?string $uploadMime = null;
+    private ?string $uploadExtension = null;
     private array $formData = [];
 
-    public function __construct(string $path, array $formData, string $name = null, string $mime = null)
+    public function __construct(string $path, array $formData, string $name = null, string $mime = null, string $extension= null)
     {
         parent::__construct($path);
         $this->uploadName = $name;
         $this->uploadMime = $mime;
+        $this->uploadExtension = $extension;
         $this->formData = $formData;
 
     }
@@ -37,5 +39,10 @@ class FormFile extends File
     public function getUploadMime(): ?string
     {
         return $this->uploadMime;
+    }
+
+    public function getUploadExtension(): ?string
+    {
+        return $this->uploadExtension;
     }
 }

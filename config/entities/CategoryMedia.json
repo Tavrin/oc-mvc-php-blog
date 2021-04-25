@@ -1,0 +1,43 @@
+{
+    "name": "categoryMedia",
+    "repository": "App\\Repository\\CategoryMediaRepository",
+    "entity": "App\\Entity\\CategoryMedia",
+    "table": "category_media",
+    "id": {
+        "type": "integer"
+    },
+    "fields": {
+        "category": {
+            "fieldName": "category_id",
+            "type": "association",
+            "associatedEntity": "category",
+            "repository": "App\\Repository\\CategoryRepository",
+            "entity": "App\\Entity\\Category",
+            "nullable": false
+        },
+        "media": {
+            "fieldName": "media_id",
+            "type": "association",
+            "associatedEntity": "media",
+            "repository": "App\\Repository\\MediaRepository",
+            "entity": "App\\Entity\\Media",
+            "nullable": false
+        },
+        "createdAt": {
+            "fieldName": "created_at",
+            "type": "datetime",
+            "nullable": false
+        },
+        "updatedAt": {
+            "fieldName": "updated_at",
+            "type": "datetime",
+            "nullable": true
+        },
+        "status": {
+            "fieldName": "status",
+            "type": "bool",
+            "nullable": false
+        }
+    },
+    "hasAssociations": true
+}

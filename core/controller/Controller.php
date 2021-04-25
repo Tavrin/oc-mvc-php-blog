@@ -68,6 +68,8 @@ class Controller
         }
 
         $parameters['app'] = $this->getConstants();
+        $parameters['app']['path'] = $this->request->getAttribute('breadcrumb');
+        $parameters['app']['currentPath'] = $this->request->getPathInfo();
         $this->setControllerContent($template, $parameters);
 
         $response->setContent($this->renderContent);
@@ -97,6 +99,14 @@ class Controller
         }
 
         return $constants;
+    }
+
+    public function sendJson(array $data, int $status = 200): Response
+    {
+        $response = new Response();
+        $response->setJsonContent($data, $status);
+
+        return $response;
     }
 
     protected function getManager(): EntityManager

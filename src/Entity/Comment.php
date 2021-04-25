@@ -15,9 +15,9 @@ class Comment
     private int $id;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $content;
+    private ?string $content;
 
     /**
      * @var int
@@ -35,14 +35,14 @@ class Comment
     private User $user;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private DateTime $publishedAt;
+    private ?DateTime $publishedAt;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private DateTime $updatedAt;
+    private ?DateTime $updatedAt;
 
     public function __construct()
     {
@@ -59,12 +59,12 @@ class Comment
         $this->id = $id;
     }
 
-    public function getContent(): string
+    public function getContent(): ?string
     {
         return $this->content;
     }
 
-    public function setContent(string $content)
+    public function setContent(?string $content)
     {
         $this->content = $content;
     }
@@ -89,22 +89,22 @@ class Comment
         $this->post = $post;
     }
 
-    public function getPublishedAt(): DateTime
+    public function getPublishedAt(): ?DateTime
     {
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(DateTime $publishedAt)
+    public function setPublishedAt(?DateTime $publishedAt)
     {
         $this->publishedAt = $publishedAt;
     }
 
-    public function getUpdatedAt(): DateTime
+    public function getUpdatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTime $updatedAt)
+    public function setUpdatedAt(?DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }

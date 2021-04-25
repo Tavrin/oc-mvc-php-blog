@@ -10,7 +10,7 @@
         "controller": "App\\Controller\\BlogController::indexAction"
     },
     {
-        "route": "blog_show",
+        "route": "blog_category",
         "path": "/blog/{category}",
         "controller": "App\\Controller\\BlogController::categoryAction"
     },
@@ -38,6 +38,86 @@
         "route": "admin_dashboard",
         "path": "/admin",
         "controller": "App\\Controller\\admin\\IndexController::indexAction"
+    },
+    {
+        "route": "admin_structure",
+        "path": "/admin/structure",
+        "controller": "App\\Controller\\admin\\IndexController::structureAction"
+    },
+    {
+        "route": "admin_categories",
+        "path": "/admin/structure/categories",
+        "controller": "App\\Controller\\admin\\CategoryController::indexAction"
+    },
+    {
+        "route": "new_category",
+        "path": "/admin/structure/categories/new",
+        "controller": "App\\Controller\\admin\\CategoryController::newAction"
+    },
+    {
+        "route": "edit_category",
+        "path": "/admin/structure/categories/{slug}/edit",
+        "controller": "App\\Controller\\admin\\CategoryController::editAction"
+    },
+    {
+        "route": "admin_users",
+        "path": "/admin/users",
+        "controller": "App\\Controller\\admin\\UserController::indexAction"
+    },
+    {
+        "route": "new_user",
+        "path": "/admin/users/new",
+        "controller": "App\\Controller\\admin\\UserController::newAction"
+    },
+    {
+        "route": "edit_user",
+        "path": "/admin/users/{slug}/edit",
+        "controller": "App\\Controller\\admin\\UserController::editAction"
+    },
+    {
+        "route": "delete_user",
+        "path": "/admin/users/{slug}/delete",
+        "controller": "App\\Controller\\admin\\UserController::deleteAction"
+    },
+    {
+        "route": "admin_mediaTypes",
+        "path": "/admin/structure/medias",
+        "controller": "App\\Controller\\admin\\MediaTypeController::indexAction"
+    },
+    {
+        "route": "new_mediaType",
+        "path": "/admin/structure/medias/new",
+        "controller": "App\\Controller\\admin\\MediaTypeController::newAction"
+    },
+    {
+        "route": "admin_medias",
+        "path": "/admin/structure/medias/{type}",
+        "controller": "App\\Controller\\admin\\MediaController::indexAction"
+    },
+    {
+        "route": "edit_media",
+        "path": "/admin/structure/medias/{type}/{slug}/edit",
+        "controller": "App\\Controller\\admin\\MediaController::editAction"
+    },
+    {
+        "route": "new_media",
+        "path": "/admin/structure/medias/{type}/new",
+        "controller": "App\\Controller\\admin\\MediaController::newAction"
+    },
+    {
+        "route": "delete_media",
+        "path": "/admin/structure/medias/{type}/{slug}/delete",
+        "controller": "App\\Controller\\admin\\MediaController::deleteAction"
+    },
+    {
+        "route": "api_medias",
+        "path": "/api/medias/{type}",
+        "controller": "App\\Controller\\admin\\MediaController::indexApiAction"
+    },
+    {
+        "route": "api_new_media",
+        "path": "/api/medias/{type}/new",
+        "controller": "App\\Controller\\admin\\MediaController::newApiAction"
     },
     {
         "route": "inscription",

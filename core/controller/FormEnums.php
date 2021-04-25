@@ -13,6 +13,7 @@ class FormEnums
             'dataAttributes',
             'placeholder',
             'id',
+            'style',
             'minlength',
             'maxlength',
             'pattern',
@@ -22,12 +23,32 @@ class FormEnums
             ]
     ];
 
+    public const TEXTAREA = [
+        'type' => 'textarea',
+        'attributes' => [
+            'dataAttributes',
+            'placeholder',
+            'id',
+            'cols',
+            'rows',
+            'wrap',
+            'style',
+            'minlength',
+            'maxlength',
+            'pattern',
+            'readonly',
+            'size',
+            'class',
+        ]
+    ];
+
     public const PASSWORD = [
         'type' => 'password',
         'attributes' => [
             'dataAttributes',
             'placeholder',
             'id',
+            'style',
             'minlength',
             'maxlength',
             'pattern',
@@ -45,6 +66,7 @@ class FormEnums
             'dataAttributes',
             'placeholder',
             'id',
+            'style',
             'minlength',
             'maxlength',
             'pattern',
@@ -61,6 +83,7 @@ class FormEnums
             'dataAttributes',
             'max',
             'min',
+            'style',
             'step',
             'value',
             'id',
@@ -74,6 +97,7 @@ class FormEnums
             'dataAttributes',
             'max',
             'min',
+            'style',
             'step',
             'value',
             'id',
@@ -92,13 +116,34 @@ class FormEnums
         ]
     ];
 
+    public const BUTTON = [
+        'type' => 'button',
+        'attributes' => [
+            'dataAttributes',
+            'type',
+            'id',
+            'class',
+        ]
+    ];
+
+    public const DIV = [
+        'type' => 'div',
+        'attributes' => [
+            'dataAttributes',
+            'id',
+            'class',
+        ]
+    ];
+
     public const FILE = [
         'type' => 'file',
         'attributes' => [
             'dataAttributes',
             'required',
+            'onchange',
             'value',
             'id',
+            'style',
             'class',
             'accept',
             'capture',

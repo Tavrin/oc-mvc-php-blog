@@ -63,7 +63,7 @@
               "associatedEntity": "category",
               "repository": "App\\Repository\\CategoryRepository"
             },
-        "publishedAt" :
+        "createdAt" :
             {
               "fieldName" : "created_at",
               "type": "datetime"
@@ -80,8 +80,10 @@
             },
         "media" :
         {
-            "fieldName": "media",
-            "type": "string"
+            "fieldName" : "media_id",
+            "type": "association",
+            "associatedEntity": "media",
+            "repository": "App\\Repository\\MediaRepository"
         }
     },
     "childrenEntities" :

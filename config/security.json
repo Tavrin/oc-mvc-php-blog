@@ -14,6 +14,15 @@
             ],
             "redirect": "/login"
         },
+        "api":
+        {
+            "pattern": "/api",
+            "roles":
+            [
+                "ROLE_ADMIN"
+            ],
+            "redirect": "/login"
+        },
         "user":
         {
             "pattern": "/user",

@@ -13,7 +13,8 @@ class EntityEnums
     public const TYPE_DATE = "datetime";
     public const TYPE_JSON = 'json';
     public const TYPE_TINYINT = 'tinyInt';
-    public const TYPE_BOOL = 'boolean';
+    public const TYPE_BOOL = 'bool';
+    public const TYPE_BOOLEAN = 'boolean';
     public const FIELD_NAME = 'fieldName';
     public const FIELD_TYPE = 'type';
     public const ID_FIELD_NAME = 'id';

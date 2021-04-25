@@ -135,7 +135,7 @@ class Kernel
         $options['entityManager'] = false;
         $controller = ControllerResolver::createController($controller, $this->request, $this->entityManager);
         $controllerResponse = $controller($e);
-        $code === 404 ? $controllerResponse->setStatusCode(404):$controllerResponse->setStatusCode(500);
+        $e->getCode() === 404 ? $controllerResponse->setStatusCode(404):$controllerResponse->setStatusCode(500);
         $controllerResponse->send();
         exit();
     }

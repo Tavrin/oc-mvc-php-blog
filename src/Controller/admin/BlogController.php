@@ -5,13 +5,16 @@ namespace App\Controller\admin;
 
 
 use App\Forms\EditorForm;
+use App\Manager\AdminManager;
 use App\Manager\BlogManager;
 use App\Repository\CategoryRepository;
+use App\Repository\MediaRepository;
 use App\Repository\PostRepository;
 use Core\controller\Controller;
 use Core\http\Request;
 use App\Entity\Post;
 use Core\http\Response;
+use Core\utils\Paginator;
 
 class BlogController extends Controller
 {
@@ -19,18 +22,22 @@ class BlogController extends Controller
 
     public function indexAction(Request $request): Response
     {
-        $query = 1;
-        if ($request->hasQuery('page')) {
-            $query = (int)$request->getQuery('page');
+        $em = $this->getManager();
+        $postRepository = new PostRepository($em);
+        $adminManager = new AdminManager($em);
+        $entityData = $em->getEntityData('post');
+        $paginator = new Paginator();
+        if (false === $query = $adminManager->initializeAndValidatePageQuery($request)) {
+            $this->redirect($request->getPathInfo() . '?page=1');
         }
 
-        $em = $this->getManager();
-        $blogManager = new BlogManager($em);
-
-        $posts = $blogManager->hydrateListing('created_at', 'DESC', ['page' => $query, 'limit' => 5]);
-
+        $content = $paginator->paginate($postRepository, $query, 5,'created_at', 'DESC');
+        if ($content['actualPage'] > $content['pages']) {
+            $this->redirect($request->getPathInfo() . '?page=1');
+        }
+        $content['items'] = $adminManager->hydrateEntities($content['items'], $entityData);
         return $this->render('admin/posts/index.html.twig', [
-            'posts' => $posts
+            'content' => $content
         ]);
     }
 
@@ -39,39 +46,45 @@ class BlogController extends Controller
 
     }
 
+    /**
+     * @throws \Exception
+     */
     public function newAction(Request $request): Response
     {
         $em = $this->getManager();
         $post = new Post();
-        $blogManager = new BlogManager($em);
-        $selection = $blogManager->getSelection('category', ['placeholder' => 'name']);
+        $postRepository = new PostRepository($em);
+        $blogManager = new BlogManager($em, $postRepository);
+        $adminManager = new AdminManager($em);
+        $categoryRepository = new CategoryRepository($em);
+        $selection = $adminManager->getEntitySelection($categoryRepository, ['placeholder' => 'name']);
 
         $content = null;
         $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'new', 'wrapperClass' => 'mb-1']);
-        if ($this->session->get('formError') && $formData =$this->session->get('formData')) {
-            if (array_key_exists('header', $formData)) {
-                $content['item']['header'] = $formData['header'];
+        if ($formData =$this->session->get('formData')) {
+            if (array_key_exists('header', $formData['data'])) {
+                $content['item']['header'] = $formData['data']['header'];
             }
 
-            if (array_key_exists('content', $formData)) {
-                $content['item']['content'] = $formData['content'];
+            if (array_key_exists('content', $formData['data'])) {
+                $content['item']['content'] = $formData['data']['content'];
             }
         }
         $editorForm->handle($request);
 
         if ($editorForm->isSubmitted && $editorForm->isValid) {
-
-            $mediaFile = $editorForm->getData('media');
-
             if (!$blogManager->validateEditor($editorForm)) {
                 $this->redirect(self::NEW_POST_LINK, ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
 
-            $mediaFile->put('uploads/media', $mediaFile->getUploadName());
-            $post->setMedia($mediaFile->getRelativePath());
+            $media = $editorForm->getData('mediaHiddenInput');
+            if (isset($media)) {
+                $mediaRepository = new MediaRepository($em);
+                $post->setMedia($adminManager->findOneByCriteria($mediaRepository, 'path', $media));
+            }
 
-            if ($blogManager->savePost($post, $this->getUser())) {
-                $this->redirect('/admin', ['type' => 'success', 'message' => 'Article publié avec succès']);
+            if ($blogManager->savePost($post, $this->getUser()) instanceof Post) {
+                $this->redirect('/admin/posts?page=1', ['type' => 'success', 'message' => 'Article publié avec succès']);
             }
 
             $this->redirect(self::NEW_POST_LINK, ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);
@@ -97,28 +110,31 @@ class BlogController extends Controller
         $redirectPath = $request->getServer('HTTP_REFERER') ?? '/';
         $em = $this->getManager();
         $postRepository = new PostRepository($em);
-        $blogManager = new BlogManager($em);
+        $categoryRepository = new CategoryRepository($em);
+        $blogManager = new BlogManager($em, $postRepository);
+        $adminManager = new AdminManager($em);
         if (!$post = $postRepository->findOneBy('slug', $slug)) {
             $this->redirect($redirectPath, ['type' => 'danger', 'message' => 'l\'article n\'a pas été trouvé en base de données']);
         }
 
-        $selection = $blogManager->getSelection('category', ['placeholder' => 'name']);
+        $selection = $adminManager->getEntitySelection($categoryRepository, ['placeholder' => 'name']);
         $editorForm = new EditorForm($request,$post, $this->session, ['name' => 'newPost','submit' => false, 'selection' => $selection, 'type' => 'edit', 'wrapperClass' => 'mb-1', 'errorClass' => 'form-control-error']);
 
         $editorForm->handle($request);
 
         if ($editorForm->isSubmitted && $editorForm->isValid) {
-
-            $mediaFile = $editorForm->getData('media');
-
             if (!$blogManager->validateEditor($editorForm)) {
                 $this->redirect("/admin/posts/{$slug}/edit", ['type' => 'danger', 'message' => 'Ou ou les deux éditeurs n\'ont pas été remplis']);
             }
 
-            $mediaFile->put('uploads/media', $mediaFile->getUploadName());
-            $post->setMedia($mediaFile->getRelativePath());
+            $media = $editorForm->getData('mediaHiddenInput');
+            if (isset($media) && !empty($media)) {
+                $mediaRepository = new MediaRepository($em);
+                $post->setMedia($adminManager->findOneByCriteria($mediaRepository, 'path', $media));
+            }
+
             if ($blogManager->updatePost($post, $this->getUser())) {
-                $this->redirect('/admin', ['type' => 'success', 'message' => 'Article mis à jour avec succès']);
+                $this->redirect('/admin/posts?page=1', ['type' => 'success', 'message' => 'Article mis à jour avec succès']);
             }
 
             $this->redirect("/admin/posts/{$slug}/edit", ['type' => 'danger', 'message' => 'Une erreur s\'est produite durant l\'enregistrement en base de données']);

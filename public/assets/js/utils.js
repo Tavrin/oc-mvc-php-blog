@@ -6,6 +6,10 @@ utils.addCloseEventOnParent = (e) => {
     e.currentTarget.parentNode.classList.add('d-n');
 }
 
+utils.closeTarget = (e, target) => {
+    return target.classList.add('d-n');
+}
+
 utils.slugify = text =>
     text
         .toString()

@@ -25,12 +25,13 @@ class SecurityController extends Controller
 
     /**
      * @throws \PHPMailer\PHPMailer\Exception
+     * @throws \Exception
      */
     public function register(Request $request): Response
     {
         $user = new User();
         $userManager = new UserManager($this->getManager());
-        $form = new RegisterForm($request,$user, $this->session, ['name' => 'registerform']);
+        $form = new RegisterForm($request,$user, $this->session, ['name' => 'registerForm', 'wrapperClass' => 'mb-1']);
 
         $form->handle($request);
 
@@ -58,7 +59,8 @@ class SecurityController extends Controller
     public function confirmEmailAction(Request $request)
     {
         $em = $this->getManager();
-        $userManager = new UserManager($em);
+        $userRepository = new UserRepository($this->getManager());
+        $userManager = new UserManager($em, $userRepository);
 
         if (! $user = $userManager->confirmUser($request)) {
             $this->redirect('/');
@@ -80,24 +82,26 @@ class SecurityController extends Controller
         }
 
         $em = $this->getManager();
-        $userManager = new UserManager($em);
+        $userRepository = new UserRepository($this->getManager());
+        $userManager = new UserManager($em, $userRepository);
         $userTemplate = new User();
 
-        $form = new LoginForm($request,$userTemplate, $this->session, ['name' => 'loginform']);
+        $form = new LoginForm($request,$userTemplate, $this->session, ['name' => 'loginform', 'wrapperClass' => 'mb-1']);
 
         $form->handle($request);
-
         if ($form->isValid) {
             if (!$user = $userManager->verifyUserLogin($userTemplate)) {
                 $this->redirect(self::LOGIN_PATH, ['type' => 'danger', 'message' => 'La connexion a échouée, veuillez réessayer']);
             }
 
+            $userManager->setLastConnexion($user);
             $this->session->set('user', $user);
             $this->redirect('/', ['type' => 'success', 'message' => 'Connexion réussie !']);
+        } elseif ($form->isSubmitted) {
+            $this->redirect(self::LOGIN_PATH, ['type' => 'danger', 'message' => 'La connexion a échouée, veuillez réessayer']);
         }
 
         $content['title'] = 'Connexion';
-        $content['breadcrumb'] = $request->getAttribute('breadcrumb');
 
         return $this->render('pages/login.html.twig',[
             'content' => $content,
@@ -114,9 +118,10 @@ class SecurityController extends Controller
             $this->redirect('/');
         }
 
-        $userManager = new UserManager($this->getManager());
+        $userRepository = new UserRepository($this->getManager());
+        $userManager = new UserManager($this->getManager(), $userRepository);
         $userTemplate = new User();
-        $form = $this->createForm($userTemplate);
+        $form = $this->createForm($userTemplate, ['wrapperClass' => 'mb-1']);
 
         $form->addEmailInput('email', ['placeholder' => 'adresse email associée au compte', 'class' => 'form-control', 'label' => 'email']);
         $form->setSubmitValue('accepter', ['class' => 'button-bb-wc']);
@@ -144,8 +149,8 @@ class SecurityController extends Controller
      */
     public function reset(Request $request): Response
     {
-        $em = $this->getManager();
-        $userManager = new UserManager($em);
+        $userRepository = new UserRepository($this->getManager());
+        $userManager = new UserManager($this->getManager(), $userRepository);
 
         if (!$request->hasQuery('token')) {
             $this->redirect('/');
@@ -156,15 +161,17 @@ class SecurityController extends Controller
         }
 
         $userTemplate = new User();
-        $form = new ResetPasswordForm($request, $userManager, $this->session, ['action' => $request->getPathInfo() . '?token=' . $request->getQuery('token')]);
+        $form = new ResetPasswordForm($request, $userTemplate, $this->session, ['action' => $request->getPathInfo() . '?token=' . $request->getQuery('token'), 'wrapperClass' => 'mb-1']);
         $form->handle($request);
 
-        if ($form->isValid) {
+        if ($form->isSubmitted && $form->isValid) {
             if ($userManager->resetPassword($form, $user, $userTemplate)) {
                 $userManager->newToken($user, 'update');
                 $this->redirect('/login', ['type' => 'success', 'message' => 'Modification réussie']);
             }
 
+            $this->redirect('/', ['type' => 'danger', 'message' => "La modification n'a pas pu aboutir"]);
+        } elseif ($form->isSubmitted) {
             $this->redirect('/', ['type' => 'danger', 'message' => "La modification n'a pas pu aboutir"]);
         }
 

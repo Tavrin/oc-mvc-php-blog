@@ -15,17 +15,17 @@ class Post
     /**
      * @var string|null
      */
-    private ?string $title;
+    private ?string $title = null;
 
     /**
      * @var string|null
      */
-    private ?string $header;
+    private ?string $header = null;
 
     /**
      * @var string|null
      */
-    private ?string $content;
+    private ?string $content = null;
 
     /**
      * @var array|null
@@ -35,27 +35,27 @@ class Post
     /**
      * @var string|null
      */
-    private ?string $metaTitle;
+    private ?string $metaTitle = null;
 
     /**
      * @var string|null
      */
-    private ?string $metaDescription;
+    private ?string $metaDescription = null;
 
     /**
      * @var string|null
      */
-    private ?string $slug;
+    private ?string $slug = null;
 
     /**
      * @var string|null
      */
-    private ?string $path;
+    private ?string $path = null;
 
     /**
-     * @var string|null
+     * @var Media|null
      */
-    private ?string $media;
+    private ?Media $media = null;
 
     /**
      * @var User|null
@@ -65,12 +65,12 @@ class Post
     /**
      * @var Category|null
      */
-    private ?Category $category;
+    private ?Category $category = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private DateTime $publishedAt;
+    private ?DateTime $createdAt = null;
 
     /**
      * @var DateTime|null
@@ -85,7 +85,7 @@ class Post
     public function __construct()
     {
         $this->status = false;
-        $this->publishedAt = new DateTime();
+        $this->createdAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -193,29 +193,29 @@ class Post
         return $this->category;
     }
 
-    public function setCategory(Category $category)
+    public function setCategory(?Category $category)
     {
         $this->category = $category;
     }
 
-    public function setMedia(?string $media)
+    public function setMedia(?Media $media)
     {
         $this->media = $media;
     }
 
-    public function getMedia(): ?string
+    public function getMedia(): ?Media
     {
         return $this->media;
     }
 
-    public function getPublishedAt(): DateTime
+    public function getCreatedAt(): ?DateTime
     {
-        return $this->publishedAt;
+        return $this->createdAt;
     }
 
-    public function setPublishedAt(DateTime $publishedAt)
+    public function setCreatedAt(?DateTime $publishedAt)
     {
-        $this->publishedAt = $publishedAt;
+        $this->createdAt = $publishedAt;
     }
 
     public function getUpdatedAt(): ?DateTime
@@ -223,7 +223,7 @@ class Post
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTime $updatedAt)
+    public function setUpdatedAt(?DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }
@@ -233,7 +233,7 @@ class Post
         return $this->status;
     }
 
-    public function setStatus(bool $status)
+    public function setStatus(?bool $status)
     {
         $this->status = $status;
     }

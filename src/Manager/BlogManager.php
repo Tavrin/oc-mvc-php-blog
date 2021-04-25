@@ -4,53 +4,37 @@
 namespace App\Manager;
 
 use App\Entity\Post;
+use App\Repository\CategoryRepository;
 use App\Repository\PostRepository;
 use Core\database\DatabaseResolver;
 use Core\database\EntityManager;
 use Core\http\exceptions\ForbiddenException;
+use Core\http\exceptions\NotFoundException;
+use Core\utils\Paginator;
+use Core\utils\StringUtils;
 
 
 class BlogManager
 {
     private ?EntityManager $em;
-    private array $allEntityData = [];
     private PostRepository $postRepository;
 
-    public function __construct(EntityManager $entityManager = null)
+    public function __construct(EntityManager $entityManager, PostRepository $postRepository)
     {
-        $this->em = $entityManager ?? DatabaseResolver::instantiateManager();
-        $this->postRepository = new PostRepository();
-
-        $this->allEntityData = $this->em::getAllEntityData();
+        $this->em = $entityManager;
+        $this->postRepository = $postRepository;
     }
 
-    public function getSelection(string $entityName, array $options): ?array
-    {
-        if (!isset($this->allEntityData[$entityName])) {
-            return null;
-        }
-
-        $selection = [];
-
-        $entityRepo = new $this->allEntityData[$entityName]['repository'];
-        $entities = $entityRepo->findAll();
-        isset($options['id']) ? $idMethod = 'get' . ucfirst($options['id']) : $idMethod = 'getId';
-
-        foreach ($entities as $key => $entity) {
-            $selection[$key]['id'] = $entity->$idMethod();
-            if (isset($options['placeholder'])) {
-                $placeholderMethod = 'get' . $options['placeholder'];
-                $selection[$key]['placeholder'] = $entity->$placeholderMethod();
-            }
-        }
-
-        return $selection;
-    }
-
-    public function savePost($post, $user): bool
+    public function savePost($post, $user): Post
     {
         if (!in_array('ROLE_ADMIN', $user->getRoles())) {
             throw new ForbiddenException('Action non autorisée', 403);
+        }
+
+        if (!$post->getSlug()) {
+            $post->setSlug(StringUtils::slugify($post->getTitle()));
+        } else {
+            $post->setSlug(StringUtils::slugify($post->getSlug()));
         }
 
         $post->setStatus(true);
@@ -61,14 +45,19 @@ class BlogManager
 
         $postAuthor ?? $post->setAuthor($user);
         $this->em->save($post);
-        return $this->em->flush();
+        $this->em->flush();
+        return $post;
     }
 
     public function updatePost(Post $post, $user): bool
     {
-        if (!in_array('ROLE_ADMIN', $user->getRoles())) {
-            throw new ForbiddenException('Action non autorisée', 403);
+        if (!$post->getSlug()) {
+            $post->setSlug(StringUtils::slugify($post->getTitle()));
+        } else {
+            $post->setSlug(StringUtils::slugify($post->getSlug()));
         }
+
+        $post->setPath($post->getCategory()->getPath() . '/' . $post->getSlug());
 
         $this->em->update($post);
         return $this->em->flush();
@@ -86,41 +75,14 @@ class BlogManager
         return true;
     }
 
-    public function hydrateListing(string $column, string $order, array $pagination = null): ?array
+    public function hydrateListing(array $entityData, Paginator $paginator = null, array $paginationOptions = null, string $column = null, string $order = null, string $category = null): ?array
     {
-        $posts = $this->postRepository->findAll(['column' => $column, 'order' => $order]);
-        $content = [];
-        $postEntityDataFields = $this->allEntityData['post']['fields'];
-        foreach ($posts as $key => $post) {
-            foreach ($postEntityDataFields as $fieldName => $fieldData) {
-                $method = 'get' . ucfirst($fieldName);
-                $content['items'][$key][$fieldName] = $post->$method();
-            }
-            $publishDate =  $post->getPublishedAt();
-            $content['items'][$key]['publishedAt'] = $publishDate->format("Y-m-d\TH:i:s");
+        isset($category) ? $categoryField = $entityData['fields']['category']['fieldName'] : $categoryField = null;
 
-            if ($post->getUpdatedAt()) {
-                $updateDate =  $post->getUpdatedAt();
-                $content['items'][$key]['updatedAt'] = $updateDate->format("Y-m-d\TH:i:s");
-            }
-        }
-
-        if ($pagination) {
-            $itemsToKeep = [];
-            $content['pages'] = intval(ceil(count($content['items']) / $pagination['limit']));
-            $content['actualPage'] = $pagination['page'];
-            if ($content['actualPage'] > $content['pages'] || $content['actualPage'] < 1) {
-                $content['actualPage'] = 1;
-            }
-            $firstItem = ($content['actualPage'] * $pagination['limit']) - $pagination['limit'];
-            for ($i = $firstItem; $i < $firstItem + $pagination['limit']; $i++) {
-                if ($content['items'][$i]) {
-                    $itemsToKeep[] = $content['items'][$i];
-                }
-            }
-
-            $content['items'] = $itemsToKeep;
-
+        if ($paginator && $paginationOptions) {
+            $content = $paginator->paginate($this->postRepository, $paginationOptions['page'], $paginationOptions['limit'], $column, $order, $categoryField, $category);
+        } else {
+            isset($categoryField, $category) ? $content = $this->postRepository->findBy($categoryField, $category, $column, $order) : $content = $this->postRepository->findAll($column, $order);
         }
 
         return $content;

@@ -16,6 +16,7 @@ use Core\utils\ClassUtils;
 use Core\utils\StringUtils;
 use DateTime;
 use Exception;
+use Ramsey\Uuid\Uuid;
 use function array_key_exists;
 
 class Form
@@ -55,7 +56,7 @@ class Form
      * @param Session $session
      * @param array $options
      */
-    public function __construct(Request $request, object $entity, Session $session, array $options)
+    public function __construct(Request $request, object $entity, Session $session, array $options = [])
     {
         $this->session = $session;
         if (isset($options['method'])) {
@@ -79,11 +80,24 @@ class Form
     /**
      * @param string $name
      * @param array $options
+     * @return $this
      */
     public function addTextInput(string $name, array $options = []): Form
     {
         $options['type'] = 'text';
         $this->setData(FormEnums::TEXT, $name, $options);
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     * @return $this
+     */
+    public function addTextareaInput(string $name, array $options = []): Form
+    {
+        $options['type'] = 'textarea';
+        $this->setData(FormEnums::TEXTAREA, $name, $options);
         return $this;
     }
 
@@ -136,7 +150,9 @@ class Form
         $options['type'] = 'select';
         $input = "<select name='{$name}' " ;
 
-        isset($options['id']) ? true :  $options['id'] = $name;
+        if ((isset($options['entitySelect']) && true === $options['entitySelect']) || !isset($options['entitySelect'] )) {
+            $options['id'] ?? $options['id'] = $name;
+        }
         foreach ($options as $optionName => $option) {
 
             if (!in_array($optionName, FormEnums::SELECT['attributes'])) {
@@ -172,11 +188,11 @@ class Form
         foreach ($selection as $item) {
             $selected = '';
             if (is_array($item) && isset($item['id'])) {
-                if ($options['selected'] && $options['selected'] === $item['id']) {
+                if (isset($options['selected']) && $options['selected'] === $item['id']) {
                     $selected = 'selected="' . $item['id'] . '"';
-                } elseif (true === $this->session->get('formError') && $formData = $this->session->get('formData')) {
-                    if (array_key_exists($name, $formData)) {
-                        $selected = 'selected="' . $formData[$name]. '"';
+                } elseif ($this->session->has('formData') && $formData = $this->session->get('formData')) {
+                    if (array_key_exists($name, $formData['data']) && $this->name === $formData['formName']) {
+                        $selected = 'selected="' . $formData['data'][$name]. '"';
                     }
                 }
 
@@ -198,6 +214,32 @@ class Form
         $this->setData(FormEnums::HIDDEN, $name, $options);
 
          return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     * @return $this
+     */
+    public function addButton(string $name, array $options = []): Form
+    {
+        $options['type'] = 'button';
+        $this->setData(FormEnums::BUTTON, $name, $options);
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     * @return $this
+     */
+    public function addDiv(string $name, array $options = []): Form
+    {
+        $options['type'] = 'div';
+        $this->setData(FormEnums::DIV, $name, $options);
+
+        return $this;
     }
 
     /**
@@ -280,9 +322,9 @@ class Form
             if ('hidden' === $input['type']) {
                 $render .= '        ' . $input['render'] . PHP_EOL;
             } else {
-                $render .= "    <div class='{$globalOptions['wrapperClass']} {$input['wrapperClass']}'>" . PHP_EOL .
-                    "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL .
-                    '        ' . $input['render'] . '</div>'. PHP_EOL;
+                $render .= "    <div class='{$globalOptions['wrapperClass']} {$input['wrapperClass']}'>" . PHP_EOL;
+                if ('button' !== $input['type']) {$render .=    "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL;}
+                $render .=    '        ' . $input['render'] . '</div>'. PHP_EOL;
             }
         }
 
@@ -296,7 +338,11 @@ class Form
         }
         $render .= "</form>";
         $form['render'] = $render;
-        $form['data'] = $this->data;
+        $form['data']['fields'] = $this->data;
+        $form['data']['action'] = $this->action;
+        $form['data']['options'] = $this->options;
+        $form['data']['fields']['formName'] = ['name' => 'formName', 'value' => $this->name, 'type' => 'hidden'];
+        $form['data']['fields']['csrf'] = ['name' => 'csrf', 'value' => $token, 'type' => 'hidden'];
         $form['name'] = $this->name;
         return $form;
     }
@@ -306,18 +352,52 @@ class Form
      * @param string $name
      * @param array $options
      */
-    protected function  setData(array $type, string $name, array $options)
+    protected function setData(array $type, string $name, array $options)
     {
 
-        if (true === $this->session->get('formError') && $this->session->get('formData') && array_key_exists($name, $this->session->get('formData'))) {
+        if ($this->session->has('formData') && 'password' !== $type['type']) {
             $formData = $this->session->get('formData');
-            $options['value'] = $formData[$name]['result'];
-            $options['error'] = ['status' => $formData[$name]['status'], 'error' => $formData[$name]['error']];
+            if ($this->name === $formData['formName'] && array_key_exists($name, $formData['data'])) {
+                $options['value'] = $formData['data'][$name]['result'];
+                $options['error'] = ['status' => $formData['data'][$name]['status'], 'error' => $formData['data'][$name]['error']];
+            }
         }
 
-        $input = "<input type='{$type['type']}' name='{$name}' " ;
-
         $options['id'] ??  $options['id'] = $name;
+
+        if ('textarea' === $type['type']) {
+            $input = "<textarea name='{$name}' ";
+        } elseif ('button' === $type['type'] || 'div' === $type['type']) {
+            $input = "<{$type['type']} ";
+        } else {
+            $input = "<input type='{$type['type']}' name='{$name}' ";
+        }
+
+        $input .= $this->setInputOptions($type, $options);
+        $input .= ">";
+
+        if ('textarea' === $type['type'] || 'button' === $type['type'] || 'div' === $type['type']) {
+            if(isset($options['value'])) {
+                $input .= PHP_EOL . $options['value'];
+            }
+
+            $input .= PHP_EOL . "</{$type['type']}>";
+        }
+
+        $fieldData = $this->setDataOptions($name, $options, $type);
+        $fieldData['render'] = $input;
+        $this->data[$name] = $fieldData;
+    }
+
+    /**
+     * @param array $type
+     * @param array $options
+     * @param string $name
+     * @return string
+     */
+    private function setInputOptions(array $type, array $options): string
+    {
+        $input = '';
         foreach ($options as $optionName => $option) {
             if (!in_array($optionName, $type['attributes'])) {
                 continue;
@@ -344,14 +424,13 @@ class Form
             $input .= "required ";
         }
 
-
-        $input .= ">";
-
-        $fieldData = $this->setDataOptions($name, $options, $type);
-        $fieldData['render'] = $input;
-        $this->data[$name] = $fieldData;
+        return $input;
     }
 
+    /**
+     * @param $option
+     * @return string
+     */
     private function setDataAttributes($option): string
     {
         $input = '';
@@ -370,6 +449,7 @@ class Form
     /**
      * @param $name
      * @param $options
+     * @param $type
      * @return array
      */
     private function setDataOptions($name, $options, $type): array
@@ -390,6 +470,8 @@ class Form
         isset($options['sanitize']) ? $fieldData['sanitize'] = $options['sanitize'] : $fieldData['sanitize'] = true;
         isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : false;
         isset($options['entity']) ? $fieldData['entity'] = $options['entity'] : $fieldData['entity'] = $this->entity;
+        isset($options['value']) ? $fieldData['value'] = $options['value'] : $fieldData['value'] = null;
+        isset($options['class']) ? $fieldData['class'] = explode(' ', $options['class']) : $fieldData['class'] = null;
         isset($options['targetField']) ? $fieldData['targetField'] = $options['targetField'] : false;
         isset($options['fieldName']) ? $fieldData['fieldName'] = $options['fieldName'] : $fieldData['fieldName'] = $name;
         isset($options['type']) ? $fieldData['type'] = $options['type'] : false;
@@ -407,19 +489,25 @@ class Form
      * @param Request $request
      * @throws Exception
      */
-    public function handle(Request $request)
+    public function handle(Request $request, bool $isJson = false)
     {
-        $this->session->remove('formError');
-        $this->session->remove('formData');
-
-        if (false !== $currentRequest = $this->validateRequest($request)) {
+        $this->updateSession($isJson);
+        $currentRequest = $this->validateRequest($request, $isJson);
+        if ($currentRequest instanceof FormHandleException) {
+            $this->errors['request'] = ['error' => $currentRequest, 'status' => true, 'result' => $request];
+            return;
+            }
 
             $this->isSubmitted = true;
             $filesArray = [];
 
             foreach ($this->data as $fieldName => $fieldData) {
+                if ('div' === $fieldData['type'] || 'button' === $fieldData['type']) {
+                    continue;
+                }
                 if ('file' === $fieldData['type']) {
-                    if ($newFileData = $this->handleFile($currentRequest->files[$fieldName], $fieldData) instanceof FormHandleException) {
+                    $newFileData = $this->handleFile($currentRequest->files[$fieldName], $fieldData);
+                    if ($newFileData instanceof FormHandleException){
                         $this->errors[$fieldName] = ['error' => $newFileData, 'status' => true, 'result' => $currentRequest->files[$fieldName]];
                         continue;
                     }
@@ -428,25 +516,13 @@ class Form
                     continue;
                 }
 
-                if (false === $requestField = $this->validateAndSanitizeRequest($fieldData, $fieldName, $currentRequest)) {
-                    continue;
-                }
-
-                if (false === $fieldData['entity']) {
-                    $this->data[$fieldName]['result'] = $requestField;
-                    continue;
-                }
-
-                if (false === $this->validateAndHydrateEntity($fieldName, $fieldData, $requestField)) {
-                    $this->errors[$fieldName]= ['error' => new FormHandleException($fieldData['type'], $fieldName, "Field ${fieldName} is not a valid entity property"), 'status' => true, 'result' => $requestField];
-                    continue;
-                }
-
-                $this->data[$fieldName]['result'] = $requestField;
+                $this->checkField($fieldName, $fieldData, $currentRequest);
             }
 
             foreach ($filesArray as $name => $data) {
-                $this->data[$name]['result'] = new FormFile($data['tmp_name'], $this->data, $data['name'], $data['type']);
+                if ($data){
+                    $this->data[$name]['result'] = new FormFile($data['tmp_name'], $this->data, $data['name'], $data['type'], $data['extension']);
+                }
             }
 
             if ($this->errors) {
@@ -455,8 +531,42 @@ class Form
             }
 
             $this->isValid = true;
+    }
 
+    private function checkField($fieldName, $fieldData, $currentRequest)
+    {
+        if (false === $requestField = $this->validateAndSanitizeRequest($fieldData, $fieldName, $currentRequest)) {
+            return;
         }
+
+        if (false === $fieldData['entity']) {
+            $this->data[$fieldName]['result'] = $requestField;
+            return;
+        }
+
+        if (false === $this->validateAndHydrateEntity($fieldName, $fieldData, $requestField)) {
+            $this->errors[$fieldName]= ['error' => new FormHandleException($fieldData['type'], $fieldName, "Field ${fieldName} is not a valid entity property"), 'status' => true, 'result' => $requestField];
+            return;
+        }
+
+        $this->data[$fieldName]['result'] = $requestField;
+    }
+
+    private function updateSession(bool $isJson)
+    {
+        if (false === $isJson) {
+            $this->updateToken();
+            $this->session->remove('formData');
+        }
+    }
+
+    protected function updateToken()
+    {
+        $token = Uuid::uuid4();
+
+        $oldToken = $this->session->get('csrf-new');
+        $this->session->set('csrf-old', $oldToken);
+        $this->session->set('csrf-new', $token->toString());
     }
 
     private function validateAndSanitizeRequest($fieldData, $fieldName, $currentRequest)
@@ -486,6 +596,7 @@ class Form
         $newFileData = $currentField;
         $newFileData['type'] =  mime_content_type($newFileData['tmp_name']);
         $newFileData['name'] = StringUtils::slugify(pathinfo($newFileData['name'])['filename']) . '.' . pathinfo($newFileData['name'])['extension'];
+        $newFileData['extension'] = pathinfo($newFileData['name'])['extension'];
 
         if ($fieldData['whitelist']) {
             $fileError = $this->validateFileWhitelist($newFileData, $fieldData);
@@ -530,6 +641,10 @@ class Form
 
     private function sanitizeRequest($currentRequest, $fieldData, $fieldName)
     {
+        if (!isset($currentRequest[$fieldName])) {
+            return null;
+        }
+
         $currentRequestField = $currentRequest[$fieldName];
         if ($fieldData['sanitize']) {
             $currentRequestField = htmlspecialchars($currentRequestField);
@@ -546,22 +661,26 @@ class Form
             }
         }
 
-        $this->session->set('formError', true);
-        $this->session->set('formData', $this->errors);
+        $formData['data'] = $this->errors;
+        $formData['formName'] = $this->name;
+        $this->session->set('formData', $formData);
     }
 
     /**
      * @param Request $request
-     * @return Request|false
+     * @return FormHandleException|Request
      */
-    private function validateRequest(Request $request)
+    private function validateRequest(Request $request, bool $isJson = false)
     {
-        $oldToken = $this->session->get('csrf-old');
+        false === $isJson ? $oldToken = $this->session->get('csrf-old') : $oldToken = $this->session->get('csrf-new');
 
-        if (!isset($request->request)
-            || (isset($this->name) && (!isset($request->request['formName']) || $this->name !== $request->getRequest('formName'))
-            || ( !isset($request->request['csrf']) || !isset($oldToken) || $request->getRequest('csrf') !== $oldToken->toString()))) {
-            return false;
+        if (!isset($request->request)) {
+            $request = new FormHandleException('request', 'the request doesn\'t exist');
+        } elseif (isset($this->name) && (!isset($request->request['formName']) || $this->name !== $request->getRequest('formName'))) {
+            $request = new FormHandleException('requestName', 'the request names don\'t match');
+        } elseif ( !isset($request->request['csrf']) || !isset($oldToken) || $request->getRequest('csrf') !== $oldToken) {
+            $this->isSubmitted = true;
+            $request = new FormHandleException('csrf', 'the csrf tokens don\'t match');
         }
 
         return $request;
@@ -604,11 +723,12 @@ class Form
             return false;
         }
 
-        $fieldType = gettype(StringUtils::changeTypeFromValue($requestField));
+        $newTypeData = StringUtils::changeTypeFromValue($requestField);
+        $fieldType = gettype($newTypeData);
 
         if (isset($fieldData['type']) && 'datetime' === $fieldData['type'] && preg_match('#^(?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}?))$#', $requestField, $match)) {
-            $requestField = new DateTime($match[0]);
-            $fieldType = strtolower(get_class($requestField));
+            $newTypeData = new DateTime($match[0]);
+            $fieldType = strtolower(get_class($newTypeData));
         }
 
         $entityField = $this->allEntityData[$entityName][EntityEnums::FIELDS_CATEGORY][$fieldData['fieldName']];
@@ -628,7 +748,7 @@ class Form
         }
 
         $entityMethod = 'set' . ucfirst($fieldData['fieldName']);
-        $fieldData['entity']->$entityMethod($associatedEntity ?? $requestField);
+        $fieldData['entity']->$entityMethod($associatedEntity ?? $newTypeData);
         return true;
     }
 
@@ -641,7 +761,7 @@ class Form
         return array_key_exists($fieldName, $this->data) ? $this->data[$fieldName]['result'] : null;
     }
 
-    public function getAllData()
+    public function getAllData(): array
     {
         return $this->data;
     }

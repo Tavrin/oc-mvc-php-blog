@@ -38,8 +38,12 @@ class Router
             foreach ($requestPath as $key => $explodedUrl) {
                 $testedRouteItem = $testedRoute['path'][$key];
 
-                if (isset($testedRouteItem)) {
-                    $params['breadcrumb'][] = ['path' => '/' . $testedRouteItem, 'name' => $testedRouteItem];
+                if (isset($testedRouteItem) && !empty($explodedUrl)) {
+                    $params['breadcrumb'][$key + 1]['path'] = '/';
+                    $params['breadcrumb'][$key + 1]['name'] = $explodedUrl;
+                    for ($i = 0; $i <= $key; $i++) {
+                        $params['breadcrumb'][$key + 1]['path'] .= $requestPath[$i] . '/';
+                    }
                 }
 
                 if (preg_match('/{(.*?)}/', $testedRouteItem, $match)) {

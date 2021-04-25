@@ -1,30 +1,43 @@
 {% extends 'layout/base.html.twig' %}
 
 {% block main %}
-    <main>
+    <main class="bcg-light4">
 
-        <div class="mw-70 m-auto mt-3 mb-3 d-f fd-c">
+        <div class="maw-90 m-auto mt-3 mb-3 d-f fd-c">
             <section id="home-articles" class="w-100 m-auto pt-3">
                 <div class="ta-l">
                     <h1 class="fw-600">Tous les articles</h1>
                 </div>
-                <div class="d-f fd-r flex-w grid-3 jc-sb mt-1 pb-3">
-                    {% if content.posts is defined and content.posts is not empty %}
-                        {% for post in content.posts %}
-                            <div>
-                                {% if post.media is defined and post.media is not empty %}
-                                    <img src="{{ post.media }}" alt="">
-                                {% else %}
-                                    <img src="http://via.placeholder.com/376x220" alt="">
-                                {% endif %}
+                <div class="d-f fd-r flex-w grid-7 jc-fs mt-1 pb-3 pl-2">
+                    {% if content.items is defined and content.items is not empty %}
+                        {% for post in content.items %}
+                            {% if post.media is defined and post.media is not empty %}
+                                {% set mediaPath = post.media.path %}
+                            {% elseif post.category.media is defined and post.category.media is not empty %}
+                                {% set mediaPath = post.category.media.path %}
+                            {% else %}
+                                {% set mediaPath = 'http://via.placeholder.com/376x220' %}
+                            {% endif %}
+
+                            <div class="w-28 hrem-35 d-f fd-c m-1-5 mb-3 p-1 bcg-white bs-1 br-5">
+                                <div class="w-100 h-60">
+                                    <img src="{{ mediaPath }}" alt="" class="w-100 h-100 of-cov br-10">
+                                </div>
                                 <p class="pt-1 pb-1 fs-1c3 fw-700">
-                                    <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">{{ post.category.name }}</span>
-                                    {{ post.listingText ?: post.title }}
+                                    <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">
+                                        <a href="{{ post.category.path }}">{{ post.category.name }}</a>
+                                        <span class="float-r"> {{ post.createdAt|date("d-m-Y") }}</span>
+                                    </span>
+                                    {{ post.title }}
                                 </p>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam scelerisque sem a elit suscipit dapibus. Nam sollicitudin neque nunc, nec varius risus iaculis eget. In a luctus sem, hendrerit lacinia metus...</p>
+                                <a href="/admin/users" class="mt-1 button-bb-wc-2 p-1 br-5 fw-600 ta-c maw-50 as-c">
+                                    Lire la suite
+                                </a>
                             </div>
                         {% endfor %}
                     {% else %}
-                        <div class="mw-70 m-auto mt-3 mb-3 pt-3 d-f fd-c">
+                        <div class="maw-70 m-auto mt-3 mb-3 pt-3 d-f fd-c">
                             <section id="home-presentation" class="d-f jc-c m-auto pt-3 pb-3 mb-3">
                                 <div class="ta-l">
                                     <h1 class="fw-600 fs-3-5 lh-3c5">Le blog ne contient aucun article</h1>
@@ -38,7 +51,7 @@
 
                 </div>
                 <div class="ta-c mb-3">
-                    <a href="/blog"> Voir tous les articles</a>
+                    {% include '/partials/inc/pagination.html.twig' %}
                 </div>
             </section>
         </div>
