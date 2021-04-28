@@ -28,12 +28,9 @@ class MediaController extends Controller
         $adminManager = new AdminManager($em);
         $mediaData = $em->getEntityData('media');
         $mediaType = $adminManager->findOneByCriteria(new MediaTypeRepository($em), 'slug', $type);
-        if (false === $query = $adminManager->initializeAndValidatePageQuery($request)) {
-            $this->redirect($request->getPathInfo() . '?page=1');
-        }
 
-        $content = $paginator->paginate($mediaRepository, $query, 16,'created_at', 'DESC', $mediaData['fields']['type']['fieldName'], $mediaType->getId());
-        if ($content['actualPage'] > $content['pages']) {
+
+        if (false === $content = $adminManager->managePagination($request, $mediaRepository, $paginator, 16, 'created_at', 'DESC', $mediaData['fields']['type']['fieldName'], $mediaType->getId() )) {
             $this->redirect($request->getPathInfo() . '?page=1');
         }
 

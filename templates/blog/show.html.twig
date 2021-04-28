@@ -1,0 +1,76 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block head %}
+    {{ parent() }}
+    {% include 'partials/inc/post-import.html.twig' %}
+{% endblock %}
+{% if content.post.author.firstName is defined and content.post.author.firstName is not empty and content.post.author.lastName is defined and content.post.author.lastName %}
+{% set authorName = content.post.author.firstName ~ ' ' ~ content.post.author.lastName %}
+{% else %}
+{% set authorName = content.post.author.username %}
+{% endif %}
+
+{% block main %}
+    <main class="bcg-light4">
+
+        <div class="maw-90 m-auto mt-3 mb-3 d-f fd-c">
+            <section id="post" class="w-100 m-auto pt-3 d-f fd-c ai-c">
+                <div class="d-f fd-c mb-3">
+                    <img src="{{ content.post.media.path }}" alt="" class="w-75 as-c">
+                </div>
+                <div class="ta-c pb-3 bb-dg2 w-50">
+                    <h1 class="fw-700 fs-3 mb-1">{{ content.post.title }}</h1>
+                    <div class="d-f ai-c">
+                        <img src="{{ content.post.author.media.path }}" class="br-50 hrem-3 mr-1" alt="">
+                        <div class="w-100">
+                        <span class="float-l">Ecrit par <a href="{{ content.post.author.path }}">{{ authorName }}</a></span>
+                        <span class="float-r">{{ content.post.updatedAt ? 'Mis à jour le ' ~ content.post.updatedAt|date('d/m/Y') : 'Publié le ' ~ content.post.createdAt|date('d/m/Y') }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bb-dg2 mb-2 w-50 mt-3 mb-3 pb-3">
+                    {% if content.post.header is defined and content.post.header is not empty %}
+                        <div id="header">
+                        {% for block in content.post.header %}
+                            {{ block|raw }}
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if content.post.header is defined and content.post.header is not empty %}
+                        <div id="content" class="mt-2">
+                        {% for block in content.post.content %}
+                            {{ block|raw }}
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="w-50 d-f fd-c ai-c">
+                    <h3>Commentaires</h3>
+                    {% if app.user is defined and app.user is not empty %}
+
+                        {{ form.render|raw }}
+                    {% else %}
+                    {% endif %}
+
+                    {% if content.comments is defined and content.comments is not empty %}
+                        {% for comment in content.comments %}
+                            {% if comment.hidden == false %}
+                                <div id="{{ comment.slug }}" class="{% if not loop.last %}bb-dg {% endif %}m-1 pt-1 pb-1 w-75 d-f fd-c ai-c">
+                                    <div class="w-100 d-f mb-1-5">
+                                        <img src="{{ comment.user.media.path }}" class="br-50 hrem-3 mr-1" alt="">
+                                        <div>
+                                            <span class="fw-900 d-b mb-0-5"><a href="{{ comment.user.path }}">{{ comment.user.username }}</a></span>
+                                            <span class="fw-500 text-muted">{{ comment.createdAt|date|moment }}</span>
+                                        </div>
+                                    </div>
+                                    <p class="ta-l w-100">{{ comment.status == true ? comment.content : '<span class="text-muted fw-900 bcg-light2 p-0-5 br-25">Commentaire en attente de modération</span>' }}</p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+            </section>
+        </div>
+    </main>
+{% endblock %}

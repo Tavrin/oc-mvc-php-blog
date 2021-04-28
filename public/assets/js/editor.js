@@ -26,7 +26,6 @@ editors.forEach((el) => {
     }
 
     const editor = new EditorJS({
-        readOnly: false,
         holder: el.id,
         placeholder: 'Nouvel article',
         tools: {
@@ -54,10 +53,10 @@ editors.forEach((el) => {
 
             image: SimpleImage,
 
+
             list: {
                 class: List,
-                inlineToolbar: true,
-                shortcut: 'CMD+SHIFT+L'
+                inlineToolbar: false
             },
 
             checklist: {
@@ -114,6 +113,7 @@ editors.forEach((el) => {
         editor.save()
             .then((outputData) => {
                 outputData.id = el.id;
+                console.log(outputData);
                 targetInput.value = JSON.stringify(outputData);
                 saveCount['currentSaved']++;
                 submitForm();

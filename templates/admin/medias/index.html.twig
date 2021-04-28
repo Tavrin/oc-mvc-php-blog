@@ -7,8 +7,8 @@
                 <div class="ta-l">
                     <h1 class="fw-600">Médias : {{ content.mediaType|default('') }}</h1>
                 </div>
-                <div class="ta-r">
-                    <a href="/admin/structure/medias/{{ content.mediaType }}/new" class="m-0-5 button-bb-wc br-5 fw-600">Nouveau média</a>
+                <div class="ta-r pt-1 pb-1">
+                    <a href="/admin/structure/medias/{{ content.mediaType }}/new" class="m-0-5 button-bb-wc-2 br-5 fw-600 m-1-5">Nouveau média</a>
                 </div>
                 <div class="d-f fd-r flex-w grid-3 jc-sb mt-1 pb-3">
                     {% for media in content.items %}
@@ -25,9 +25,9 @@
                             </span>
                         </div>
                         {% endfor %}
-                    <div>
-                        {% include '/partials/inc/pagination.html.twig' %}
-                    </div>
+                </div>
+                <div class="d-f ai-c jc-c">
+                {% include '/partials/inc/pagination.html.twig' %}
                 </div>
             </section>
         </div>

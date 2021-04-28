@@ -29,6 +29,10 @@ button:-moz-focusring {
     outline: 1px dotted ButtonText;
 }
 
+p {
+    line-height: 1.7rem;
+}
+
 .button {
     border: 0;
     border-radius: 0.25rem;

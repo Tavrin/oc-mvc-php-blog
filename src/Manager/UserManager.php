@@ -9,6 +9,7 @@ use App\Repository\UserRepository;
 use Core\controller\Form;
 use Core\database\EntityManager;
 use Core\http\Request;
+use Core\http\Session;
 use Core\security\Security;
 use Core\utils\StringUtils;
 use Ramsey\Uuid\Uuid;
@@ -164,5 +165,15 @@ class UserManager
         $this->em->flush();
 
         return true;
+    }
+
+    public function updateUser(User $modifiedUser, Session $session): bool
+    {
+        $currentUser = $session->get('user');
+        $this->em->update($modifiedUser);
+        if ($modifiedUser->getId() === $currentUser->getId()) {
+            $session->set('user', $modifiedUser);
+        }
+        return $this->em->flush();
     }
 }

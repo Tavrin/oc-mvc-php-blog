@@ -378,10 +378,10 @@ class Form
 
         if ('textarea' === $type['type'] || 'button' === $type['type'] || 'div' === $type['type']) {
             if(isset($options['value'])) {
-                $input .= PHP_EOL . $options['value'];
+                $input .= $options['value'];
             }
 
-            $input .= PHP_EOL . "</{$type['type']}>";
+            $input .= "</{$type['type']}>";
         }
 
         $fieldData = $this->setDataOptions($name, $options, $type);
@@ -471,6 +471,7 @@ class Form
         isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : false;
         isset($options['entity']) ? $fieldData['entity'] = $options['entity'] : $fieldData['entity'] = $this->entity;
         isset($options['value']) ? $fieldData['value'] = $options['value'] : $fieldData['value'] = null;
+        isset($options['modifyIfEmpty']) ? $fieldData['modifyIfEmpty'] = $options['modifyIfEmpty'] : $fieldData['modifyIfEmpty'] = null;
         isset($options['class']) ? $fieldData['class'] = explode(' ', $options['class']) : $fieldData['class'] = null;
         isset($options['targetField']) ? $fieldData['targetField'] = $options['targetField'] : false;
         isset($options['fieldName']) ? $fieldData['fieldName'] = $options['fieldName'] : $fieldData['fieldName'] = $name;
@@ -533,6 +534,9 @@ class Form
             $this->isValid = true;
     }
 
+    /**
+     * @throws Exception
+     */
     private function checkField($fieldName, $fieldData, $currentRequest)
     {
         if (false === $requestField = $this->validateAndSanitizeRequest($fieldData, $fieldName, $currentRequest)) {
@@ -602,7 +606,7 @@ class Form
             $fileError = $this->validateFileWhitelist($newFileData, $fieldData);
         }
 
-        if (($newFileData['type'] !== $currentField['type'] || mb_strlen($newFileData['name'] > 250) || 0 === $newFileData['size']) && !isset($fileError)) {
+        if (($newFileData['type'] !== $currentField['type'] || mb_strlen($newFileData['name']) > 250 || 0 === $newFileData['size']) && !isset($fileError)) {
             $fileError = new FormHandleException('file', $newFileData['name'], "File [${$newFileData['name']}] encountered en error");
         }
 
@@ -702,7 +706,7 @@ class Form
             return false;
         }
 
-        if (isset($fieldData['type']) && 'password' === $fieldData['type'] && isset($fieldData['hash']) && true === $fieldData['hash']) {
+        if (isset($fieldData['type']) && 'password' === $fieldData['type'] && isset($fieldData['hash']) && true === $fieldData['hash'] && !empty($requestField)) {
             $requestField = password_hash($requestField, PASSWORD_DEFAULT);
         }
 
@@ -748,6 +752,11 @@ class Form
         }
 
         $entityMethod = 'set' . ucfirst($fieldData['fieldName']);
+
+        if (isset($fieldData['modifyIfEmpty']) && false === $fieldData['modifyIfEmpty'] && empty($requestField)) {
+            return true;
+        }
+
         $fieldData['entity']->$entityMethod($associatedEntity ?? $newTypeData);
         return true;
     }

@@ -85,6 +85,10 @@ h1 {
 /* Text */
 
 /*line-height */
+.lh-1c7 {
+    line-height: 1.7rem;
+}
+
 .lh-3c5 {
     line-height: 3.5rem;
 }
@@ -96,6 +100,10 @@ h1 {
 
 .ff-titi {
     font-family: 'Titillium Web', sans-serif;
+}
+
+.ff-i {
+    font-family: 'Inconsolata', sans-serif!important;
 }
 
 /* transform & deco */
@@ -619,6 +627,11 @@ h1 {
 .hrem-35 {
     height: 35rem;
 }
+
+.hrem-45 {
+    height: 45rem;
+}
+
 /*max-height */
 .mh-0 {
     max-height: 0;
@@ -653,6 +666,18 @@ h1 {
     float: right;
 }
 
+/* position */
+.pos-r {
+    position: relative;
+}
+
+.pos-a {
+    position: absolute;
+}
+
+.bot-2r {
+    bottom: 2rem;
+}
 /* FLEX */
 
 .d-f {
@@ -825,13 +850,21 @@ h1 {
     border-top: 1px solid #f5f4f4;
 }
 
+.bt-dg {
+    border-top: 1px solid #DFE1E7;
+}
+
 /* border-bottom */
 .bb-g {
     border-bottom: 1px solid #f5f4f4;
 }
 
-.bb-dg   {
+.bb-dg {
     border-bottom: 1px solid #DFE1E7;
+}
+
+.bb-dg2 {
+    border-bottom: 1px solid rgb(229, 233, 236);
 }
 
 /*border-radius */
@@ -885,6 +918,16 @@ h1 {
 .fade {
     transition: opacity 15s linear;
 }
+
+/* list */
+.li-dot {
+list-style-type: disc;
+}
+
+.li-num {
+    list-style-type: decimal;
+}
+
 
 /* Modal */
 .modal-bg {

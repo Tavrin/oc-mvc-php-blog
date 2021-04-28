@@ -22,13 +22,7 @@ class CategoryController extends Controller
         $categoryData = $this->getManager()->getEntityData('category');
         $categoryRepository = new CategoryRepository($this->getManager());
 
-        if (false === $query = $adminManager->initializeAndValidatePageQuery($request)) {
-            $this->redirect($request->getPathInfo() . '?page=1');
-        }
-
-        $content = $paginator->paginate($categoryRepository, $query, 8, 'created_at', 'DESC');
-
-        if ($content['actualPage'] > $content['pages']) {
+        if (false === $content = $adminManager->managePagination($request, $categoryRepository, $paginator)) {
             $this->redirect($request->getPathInfo() . '?page=1');
         }
 

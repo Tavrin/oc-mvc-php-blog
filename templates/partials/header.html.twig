@@ -8,7 +8,7 @@
                 <a href="/blog" class="fw-700 h3 ff-titi">Blog</a>
             </li>
             <li class="fw-700 h3 ff-titi">
-                {% if user is defined and user is not empty %}
+                {% if app.user is defined and app.user is not empty %}
                     <a href="#" class="fw-700 h3 ff-titi" id="userDropdown"><i class="fas fa-bars"></i></a>
                     <ul class="dropdown d-n" id="userDropdownLinks">
                         <li><a href="/user/profile" class="">Profil</a></li>

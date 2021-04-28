@@ -82,6 +82,7 @@ class UserController extends Controller
     {
         $em = $this->getManager();
         $adminManager = new AdminManager($em);
+        $userManager = new UserManager($em);
 
         if (!$user = $adminManager->findOneByCriteria(new UserRepository($em), 'slug', $slug)) {
             throw new NotFoundException('The user doesn\'t exist');
@@ -97,8 +98,9 @@ class UserController extends Controller
                 $mediaRepository = new MediaRepository($em);
                 $user->setMedia($adminManager->findOneByCriteria($mediaRepository, 'path', $media));
             }
-            if (true === $adminManager->updateEntity($user)) {
-                $this->redirect('/admin/users', ['type' => 'success', 'message' => "Utilisateur {$userName} modifiée avec succès"]);
+
+            if (true === $userManager->updateUser($user, $this->session)) {
+                $this->redirect('/admin/users?page=1', ['type' => 'success', 'message' => "Utilisateur {$userName} modifié avec succès"]);
             } else {
                 $this->redirect('/admin/users/' . $slug . '/edit', ['type' => 'danger', 'message' => "L'utilisateur n'a pas pu être modifié"]);
             }

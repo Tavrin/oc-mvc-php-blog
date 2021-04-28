@@ -10,6 +10,11 @@
         "controller": "App\\Controller\\BlogController::indexAction"
     },
     {
+        "route": "blog_show",
+        "path": "/blog/{category}/{slug}",
+        "controller": "App\\Controller\\BlogController::showAction"
+    },
+    {
         "route": "blog_category",
         "path": "/blog/{category}",
         "controller": "App\\Controller\\BlogController::categoryAction"
@@ -78,6 +83,16 @@
         "route": "delete_user",
         "path": "/admin/users/{slug}/delete",
         "controller": "App\\Controller\\admin\\UserController::deleteAction"
+    },
+    {
+        "route": "admin_comments",
+        "path": "/admin/comments",
+        "controller": "App\\Controller\\admin\\CommentController::indexAction"
+    },
+    {
+        "route": "comment_status",
+        "path": "/admin/comments/{slug}/updatestatus",
+        "controller": "App\\Controller\\admin\\CommentController::statusAction"
     },
     {
         "route": "admin_mediaTypes",

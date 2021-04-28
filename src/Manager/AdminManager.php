@@ -40,6 +40,20 @@ class AdminManager
         return $content;
     }
 
+    public function managePagination($request, $repository, $paginator, $limit = 5, $column = 'created_at', $order = 'DESC', $row = null, $criteria = null )
+    {
+        if (false === $query = $this->initializeAndValidatePageQuery($request)) {
+            return false;
+        }
+
+        $content = $paginator->paginate($repository, $query, $limit, $column, $order, $row, $criteria);
+        if ($content['actualPage'] > $content['pages'] && $content['pages'] > 0) {
+            return false;
+        }
+
+        return $content;
+    }
+
     public function initializeAndValidatePageQuery(Request $request)
     {
         if ($request->hasQuery('page')) {
@@ -142,6 +156,25 @@ class AdminManager
     {
         $this->em->update($entity);
         return $this->em->flush();
+    }
+
+    public function updateEntityStatus(object $entityRepository, string $criteria, string $row, bool $hidden = false): bool
+    {
+        if (!$entity = $entityRepository->findOneBy($row, $criteria)) {
+            throw new NotFoundException();
+        }
+
+        $entity->setStatus(!$entity->getStatus());
+
+        if (true === $hidden) {
+            if (true == $entity->getStatus() || 1 === $entity->getStatus()) {
+                $entity->setHidden(false);
+            } elseif (false == $entity->getStatus() || 1 == $entity->getStatus()) {
+                $entity->setHidden(true);
+            }
+        }
+
+        return $this->updateEntity($entity);
     }
 
     public function findByCriteria(object $entityRepository,string $row, string $criteria, string $column = 'id', string $order = 'DESC')

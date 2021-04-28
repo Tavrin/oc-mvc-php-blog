@@ -6,16 +6,20 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Forms\ChangePasswordForm;
 use App\Manager\UserManager;
+use Core\controller\Controller;
 use Core\http\Request;
 use Core\http\Response;
 
-class UserController extends \Core\controller\Controller
+class UserController extends Controller
 {
-    public function indexAction()
+    public function indexAction(): Response
     {
         return $this->render('user/index.html.twig');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function settingsAction(Request $request): Response
     {
         $user = new User();
