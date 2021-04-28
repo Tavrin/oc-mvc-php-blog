@@ -4,6 +4,10 @@
     {{ parent() }}
     {% include 'partials/inc/post-import.html.twig' %}
 {% endblock %}
+
+{% block microdata %}
+    {% include'microdata/post.html.twig' %}
+{% endblock %}
 {% if content.post.author.firstName is defined and content.post.author.firstName is not empty and content.post.author.lastName is defined and content.post.author.lastName %}
 {% set authorName = content.post.author.firstName ~ ' ' ~ content.post.author.lastName %}
 {% else %}

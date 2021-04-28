@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en-EN">
+<html lang="fr-FR">
 <head>
     {% block head %}
         {% include 'partials/inc/meta.html.twig' %}
@@ -12,6 +12,13 @@
     {% endblock %}
 </head>
 <body>
+<script type="application/ld+json">
+[
+    {% include "microdata/website.html.twig" %}
+    {% block microdata %}{% endblock %}
+]
+</script>
+
     {% block header %}
         {% include 'partials/header.html.twig' %}
         {% include 'partials/inc/flash.html.twig' %}

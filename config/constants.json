@@ -1,3 +1,4 @@
 {
-    "host": "localhost:8000"
+    "host": "localhost:8000",
+    "site_title": "Tavrin.io"
 }
