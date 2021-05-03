@@ -76,8 +76,12 @@ class BlogController extends Controller
 
             $media = $editorForm->getData('mediaHiddenInput');
             if (isset($media)) {
-                $mediaRepository = new MediaRepository($em);
-                $post->setMedia($adminManager->findOneByCriteria($mediaRepository, 'path', $media));
+                if ('none' === $media) {
+                    $post->setMedia(null);
+                } else {
+                    $mediaRepository = new MediaRepository($em);
+                    $post->setMedia($adminManager->findOneByCriteria($mediaRepository, 'path', $media));
+                }
             }
 
             if ($blogManager->savePost($post, $this->getUser()) instanceof Post) {

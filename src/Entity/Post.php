@@ -85,7 +85,6 @@ class Post
     public function __construct()
     {
         $this->status = false;
-        $this->createdAt = new DateTime();
     }
 
     public function getId(): ?int

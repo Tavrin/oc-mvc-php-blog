@@ -30,14 +30,14 @@
                                 <span class="text-muted fs-09 mb-0-5 fw-500 fb-15">{{ app.constants.host ~ '/'~ post.category.path ~ '/' ~post.slug }}</span>
                             {% endif %}
                             <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ post.author.username }}</span>
-                            <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ post.publishedAt|date("d/m/Y: H:i") }}</span>
-                            <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ post.updatedAt|date("d/m/Y: H:i") }}</span>
+                            <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ post.createdAt|date("d/m/Y: H:i") }}</span>
+                            <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ post.updatedAt is empty ? "" : post.updatedAt|date("d/m/Y: H:i")  }}</span>
                             <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">
-                                <button class="m-0-5 button-bb-wc br-5 fw-600 js-toggle" data-type="display" data-target-id="actionDropdown{{ loop.index }}">Action</button>
+                                <button class="m-0-5 button-bb-wc br-5 fw-600 js-toggle" data-type="display" id="actionButton{{ loop.index }}" data-target-id="actionDropdown{{ loop.index }}">Action</button>
                                  <ul class="dropdown d-n" id="actionDropdown{{ loop.index }}">
                                     <li><a href="/admin/posts/{{ post.slug }}/edit" class="">Modifier</a></li>
                                     <li><a href="/admin/posts/{{ post.slug }}/delete" class="">Supprimer</a></li>
-                                    <li><a href="/{{ post.category.path ~ '/' ~post.slug }}" class="">Voir</a></li>
+                                    <li><a href="{{ post.path }}" class="">Voir</a></li>
                                 </ul>
                             </span>
                         </div>

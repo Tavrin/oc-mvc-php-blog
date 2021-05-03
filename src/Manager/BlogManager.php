@@ -83,10 +83,25 @@ class BlogManager
             $entityArray['header'] = $this->parseContent($entityArray['header']);
         }
         if ($entityArray['content']) {
+            $entityArray['summary'] = $this->createSummary($entityArray['content']);
             $entityArray['content'] = $this->parseContent($entityArray['content']);
         }
 
         return $entityArray;
+    }
+
+    public function createSummary($content): array
+    {
+        $summary = [];
+        $content = json_decode($content, true);
+        foreach ($content['blocks'] as $key => $block) {
+            if ('header' === $block['type'] && 1 < $block['data']['level']) {
+                $summary[$key]['link'] = "#".StringUtils::slugify($block['data']['text']);
+                $summary[$key]['name'] = $block['data']['text'];
+            }
+        }
+
+        return $summary;
     }
 
     public function parseContent($content): array
@@ -98,7 +113,8 @@ class BlogManager
                 case 'header':
                     $headerLevel = $block['data']['level'];
                     1 === $headerLevel ? $class = 'ta-c' : $class = 'ta-l';
-                    $parsedContent[] = "<h{$headerLevel} class='fw-700 mb-1 {$class}'>{$block['data']['text']}</h{$headerLevel}>";
+                    $id = StringUtils::slugify($block['data']['text']);
+                    $parsedContent[] = "<h{$headerLevel} id={$id} class='fw-700 mb-1 {$class}'>{$block['data']['text']}</h{$headerLevel}>";
                     break;
                 case 'paragraph':
                     $parsedContent[] = $this->setParagraph($block['data']);
@@ -111,6 +127,12 @@ class BlogManager
                     break;
                 case 'code':
                     $parsedContent[] = '<pre><code class="language-php ff-i">' . PHP_EOL . $block['data']['code'] . PHP_EOL . '</code></pre>';
+                    break;
+                case 'mediaPicker':
+                case 'image':
+                    $parsedContent[] = "<div class='d-f jc-c'><img src='{$block['data']['url']}' alt='image'><figcaption>{$block['data']['caption']}</figcaption></div>";
+                    break;
+                default:
                     break;
             }
         }
@@ -191,7 +213,7 @@ class BlogManager
         return $content;
     }
 
-    public function saveComment(Comment $comment, Post $post, User $user)
+    public function saveComment(Comment $comment, Post $post, User $user): bool
     {
         if (!in_array('ROLE_USER', $user->getRoles())) {
             throw new ForbiddenException('Action non autorisée', 403);

@@ -620,6 +620,10 @@ h1 {
     height: 10rem;
 }
 
+.hrem-15 {
+    height: 15rem;
+}
+
 .hrem-25 {
     height: 25rem;
 }
@@ -647,6 +651,10 @@ h1 {
 
 .mh-75 {
     max-height: 75%;
+}
+
+.mh-80 {
+    max-height: 80%;
 }
 
 .mh-100 {

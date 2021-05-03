@@ -33,7 +33,7 @@ class EditorForm extends Form
             ->addDateTimeInput('createdAt', ['class' => 'form-control', 'placeholder' => "Date de publication", 'value' => 'edit' === $options['type']? $entity->getCreatedAt()->format("Y-m-d\TH:i:s") : null])
             ->addHiddenInput('mediaHiddenInput', ['entity' => false, 'class' => 'js-binder', 'required' => false,'dataAttributes' => ['type' => 'image', 'from' => 'modal', 'target' => 'previewImage']])
             ->addButton('mediaLibrary', ['class' => 'js-modal button-bb-wc m-1', 'value' => 'Galerie média', 'type' => 'button', 'dataAttributes' => ['target-modal' => 'mediaModal']])
-            ->addDiv('mediaShow', ['class' => 'hrem-10 js-filler pt-1', 'dataAttributes' => ['type' => 'image', 'id' => 'previewImage', 'class' => 'mh-100 mw-100', 'src' => 'edit' === $options['type']? $media : ''], 'wrapperClass' => 'mt-1', 'label' => 'Prévisualisation du média principal'])
+            ->addDiv('mediaShow', ['class' => 'hrem-15 js-filler pt-1', 'dataAttributes' => ['type' => 'image', 'id' => 'previewImage', 'class' => 'mh-80 d-b mw-100', 'src' => 'edit' === $options['type']? $media : ''], 'wrapperClass' => 'mt-1', 'label' => 'Prévisualisation du média principal'])
             ->addHiddenInput('header', ['sanitize' => false])
             ->addHiddenInput('content', ['sanitize' => false]);
     }

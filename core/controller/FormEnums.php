@@ -81,6 +81,7 @@ class FormEnums
         'type' => 'datetime-local',
         'attributes' => [
             'dataAttributes',
+            'readonly',
             'max',
             'min',
             'style',

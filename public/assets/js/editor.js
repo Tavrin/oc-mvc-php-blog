@@ -1,3 +1,5 @@
+import MediaPicker from "./editor-media-picker/mediaPicker.js";
+
 let editors = document.querySelectorAll('.editor');
 let saveCount = {
     'totalEditors' : 0,
@@ -29,17 +31,19 @@ editors.forEach((el) => {
         holder: el.id,
         placeholder: 'Nouvel article',
         tools: {
+            mediaPicker: MediaPicker,
             paragraph: {
                 class: Paragraph,
                 inlineToolbar: true,
             },
             header: {
                 class: Header,
+                tunes: ['AlignmentBlockTune'],
                 inlineToolbar: ['marker', 'link'],
                 config: {
                     placeholder: 'Header'
                 },
-                shortcut: 'CMD+SHIFT+H'
+                shortcut: 'CTRL+SHIFT+H'
             },
             AnyButton: {
                 class: AnyButton,
@@ -71,19 +75,19 @@ editors.forEach((el) => {
                     quotePlaceholder: 'Enter a quote',
                     captionPlaceholder: 'Quote\'s author',
                 },
-                shortcut: 'CMD+SHIFT+O'
+                shortcut: 'CTRL+SHIFT+O'
             },
 
             warning: Warning,
 
             marker: {
                 class: Marker,
-                shortcut: 'CMD+SHIFT+M'
+                shortcut: 'CTRL+SHIFT+M'
             },
 
             code: {
                 class: CodeTool,
-                shortcut: 'CMD+SHIFT+C'
+                shortcut: 'CTRL+SHIFT+C'
             },
 
             delimiter: Delimiter,
@@ -102,7 +106,9 @@ editors.forEach((el) => {
                 inlineToolbar: true,
                 shortcut: 'CMD+ALT+T'
             },
-
+            AlignmentBlockTune: {
+                class: AlignmentBlockTune,
+            }
         },
 
         data: content

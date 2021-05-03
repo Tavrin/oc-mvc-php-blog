@@ -25,20 +25,30 @@ class ToggleContent {
     }
 
     setDisplayEvent(elem) {
-        elem.addEventListener('click', () => {
-            this.state = !this.state;
-            if (this.options['icons'] && this.options['icons'][0] && this.options['icons'][1]) {
-                elem.classList.toggle(this.options['icons'][0]);
-                elem.classList.toggle(this.options['icons'][1]);
-            }
-
-            if (elem.dataset.targetId && document.querySelector('#' + elem.dataset.targetId) !== null) {
-                let target = document.querySelector('#' + elem.dataset.targetId);
-                target.classList.toggle('d-n');
-            } else {
-                elem.classList.toggle('d-n');
+        window.addEventListener('mouseup', (e) => {
+            let target = document.querySelector('#' + elem.dataset.targetId);
+            if (!target.classList.contains('d-n') && !elem.contains(e.target) && target.id !== 'editorjsChapo' && target.id !== 'editorjsContent') {
+                this.displayEventChanges(elem);
             }
         })
+        elem.addEventListener('click', () => {
+            this.displayEventChanges(elem);
+        })
+    }
+
+    displayEventChanges(elem) {
+        this.state = !this.state;
+        if (this.options['icons'] && this.options['icons'][0] && this.options['icons'][1]) {
+            elem.classList.toggle(this.options['icons'][0]);
+            elem.classList.toggle(this.options['icons'][1]);
+        }
+
+        if (elem.dataset.targetId && document.querySelector('#' + elem.dataset.targetId) !== null) {
+            let target = document.querySelector('#' + elem.dataset.targetId);
+            target.classList.toggle('d-n');
+        } else {
+            elem.classList.toggle('d-n');
+        }
     }
 }
 

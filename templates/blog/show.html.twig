@@ -35,14 +35,26 @@
                 </div>
                 <div class="bb-dg2 mb-2 w-50 mt-3 mb-3 pb-3">
                     {% if content.post.header is defined and content.post.header is not empty %}
-                        <div id="header">
+                        <div id="header" class="fw-900">
                         {% for block in content.post.header %}
                             {{ block|raw }}
                         {% endfor %}
                         </div>
                     {% endif %}
+                    {% if content.post.summary is defined and content.post.summary is not empty%}
+                    <div id="summary" class="mt-2 mb-3 pb-1 pt-1 bt-dg bb-dg">
+                        <h2 class="ta-c">Sommaire</h2>
+                        <ul>
+                        {% for link in content.post.summary %}
+                            <li class="m-1">
+                                <a href="{{ link.link }}">- {{ link.name }}</a>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
                     {% if content.post.header is defined and content.post.header is not empty %}
-                        <div id="content" class="mt-2">
+                        <div id="content" class="mt-3">
                         {% for block in content.post.content %}
                             {{ block|raw }}
                         {% endfor %}

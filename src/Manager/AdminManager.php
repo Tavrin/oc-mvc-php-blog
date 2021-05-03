@@ -167,9 +167,9 @@ class AdminManager
         $entity->setStatus(!$entity->getStatus());
 
         if (true === $hidden) {
-            if (true == $entity->getStatus() || 1 === $entity->getStatus()) {
+            if ($entity->getStatus() || 1 === $entity->getStatus()) {
                 $entity->setHidden(false);
-            } elseif (false == $entity->getStatus() || 1 == $entity->getStatus()) {
+            } elseif (!$entity->getStatus() || 0 === $entity->getStatus()) {
                 $entity->setHidden(true);
             }
         }
