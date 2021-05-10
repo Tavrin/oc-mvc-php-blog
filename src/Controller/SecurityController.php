@@ -38,7 +38,8 @@ class SecurityController extends Controller
         if ($form->isValid) {
 
             $userManager->newToken($user, 'save');
-            $email = new VerificationEmail($user);
+            $scheme = $this->request->getScheme();
+            $email = new VerificationEmail($user, $scheme);
             $email->send();
 
             $this->redirect('/', ['type' => 'success', 'message' => 'Inscription réussie, veuillez confirmer votre adresse email']);
@@ -133,7 +134,8 @@ class SecurityController extends Controller
             }
 
             $userManager->newToken($user, 'update');
-            $email = new ResetPasswordEmail($user);
+            $scheme = $this->request->getScheme();
+            $email = new ResetPasswordEmail($user, $scheme);
             $email->send();
 
             $this->redirect('/', ['type' => 'success', 'message' => 'Un email a été envoyé']);

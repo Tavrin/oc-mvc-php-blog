@@ -4,8 +4,11 @@
 namespace App\Manager;
 
 
+use App\Email\ContactEmail;
+use App\Entity\Message;
 use App\Repository\CategoryRepository;
 use App\Repository\CommentRepository;
+use App\Repository\MessageRepository;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
 use Core\database\DatabaseResolver;
@@ -186,5 +189,23 @@ class AdminManager
     {
         return $entityRepository->findOneBy($row, $criteria);
 
+    }
+
+    /**
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
+    public function handleContactMessage(Message $message, ContactEmail $contactEmail)
+    {
+        $message->setUuid(Uuid::uuid4()->toString());
+        $message->setSlug('message-'.$message->getUuid());
+        $message->setCreatedAt(new \DateTime())
+        ;
+        $this->em->save($message);
+        if ($this->em->flush()) {
+            $contactEmail->send();
+            return true;
+        }
+
+        return false;
     }
 }

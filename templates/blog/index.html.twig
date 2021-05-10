@@ -11,17 +11,10 @@
                 <div class="d-f fd-r flex-w grid-7 jc-fs mt-1 pb-3 pl-2">
                     {% if content.items is defined and content.items is not empty %}
                         {% for post in content.items %}
-                            {% if post.media is defined and post.media is not empty %}
-                                {% set mediaPath = post.media.path %}
-                            {% elseif post.category.media is defined and post.category.media is not empty %}
-                                {% set mediaPath = post.category.media.path %}
-                            {% else %}
-                                {% set mediaPath = 'http://via.placeholder.com/376x220' %}
-                            {% endif %}
 
                             <div class="w-28 hrem-45 d-f fd-c m-1-5 mb-3 p-1 bcg-white bs-1 br-5 pos-r">
                                 <div class="w-100 h-60">
-                                    <img src="{{ mediaPath }}" alt="" class="w-100 h-100 of-cov br-10">
+                                    {% include'/partials/inc/listing_media.html.twig' %}
                                 </div>
                                 <p class="pt-1 pb-1 fs-1c3 fw-700">
                                     <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">

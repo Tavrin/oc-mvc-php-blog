@@ -8,12 +8,12 @@ use App\Entity\User;
 
 class VerificationEmail extends Email
 {
-    public function __construct(User $user)
+    public function __construct(User $user, $scheme)
     {
         parent::__construct();
 
         $this->addReceiver($user->getEmail());
         $this->subject('Email de vérification');
-        $this->setRender('email/email-verification.html.twig', ['user' => $user]);
+        $this->setRender('email/email-verification.html.twig', ['user' => $user, 'scheme' => $scheme]);
     }
 }

@@ -24,11 +24,6 @@ class Security
         $this->setUser();
     }
 
-    public function setCSRFToken()
-    {
-
-    }
-
     private function setUser(){
         if ($this->session->has('user')) {
             $this->user = $this->session->get('user');

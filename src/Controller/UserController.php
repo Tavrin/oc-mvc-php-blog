@@ -6,15 +6,20 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Forms\ChangePasswordForm;
 use App\Manager\UserManager;
+use App\Repository\UserRepository;
 use Core\controller\Controller;
 use Core\http\Request;
 use Core\http\Response;
 
 class UserController extends Controller
 {
-    public function indexAction(): Response
+    public function indexAction(string $slug): Response
     {
-        return $this->render('user/index.html.twig');
+        $userRepository = new UserRepository($this->getManager());
+        $user = $userRepository->findOneBy('slug', $slug);
+        return $this->render('user/index.html.twig', [
+            'user' => $user
+        ]);
     }
 
     /**

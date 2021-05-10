@@ -5,30 +5,27 @@
         <div class="maw-90 m-auto mt-3 mb-3 d-f fd-c">
             <section class="w-100 m-auto pt-3">
                 <div class="ta-l">
-                    <h1 class="fw-600">Commentaires</h1>
+                    <h1 class="fw-600">Messages de contact</h1>
                 </div>
                 <div class="d-f fd-r flex-w grid-3 jc-sa mt-1 pb-3">
                     <div class="bcg-light2 pb-1 br-10 w-100 d-f fd-c ac-c">
                         <div class="ai-c pt-1 fs-1c3 fw-700 d-f fd-r jc-sa bcg-light3">
                             <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-15">Nom de l'auteur</span>
-                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-25">Commentaire</span>
-                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-5">Statut</span>
-                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Article associé</span>
-                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Date de publication</span>
+                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-15">Email de l'auteur</span>
+                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-25">Message</span>
+                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Date de création</span>
                             <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Operation</span>
                         </div>
-                        {% for comment in content.items %}
+                        {% for message in content.items %}
                             <div class="ai-c fs-1c3 fw-700 d-f fd-r jc-sa hrem-10 {% if not loop.last %} bb-dg {% endif %}">
-                                <span class="text-muted fs-1 mb-0-5 fw-500 fb-15">{{ comment.user.username }}</span>
-                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-25">{{ comment.content|slice(0, 200) ~ '...' }}</span>
-                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-5">{{ comment.status ? 'activé' : 'desactivé'}}</span>
-
-                                <a class=" fb-10 fs-09" href="{{ comment.path?? comment.post.path }}">{{ comment.post.title }}</a>
-                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ comment.createdAt|date("d/m/Y: H:i") }}</span>
+                                <span class="text-muted fs-1 mb-0-5 fw-500 fb-15">{{ message.fullName }}</span>
+                                <span class="text-muted fs-1 mb-0-5 fw-500 fb-15">{{ message.email }}</span>
+                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-25">{{ message.content }}</span>
+                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ message.createdAt|date("d/m/Y: H:i") }}</span>
                                 <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">
                                     <button class="m-0-5 button-bb-wc br-5 fw-600 js-toggle" data-type="display" data-target-id="actionDropdown{{ loop.index }}">Action</button>
                                      <ul class="dropdown d-n" id="actionDropdown{{ loop.index }}">
-                                        <li><a href="/admin/comments/{{ comment.slug }}/updatestatus" class="">{{ comment.status ? 'désactiver' : 'activer' }}</a></li>
+                                        <li><a href="/admin/configuration/messages/{{ message.id }}/delete" class="">Supprimer</a></li>
                                     </ul>
                                 </span>
                             </div>

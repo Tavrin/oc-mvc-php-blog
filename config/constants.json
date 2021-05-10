@@ -1,4 +1,4 @@
 {
-    "host": "localhost:8000",
-    "site_title": "Tavrin.io"
+    "site_title": "Tavrin.io",
+    "admin_email": "etienne.doux@gmail.com"
 }

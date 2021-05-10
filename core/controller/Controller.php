@@ -126,12 +126,6 @@ class Controller
         }
     }
 
-    protected function get404()
-    {
-        header("location:/error");
-        exit();
-    }
-
     protected function getUser(): ?User
     {
         return $this->security->getUser();
@@ -160,8 +154,8 @@ class Controller
         return new Form($this->request, $entity, $this->session, $options);
     }
 
-    protected function flashMessage(string $key, string $message)
+    protected function flashMessage(string $type, string $message)
     {
-        $this->session->addFlash($key, $message);
+        $this->session->addFlash($type, $message);
     }
 }

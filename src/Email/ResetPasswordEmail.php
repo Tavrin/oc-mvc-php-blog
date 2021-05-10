@@ -8,12 +8,12 @@ use App\Entity\User;
 
 class ResetPasswordEmail extends Email
 {
-    public function __construct(User $user)
+    public function __construct(User $user, string $scheme)
     {
         parent::__construct();
 
         $this->addReceiver($user->getEmail());
         $this->subject('Demande de réinitialisation du mot de passe');
-        $this->setRender('email/password-reset.html.twig', ['user' => $user]);
+        $this->setRender('email/password-reset.html.twig', ['user' => $user, 'scheme' => $scheme]);
     }
 }

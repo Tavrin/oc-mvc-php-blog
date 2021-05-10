@@ -5,14 +5,14 @@
         <div class="maw-70 m-auto mt-3 mb-3 d-f fd-c">
             <section id="home-presentation" class="d-f jc-c m-auto pt-3 pb-3 mb-3">
                 <div class="ta-l fb-50">
-                    <h1 class="fw-600 fs-3-5 lh-3c5">Bonjour,<br> moi c'est Etienne Doux, bienvenue sur mon blog</h1>
+                    <h1 class="fw-600 fs-3-5 lh-3c5">Bonjour,<br> moi c'est {{ content.user.fullName }}, bienvenue sur mon blog</h1>
                     <h5 class="mt-0-5">Web backend / frontend / gamedev / design / digital art</h5>
                     <div class="m-auto ta-c d-f jc-c mt-3">
                         <a href="https://tavrin.io">
-                            <button class="m-0-5 button-bb-wc br-5 fw-600">Portfolio</button>
+                            <button class="m-0-5 button-bb-wc-2 br-5 fw-600">Portfolio</button>
                         </a>
                         <a href="/uploads/cv.pdf" download="cv-tavrin">
-                            <button class="m-0-5 button-bb-wc br-5 fw-600">Mon CV</button>
+                            <button class="m-0-5 button-bb-wc-2 br-5 fw-600">Mon CV</button>
                         </a>
                     </div>
                 </div>
@@ -25,69 +25,28 @@
                     <h1 class="fw-600">Articles à la une</h1>
                 </div>
                 <div class="d-f fd-r flex-w grid-3 jc-sb mt-1 pb-3">
-                    <div>
-                        <img src="http://via.placeholder.com/376x220" alt="">
-                        <p class="pt-1 pb-1 fs-1c3 fw-700">
-                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
-                            Lorem ipsum texte de l'article etc
-                        </p>
-                    </div>
-                    <div>
-                        <img src="http://via.placeholder.com/376x220" alt="">
-                        <p class="pt-1 pb-1 fs-1c3 fw-700">
-                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
-                            Lorem ipsum texte de l'article etc
-                        </p>
-                    </div>
-                    <div>
-                        <img src="http://via.placeholder.com/376x220" alt="">
-                        <p class="pt-1 pb-1 fs-1c3 fw-700">
-                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
-                            Lorem ipsum texte de l'article etc
-                        </p>
-                    </div>
-                    <div>
-                        <img src="http://via.placeholder.com/376x220" alt="">
-                        <p class="pt-1 pb-1 fs-1c3 fw-700">
-                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
-                            Lorem ipsum texte de l'article etc
-                        </p>
-                    </div>
-                    <div>
-                        <img src="http://via.placeholder.com/376x220" alt="">
-                        <p class="pt-1 pb-1 fs-1c3 fw-700">
-                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
-                            Lorem ipsum texte de l'article etc
-                        </p>
-                    </div>
-                    <div>
-                        <img src="http://via.placeholder.com/376x220" alt="">
-                        <p class="pt-1 pb-1 fs-1c3 fw-700">
-                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
-                            Lorem ipsum texte de l'article etc
-                        </p>
-                    </div>
-                    <div>
-                        <img src="http://via.placeholder.com/376x220" alt="">
-                        <p class="pt-1 pb-1 fs-1c3 fw-700">
-                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
-                            Lorem ipsum texte de l'article etc
-                        </p>
-                    </div>
-                    <div>
-                        <img src="http://via.placeholder.com/376x220" alt="">
-                        <p class="pt-1 pb-1 fs-1c3 fw-700">
-                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
-                            Lorem ipsum texte de l'article etc
-                        </p>
-                    </div>
-                    <div>
-                        <img src="http://via.placeholder.com/376x220" alt="">
-                        <p class="pt-1 pb-1 fs-1c3 fw-700">
-                            <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">Backend Dev</span>
-                            Lorem ipsum texte de l'article etc
-                        </p>
-                    </div>
+                    {% if content.posts is defined and content.posts is iterable %}
+                        {% for post in content.posts %}
+                            <div class="w-100 hrem-35 d-f fd-c m-1-5 mb-3 p-1 bcg-light-blue bs-1 br-5 pos-r">
+                                <div class="w-100 h-60">
+                                    {% include'/partials/inc/listing_media.html.twig' %}
+                                </div>
+                                <p class="pt-1 pb-1 fs-1c3 fw-700">
+                                    <span class="d-b fs-07 tt-u mb-0-5 fw-500">
+                                        <a href="{{ post.category.path }}">{{ post.category.name }}</a>
+                                        <span class="float-r"> {{ post.createdAt|date("d-m-Y") }}</span>
+                                    </span>
+                                    <a class="pt-1 pb-1 fs-1c6 fw-900" href="{{ post.path }}">{{ post.title }}</a>
+
+                                </p>
+                                    <div>{{ post.header|parseEditor|raw|length > 255 ? (post.header|parseEditor(true)|striptags|slice(0, 255, true))|raw ~ '...': post.header|parseEditor(true)|raw }}</div>
+                                    <a href="{{ post.path }}" class="mt-1 button-bb-wc-2 p-1 br-5 fw-600 ta-c maw-50 as-c pos-a bot-2r">
+                                        Lire la suite
+                                    </a>
+
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
                 <div class="ta-c mb-3">
                     <a href="/blog"> Voir tous les articles</a>
@@ -95,7 +54,8 @@
             </section>
             <section id="home-contact">
                 <div  class="m-auto maw-70">
-                    {% include 'partials/forms/contact.html.twig' %}
+                    <h2 class="ta-c fw-900">Contactez moi</h2>
+                    {{ form.render|raw }}
                 </div>
             </section>
         </div>

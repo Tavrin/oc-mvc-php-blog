@@ -3,14 +3,14 @@
         {% if flashType == 'success' %}
             {% for message in array %}
                 <div class="flash flash-success" role="alert">
-                    {{ message }}
+                    {{ message|raw }}
                     <button class="flash-close"></button>
                 </div>
             {% endfor %}
         {% elseif flashType == 'danger' %}
             {% for message in array %}
                 <div class="flash flash-danger" role="alert">
-                    {{ message }}
+                    {{ message|raw }}
                     <button class="flash-close"></button>
 
                 </div>
@@ -18,7 +18,7 @@
         {% elseif flashType == 'warning' %}
             {% for message in array %}
                 <div class="flash flash-warning" role="alert">
-                    {{ message }}
+                    {{ message|raw }}
                     <button class="flash-close"></button>
 
                 </div>
@@ -26,7 +26,7 @@
         {% else %}
             {% for message in array %}
                 <div class="flash flash-other" role="alert">
-                    {{ message }}
+                    {{ message|raw }}
                     <button class="flash-close"></button>
 
                 </div>

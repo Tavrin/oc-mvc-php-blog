@@ -33,7 +33,7 @@ class Form
 
     protected string $css = '';
 
-    protected object $entity;
+    protected ?object $entity = null;
 
     protected array $allEntityData = [];
 
@@ -63,7 +63,7 @@ class Form
             $this->method = $options['method'];
         }
 
-        isset($options['name']) ? $this->name = $options['name'] : false;
+        isset($options['name']) ? $this->name = $options['name'] : $this->name = 'defaultForm';
         (isset($options['submit']) && !$options['submit']) ? $this->options['submit'] = false : $this->options['submit'] = true;
         isset($options['wrapperClass']) ? $this->options['wrapperClass'] = $options['wrapperClass'] : $this->options['wrapperClass'] = '';
         isset($options['errorClass']) ? $this->options['errorClass'] = $options['errorClass'] : $this->options['errorClass'] = null;
@@ -214,6 +214,19 @@ class Form
         $this->setData(FormEnums::HIDDEN, $name, $options);
 
          return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     * @return $this
+     */
+    public function addCheckbox(string $name, array $options = []): Form
+    {
+        $options['type'] = 'checkbox';
+        $this->setData(FormEnums::CHECKBOX, $name, $options);
+
+        return $this;
     }
 
     /**
@@ -468,19 +481,19 @@ class Form
 
         isset($options['error']) ? $fieldData['error'] = $options['error'] : $fieldData['error'] = null;
         isset($options['sanitize']) ? $fieldData['sanitize'] = $options['sanitize'] : $fieldData['sanitize'] = true;
-        isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : false;
+        isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : $fieldData['hash'] = null;
         isset($options['entity']) ? $fieldData['entity'] = $options['entity'] : $fieldData['entity'] = $this->entity;
         isset($options['value']) ? $fieldData['value'] = $options['value'] : $fieldData['value'] = null;
         isset($options['modifyIfEmpty']) ? $fieldData['modifyIfEmpty'] = $options['modifyIfEmpty'] : $fieldData['modifyIfEmpty'] = null;
         isset($options['class']) ? $fieldData['class'] = explode(' ', $options['class']) : $fieldData['class'] = null;
-        isset($options['targetField']) ? $fieldData['targetField'] = $options['targetField'] : false;
+        isset($options['targetField']) ? $fieldData['targetField'] = $options['targetField'] : $fieldData['targetField'] = null;
         isset($options['fieldName']) ? $fieldData['fieldName'] = $options['fieldName'] : $fieldData['fieldName'] = $name;
-        isset($options['type']) ? $fieldData['type'] = $options['type'] : false;
+        isset($options['type']) ? $fieldData['type'] = $options['type'] : $fieldData['type'] = null;
         isset($options['placeholder']) ? $fieldData['placeholder'] = $options['placeholder'] : $fieldData['placeholder'] = $name;
         isset($options['label']) ? $fieldData['label'] = $options['label'] : $fieldData['label'] = $fieldData['placeholder'];
         isset($options['wrapperClass']) ? $fieldData['wrapperClass'] = $options['wrapperClass'] : $fieldData['wrapperClass'] = '';
         isset($options['dataAttributes']) ? $fieldData['dataAttributes'] = $options['dataAttributes'] : $fieldData['dataAttributes'] = null;
-        isset($options['property']) ? $fieldData['property'] = $options['property'] : false;
+        isset($options['property']) ? $fieldData['property'] = $options['property'] : $fieldData['property'] = null;
         $fieldData['id'] = $options['id'];
 
         return $fieldData;

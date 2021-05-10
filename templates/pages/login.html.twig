@@ -13,7 +13,10 @@
         </section>
         <section class="d-f fd-c ai-c">
             {{ form.render|raw }}
-            <a class="ml-auto" href="/forgot-password">Mot de passe oublié</a>
+            <div class="w-100">
+                <a class=float-l href="/register">Créer un compte</a>
+                <a class="float-r" href="/forgot-password">Mot de passe oublié</a>
+            </div>
         </section>
     </div>
 {% endblock %}

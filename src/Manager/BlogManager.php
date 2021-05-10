@@ -79,12 +79,9 @@ class BlogManager
         if ($entityArray['updatedAt']) {
             $entityArray['updatedAt'] = $entityArray['updatedAt'] ->format("Y-m-d\TH:i:s");
         }
-        if ($entityArray['header']) {
-            $entityArray['header'] = $this->parseContent($entityArray['header']);
-        }
+
         if ($entityArray['content']) {
             $entityArray['summary'] = $this->createSummary($entityArray['content']);
-            $entityArray['content'] = $this->parseContent($entityArray['content']);
         }
 
         return $entityArray;

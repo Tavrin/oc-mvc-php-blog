@@ -107,4 +107,17 @@ class CategoryController extends Controller
             'content' => $content ?? null
         ]);
     }
+
+    public function deleteAction(Request $request, $slug)
+    {
+        $redirectPath = $request->getServer('HTTP_REFERER') ?? '/';
+        $em = $this->getManager();
+        $categoryRepository = new CategoryRepository();
+        $message = $categoryRepository->findOneBy('slug', $slug);
+
+        $em->remove($message);
+        $em->flush();
+
+        $this->redirect($redirectPath, ['type' => 'success', 'message' => 'Suppression réussie']);
+    }
 }

@@ -106,6 +106,18 @@ class FormEnums
         ]
     ];
 
+    public const CHECKBOX = [
+        'type' => 'checkbox',
+        'attributes' => [
+            'dataAttributes',
+            'style',
+            'value',
+            'checked',
+            'id',
+            'class',
+        ]
+    ];
+
     public const HIDDEN = [
         'type' => 'hidden',
         'attributes' => [
@@ -159,6 +171,7 @@ class FormEnums
         'autofocus',
         'checked',
         'disabled',
+        'checked'
     ];
 
     public const WHITELISTS = [

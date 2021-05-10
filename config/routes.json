@@ -50,6 +50,16 @@
         "controller": "App\\Controller\\admin\\IndexController::structureAction"
     },
     {
+        "route": "admin_messages",
+        "path": "/admin/configuration/messages",
+        "controller": "App\\Controller\\admin\\ConfigController::messageIndexAction"
+    },
+    {
+        "route": "delete_message",
+        "path": "/admin/configuration/messages/{id}/delete",
+        "controller": "App\\Controller\\admin\\ConfigController::messageDeleteAction"
+    },
+    {
         "route": "admin_categories",
         "path": "/admin/structure/categories",
         "controller": "App\\Controller\\admin\\CategoryController::indexAction"
@@ -63,6 +73,11 @@
         "route": "edit_category",
         "path": "/admin/structure/categories/{slug}/edit",
         "controller": "App\\Controller\\admin\\CategoryController::editAction"
+    },
+    {
+        "route": "delete_category",
+        "path": "/admin/structure/categories/{slug}/delete",
+        "controller": "App\\Controller\\admin\\CategoryController::deleteAction"
     },
     {
         "route": "admin_users",
@@ -177,7 +192,7 @@
     },
     {
         "route": "profile",
-        "path": "/user/profile",
+        "path": "/membres/{slug}",
         "controller": "App\\Controller\\UserController::indexAction"
     }
 ]

@@ -20,7 +20,7 @@ class DatabaseResolver
 
     public static function getDatabaseUrl(): ?string
     {
-        $parsedUrl = JsonParser::parseFile(ROOT_DIR . '/config/configuration.json');
+        $parsedUrl = JsonParser::parseFile(ROOT_DIR . '/config/database.json');
 
         if (empty($parsedUrl['database']['url'])) {
             return null;

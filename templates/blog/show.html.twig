@@ -9,8 +9,8 @@
     {% include'microdata/post.html.twig' %}
 {% endblock %}
 
-{% if content.post.author.firstName is defined and content.post.author.firstName is not empty and content.post.author.lastName is defined and content.post.author.lastName %}
-{% set authorName = content.post.author.firstName ~ ' ' ~ content.post.author.lastName %}
+{% if content.post.author.fullName is defined and content.post.author.fullName is not empty %}
+{% set authorName = content.post.author.fullName %}
 {% else %}
 {% set authorName = content.post.author.username %}
 {% endif %}
@@ -36,9 +36,7 @@
                 <div class="bb-dg2 mb-2 w-50 mt-3 mb-3 pb-3">
                     {% if content.post.header is defined and content.post.header is not empty %}
                         <div id="header" class="fw-900">
-                        {% for block in content.post.header %}
-                            {{ block|raw }}
-                        {% endfor %}
+                            {{ content.post.header|parseEditor|raw }}
                         </div>
                     {% endif %}
                     {% if content.post.summary is defined and content.post.summary is not empty%}
@@ -55,9 +53,7 @@
                     {% endif %}
                     {% if content.post.header is defined and content.post.header is not empty %}
                         <div id="content" class="mt-3">
-                        {% for block in content.post.content %}
-                            {{ block|raw }}
-                        {% endfor %}
+                            {{ content.post.content|parseEditor|raw }}
                         </div>
                     {% endif %}
                 </div>

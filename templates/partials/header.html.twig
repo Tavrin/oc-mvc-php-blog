@@ -11,12 +11,12 @@
                 {% if app.user is defined and app.user is not empty %}
                     <a href="#" class="fw-700 h3 ff-titi" id="userDropdown"><i class="fas fa-bars"></i></a>
                     <ul class="dropdown d-n" id="userDropdownLinks">
-                        <li><a href="/user/profile" class="">Profil</a></li>
+                        <li><a href="/membres/{{ user.slug }}" class="">Profil</a></li>
                         <li><a href="/user/settings" class="">Paramètres</a></li>
                         <li><a href="/logout" class="">Déconnexion</a></li>
                     </ul>
                 {% else %}
-                    <a href="/login" class="fw-700 h3 ff-titi"><i class="fas fa-sign-in-alt"></i></a>
+                    <a href="/login" class="fw-700 h3 ff-titi d-f ai-c"><span class="fs-08 pr-0-5">Connexion</span> <i class="fas fa-sign-in-alt"></i></a>
                 {% endif %}
             </li>
         </ul>

@@ -9,14 +9,9 @@
     },
     "fields" :
     {
-        "firstName" :
+        "fullName" :
             {
-              "fieldName" : "first_name",
-              "type": "string"
-            },
-        "lastName" :
-            {
-              "fieldName" : "last_name",
+              "fieldName" : "full_name",
               "type": "string"
             },
         "presentation" :

@@ -71,8 +71,7 @@ class AdminManagerTest extends \PHPUnit\Framework\TestCase
         $users = [
             [
             "id" => 2,
-            "firstName" => "blabla",
-            "lastName" => "bleble",
+            "fullName" => "blabla",
             "presentation" => "bbb",
             "status" => true,
             "uuid" => "69a2d2e9-00e5-4bdf-a7e6-fa8319b03597",
@@ -88,8 +87,7 @@ class AdminManagerTest extends \PHPUnit\Framework\TestCase
             ],
             [
             "id" => 3,
-            "firstName" => "blabla2",
-            "lastName" => "bleble2",
+            "fullName" => "blabla2",
             "presentation" => "cc",
             "status" => true,
             "uuid" => "000-000-00",

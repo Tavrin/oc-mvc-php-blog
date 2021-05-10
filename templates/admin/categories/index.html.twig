@@ -30,12 +30,12 @@
                                 <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ category.publishedAt|date("d/m/Y: H:i") }}</span>
                                 <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ category.updatedAt ? category.updatedAt|date("d/m/Y: H:i") : ''}}</span>
                                 <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">
-                                <button class="m-0-5 button-bb-wc br-5 fw-600 js-toggle" data-type="display" data-target-id="actionDropdown{{ loop.index }}">Action</button>
-                                 <ul class="dropdown d-n" id="actionDropdown{{ loop.index }}">
-                                    <li><a href="/admin/structure/categories/{{ category.slug }}/edit" class="">Modifier</a></li>
-                                    <li><a href="/admin/structure/categories/{{ category.slug }}/delete" class="">Supprimer</a></li>
-                                </ul>
-                            </span>
+                                    <button class="m-0-5 button-bb-wc br-5 fw-600 js-toggle" data-type="display" data-target-id="actionDropdown{{ loop.index }}">Action</button>
+                                     <ul class="dropdown d-n" id="actionDropdown{{ loop.index }}">
+                                        <li><a href="/admin/structure/categories/{{ category.slug }}/edit" class="">Modifier</a></li>
+                                        <li><a href="/admin/structure/categories/{{ category.slug }}/delete" class="">Supprimer</a></li>
+                                    </ul>
+                                </span>
                             </div>
                         {% endfor %}
                     </div>
