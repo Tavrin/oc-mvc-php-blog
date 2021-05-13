@@ -1032,6 +1032,18 @@ margin-bottom: 3rem;
 .dropdown.active {
     display: block;
 }
+
+.featured-container {
+    overflow: hidden;
+}
+
+.featured-item {
+    display: none;
+}
+
+.featured-item.active {
+    display: block;
+}
 /* flash */
 .flash {
     max-width: 70%;
@@ -1079,4 +1091,47 @@ margin-bottom: 3rem;
     color: black;
     font-weight: 300;
     font-family: Arial, sans-serif;
+}
+
+@media screen and (max-width: 1024px) {
+    .maw-70 {
+        max-width: 90%;
+    }
+    .w-28 {
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 4rem;
+    }
+
+    h2,.h2 {
+        font-size: 3rem;
+    }
+    h3,.h3 {
+        font-size: 2.5rem;
+    }
+
+    h4,.h4 {
+        font-size: 2rem;
+    }
+    h5,.h5 {
+        font-size: 1.5rem;
+    }
+
+    p {
+        font-size: 1.25rem;
+        line-height: 8rem;
+    }
+
+    .lh-2c5-xs {
+
+    }
+    .w-100-xs {
+        width: 100%;
+    }
+
+    .fs-3-xs {
+        font-size: 3rem;
+    }
 }

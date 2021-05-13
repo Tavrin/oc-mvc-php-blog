@@ -189,10 +189,10 @@ class Form
             $selected = '';
             if (is_array($item) && isset($item['id'])) {
                 if (isset($options['selected']) && $options['selected'] === $item['id']) {
-                    $selected = 'selected="' . $item['id'] . '"';
+                    $selected = 'selected';
                 } elseif ($this->session->has('formData') && $formData = $this->session->get('formData')) {
                     if (array_key_exists($name, $formData['data']) && $this->name === $formData['formName']) {
-                        $selected = 'selected="' . $formData['data'][$name]. '"';
+                        $selected = 'selected';
                     }
                 }
 
@@ -336,8 +336,15 @@ class Form
                 $render .= '        ' . $input['render'] . PHP_EOL;
             } else {
                 $render .= "    <div class='{$globalOptions['wrapperClass']} {$input['wrapperClass']}'>" . PHP_EOL;
-                if ('button' !== $input['type']) {$render .=    "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL;}
-                $render .=    '        ' . $input['render'] . '</div>'. PHP_EOL;
+                if ('button' !== $input['type']) {
+                    if (isset($input['inputBeforeLabel']) && true === $input['inputBeforeLabel']) {$render .=    '        ' . $input['render'] . PHP_EOL;}
+                    $render .=    "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL;
+                }
+                if (!isset($input['inputBeforeLabel']) || (isset($input['inputBeforeLabel']) && false === $input['inputBeforeLabel'])) {
+                    $render .=    '        ' . $input['render'] . '</div>'. PHP_EOL;
+                } else {
+                    $render .=    '        </div>'. PHP_EOL;
+                }
             }
         }
 
@@ -479,6 +486,7 @@ class Form
             $fieldData['whitelist'] = $options['whitelist'];
         }
 
+        isset($options['inputBeforeLabel']) ? $fieldData['inputBeforeLabel'] = $options['inputBeforeLabel'] : $fieldData['inputBeforeLabel'] = false;
         isset($options['error']) ? $fieldData['error'] = $options['error'] : $fieldData['error'] = null;
         isset($options['sanitize']) ? $fieldData['sanitize'] = $options['sanitize'] : $fieldData['sanitize'] = true;
         isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : $fieldData['hash'] = null;
