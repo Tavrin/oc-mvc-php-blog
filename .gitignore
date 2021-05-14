@@ -7,4 +7,3 @@
 .env.local
 .idea
 /build/
-/public/uploads/media

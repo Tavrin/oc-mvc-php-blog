@@ -126,7 +126,15 @@ class MediaController extends Controller
         $redirectPath = $request->getServer('HTTP_REFERER') ?? '/';
         $adminManager = new AdminManager($this->getManager());
         $mediaRepository = new MediaRepository($this->getManager());
-        $adminManager->deleteEntity($mediaRepository, $slug, 'slug');
+
+        if (!$media = $mediaRepository->findOneBy('slug', $slug)) {
+            throw new NotFoundException();
+        }
+
+        $oldFile = new PublicFile($media->getPath());
+        $oldFile->delete();
+        $this->getManager()->remove($media);
+        $this->getManager()->flush();
 
         $this->redirect($redirectPath, ['type' => 'success', 'message' => 'Suppression réussie']);
     }
