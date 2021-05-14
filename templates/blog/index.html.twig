@@ -8,11 +8,11 @@
                 <div class="ta-l">
                     <h1 class="fw-600">{{ content.currentCategory.name ?? 'Tous les articles'}}</h1>
                 </div>
-                <div class="d-f fd-r flex-w grid-7 jc-fs mt-1 pb-3 pl-2">
+                <div class="post-listing-grid grid-7">
                     {% if content.items is defined and content.items is not empty %}
                         {% for post in content.items %}
 
-                            <div class="w-28 hrem-45 d-f fd-c m-1-5 mb-3 p-1 bcg-white bs-1 br-5 pos-r">
+                            <div class="post-listing">
                                 <div class="w-100 h-60">
                                     {% include'/partials/inc/listing_media.html.twig' %}
                                 </div>
@@ -23,7 +23,7 @@
                                     </span>
                                     {{ post.title }}
                                 </p>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam scelerisque sem a elit suscipit dapibus. Nam sollicitudin neque nunc, nec varius risus iaculis eget. In a luctus sem, hendrerit lacinia metus...</p>
+                                <div class="ofw-bw">{{ post.header|parseEditor|raw|length > 255 ? (post.header|parseEditor(true)|striptags|slice(0, 255, true))|raw ~ '...': post.header|parseEditor(true)|raw }}</div>
                                 <a href="{{ post.path }}" class="mt-1 button-bb-wc-2 p-1 br-5 fw-600 ta-c maw-50 as-c pos-a bot-2r">
                                     Lire la suite
                                 </a>
@@ -31,7 +31,7 @@
                         {% endfor %}
                     {% else %}
                         <div class="maw-70 m-auto mt-3 mb-3 pt-3 d-f fd-c">
-                            <section id="home-presentation" class="d-f jc-c m-auto pt-3 pb-3 mb-3">
+                            <section class="d-f jc-c m-auto pt-3 pb-3 mb-3">
                                 <div class="ta-l">
                                     <h1 class="fw-600 fs-3-5 lh-3c5">Aucun article</h1>
                                     <a href="/">

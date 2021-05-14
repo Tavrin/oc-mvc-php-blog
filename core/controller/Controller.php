@@ -20,7 +20,7 @@ class Controller
     protected const CONFIG_DIR = ROOT_DIR . '/config/';
     protected Environment $twig;
 
-    private ?EntityManager $entityManager;
+    protected ?EntityManager $entityManager;
 
     protected Session $session;
 

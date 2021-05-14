@@ -11,6 +11,7 @@ use App\Forms\LoginForm;
 use App\Forms\RegisterForm;
 use App\Forms\ResetPasswordForm;
 use App\Manager\UserManager;
+use App\Repository\CategoryRepository;
 use App\Repository\UserRepository;
 use Core\controller\Controller;
 use Core\controller\Form;
@@ -45,6 +46,8 @@ class SecurityController extends Controller
             $this->redirect('/', ['type' => 'success', 'message' => 'Inscription réussie, veuillez confirmer votre adresse email']);
         }
 
+        $categoryRepository = new CategoryRepository($this->getManager());
+        $content['categories'] = $categoryRepository->findAll();
         $content['title'] = 'Inscription';
         $content['breadcrumb'] = $request->getAttribute('breadcrumb');
 
@@ -103,6 +106,8 @@ class SecurityController extends Controller
         }
 
         $content['title'] = 'Connexion';
+        $categoryRepository = new CategoryRepository($this->getManager());
+        $content['categories'] = $categoryRepository->findAll();
 
         return $this->render('pages/login.html.twig',[
             'content' => $content,
@@ -141,8 +146,12 @@ class SecurityController extends Controller
             $this->redirect('/', ['type' => 'success', 'message' => 'Un email a été envoyé']);
         }
 
+        $categoryRepository = new CategoryRepository($this->getManager());
+        $content['categories'] = $categoryRepository->findAll();
+
         return $this->render('/pages/forgot.html.twig', [
-            'form'=>$form->renderForm()
+            'form'=>$form->renderForm(),
+            'content' => $content
         ]);
     }
 
@@ -177,8 +186,11 @@ class SecurityController extends Controller
             $this->redirect('/', ['type' => 'danger', 'message' => "La modification n'a pas pu aboutir"]);
         }
 
+        $categoryRepository = new CategoryRepository($this->getManager());
+        $content['categories'] = $categoryRepository->findAll();
         return $this->render('pages/reset.html.twig', [
-            'form' => $form->renderForm()
+            'form' => $form->renderForm(),
+            'content' => $content
         ]);
     }
 

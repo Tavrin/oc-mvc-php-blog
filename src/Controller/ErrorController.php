@@ -3,6 +3,7 @@
 
 namespace App\Controller;
 
+use App\Repository\CategoryRepository;
 use Core\controller\Controller;
 use Core\http\Response;
 use Exception;
@@ -18,6 +19,11 @@ class ErrorController extends Controller
      */
     public function indexAction(Exception $e = null):Response
     {
+        if (!empty($this->entityManager)) {
+            $categoryRepository = new CategoryRepository($this->getManager());
+            $content['categories'] = $categoryRepository->findAll();
+        }
+
         $message = $e->getMessage();
         $code = $e->getCode();
         $content['title'] = "Page d'erreur";

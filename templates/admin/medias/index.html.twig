@@ -10,9 +10,9 @@
                 <div class="ta-r pt-1 pb-1">
                     <a href="/admin/structure/medias/{{ content.mediaType }}/new" class="m-0-5 button-bb-wc-2 br-5 fw-600 m-1-5">Nouveau média</a>
                 </div>
-                <div class="d-f fd-r flex-w grid-3 jc-sb mt-1 pb-3">
+                <div class="d-f fd-r flex-w grid-3 jc-fs mt-1 pb-3">
                     {% for media in content.items %}
-                        <div class="bcg-light3 p-1 br-10 w-15 d-f fd-c ac-c">
+                        <div class="bcg-light3 p-1 br-10 w-15 d-f fd-c ac-c ml-1 mr-1">
                             <span class="fs-1 mb-0-5 fw-700 fb-15">{{ media.name }}</span>
                             <img src="{{ media.path }}" alt="">
 

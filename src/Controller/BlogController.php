@@ -38,7 +38,7 @@ class BlogController extends Controller
         }
 
         $content['categories'] = $categoryRepository->findAll();
-        if (empty($content)) {
+        if (empty($content['items'])) {
             throw new NotFoundException("pas d'article de blog trouvé", 404);
         }
 

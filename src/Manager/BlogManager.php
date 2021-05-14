@@ -92,7 +92,7 @@ class BlogManager
         $summary = [];
         $content = json_decode($content, true);
         foreach ($content['blocks'] as $key => $block) {
-            if ('header' === $block['type'] && 1 < $block['data']['level']) {
+            if ('header' === $block['type'] && 2 === $block['data']['level']) {
                 $summary[$key]['link'] = "#".StringUtils::slugify($block['data']['text']);
                 $summary[$key]['name'] = $block['data']['text'];
             }

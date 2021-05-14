@@ -189,7 +189,7 @@ class User
     {
         $roles = $this->roles;
 
-        if (empty($roles)) {
+        if (!in_array('ROLE_USER',$roles, true)) {
             $roles[] = 'ROLE_USER';
         }
 

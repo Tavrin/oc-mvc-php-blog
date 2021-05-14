@@ -33,6 +33,10 @@ p {
     line-height: 1.7rem;
 }
 
+li {
+    line-height: 2.5rem;
+}
+
 .button {
     border: 0;
     border-radius: 0.25rem;

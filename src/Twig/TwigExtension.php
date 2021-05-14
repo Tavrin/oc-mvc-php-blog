@@ -52,7 +52,7 @@ class TwigExtension extends AbstractExtension
                     $headerLevel = $block['data']['level'];
                     1 === $headerLevel ? $class = 'ta-c' : $class = 'ta-l';
                     $id = StringUtils::slugify($block['data']['text']);
-                    $parsedContent .= "<h{$headerLevel} id={$id} class='fw-700 mb-1 {$class}'>{$block['data']['text']}</h{$headerLevel}>";
+                    $parsedContent .= "<h{$headerLevel} id={$id} class='fw-700 mb-0-5 mt-1 {$class}'>{$block['data']['text']}</h{$headerLevel}>";
                     break;
                 case 'paragraph':
                     $parsedContent .= $this->setParagraph($block['data']);
@@ -77,7 +77,7 @@ class TwigExtension extends AbstractExtension
                 if (true === $listing) {
                     break;
                 }
-                    $parsedContent .= "<div class='d-f jc-c fd-c mt-1 mb-2'><img src='{$block['data']['url']}' alt='image'><figcaption class='text-muted pt-0-5'>{$block['data']['caption']}</figcaption></div>";
+                    $parsedContent .= "<div class='d-f jc-c fd-c mt-1 mb-2 w-75'><img src='{$block['data']['url']}' alt='image'><figcaption class='text-muted pt-0-5'>{$block['data']['caption']}</figcaption></div>";
                     break;
                 default:
                     break;

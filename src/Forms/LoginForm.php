@@ -17,6 +17,6 @@ class LoginForm extends Form
         $this->addEmailInput('email', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Email'])
             ->addPasswordInput('password', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Mot de passe'])
             ->setSubmitValue('accepter', ['class' => 'button-bb-wc-2 as-c'])
-            ->addCss('w-50 d-f fd-c');
+            ->addCss('w-50 w-100-xs d-f fd-c');
     }
 }

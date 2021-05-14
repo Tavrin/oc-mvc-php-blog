@@ -35,7 +35,7 @@ class EditorForm extends Form
             isset($entityUpdated) ? $entityUpdated = $entityUpdated->format("Y-m-d\TH:i:s") : $entityUpdated = null;
         }
 
-        $this->addCss('w-75')
+        $this->addCss('w-75 w-90-xs')
             ->addTextInput('title', ['class' => 'form-control js-binder', 'placeholder' => "Titre", 'dataAttributes' => ['type' => 'text', 'target' => 'slug', 'target-attribute' => 'value', 'options' => ['slugify' => true]], 'value' => 'edit' === $options['type']? $entity->getTitle() : null])
             ->addTextInput('metaTitle', ['class' => 'form-control', 'placeholder' => "Méta titre",  'value' => 'edit' === $options['type']? $entity->getMetaTitle() : null])
             ->addTextInput('metaDescription', ['class' => 'form-control', 'placeholder' => "Méta description",  'value' => 'edit' === $options['type']? $entity->getMetaDescription() : null])

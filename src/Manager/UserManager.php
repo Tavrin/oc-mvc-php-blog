@@ -68,20 +68,26 @@ class UserManager
         return $user;
     }
 
-    public function saveUser(object $user, string $confirmPassword): bool
+    public function saveUser(User $user, string $confirmPassword): bool
     {
-        $user->setSlug(StringUtils::slugify($user->getSlug()));
-        $user->setUuid(Uuid::uuid4()->toString());
-        $user->setPath(self::USER_DEFAULT_PATH . $user->getSlug());
+        $user = $this->setUserData($user);
         $user->setStatus(true);
 
-        if (!password_verify($confirmPassword, $user->getPassword()) || $user->hasRole('ROLE_ADMIN')) {
+        if (!password_verify($confirmPassword, $user->getPassword())) {
             return false;
         }
 
         $this->em->save($user);
         $this->em->flush();
         return true;
+    }
+
+    public function setUserData(User $user): User
+    {
+        $user->setSlug(StringUtils::slugify($user->getSlug()));
+        $user->setUuid(Uuid::uuid4()->toString());
+        $user->setPath(self::USER_DEFAULT_PATH . $user->getSlug());
+        return $user;
     }
 
     public function newToken(User $user, string $operation)
@@ -169,6 +175,7 @@ class UserManager
 
     public function updateUser(User $modifiedUser, Session $session): bool
     {
+        $modifiedUser = $this->setUserData($modifiedUser);
         $currentUser = $session->get('user');
         $this->em->update($modifiedUser);
         if ($modifiedUser->getId() === $currentUser->getId()) {

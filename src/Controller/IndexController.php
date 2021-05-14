@@ -60,11 +60,4 @@ class IndexController extends Controller
             'form' => $form->renderForm()
         ]);
     }
-
-    public function showAction(Request $request, $slug)
-    {
-        return $this->render('test.html.twig',[
-            'title' => $slug
-        ]);
-    }
 }
