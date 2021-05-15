@@ -116,9 +116,9 @@ class Request
         if (false === empty($this->server['PATH_INFO'])) {
             $pathInfo = htmlspecialchars($this->server['PATH_INFO']);
         } else {
-            $pathInfo = htmlspecialchars($this->server['REQUEST_URI']);
+            $path = htmlspecialchars($this->server['REQUEST_URI']);
+            $pathInfo = strstr($path, '?', true) ?: $pathInfo = htmlspecialchars($path);
         }
-
 
         return $pathInfo;
     }
