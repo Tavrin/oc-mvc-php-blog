@@ -37,7 +37,7 @@ class IndexController extends Controller
         $form = new ContactForm($request, $message, $this->session, ['name' => 'contact', 'wrapperClass' => 'mb-1']);
         $content['posts'] = $postRepository->findBy('featured', true);
         $content['categories'] = $categoryRepository->findAll();
-        $content['user'] = $userRepository->findOneBy('email', $constants['admin_email']);
+        $content['user'] = $userRepository->findOneBy('username', 'admin');
         $content['title'] = 'Tavrin.io - Blog';
 
         $form->handle($request);
