@@ -45,9 +45,9 @@ class Comment
     private Post $post;
 
     /**
-     * @var User
+     * @var User|null
      */
-    private User $user;
+    private ?User $user;
 
     /**
      * @var DateTime|null
@@ -90,7 +90,7 @@ class Comment
         return $this->user;
     }
 
-    public function setUser(User $user)
+    public function setUser(?User $user)
     {
         $this->user = $user;
     }

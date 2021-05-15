@@ -70,9 +70,11 @@
                             {% if comment.hidden == false %}
                                 <div id="{{ comment.slug }}" class="{% if not loop.last %}bb-dg {% endif %}m-1 pt-1 pb-1 w-75 d-f fd-c ai-c">
                                     <div class="w-100 d-f mb-1-5">
-                                        <img src="{{ comment.user.media.path }}" class="br-50 hrem-3 mr-1" alt="">
+                                        {% if comment.user is defined and comment.user is not empty %}
+                                            <img src="{{ comment.user.media.path }}" class="br-50 hrem-3 mr-1" alt="">
+                                        {% endif %}
                                         <div>
-                                            <span class="fw-900 d-b mb-0-5"><a href="{{ comment.user.path }}">{{ comment.user.username }}</a></span>
+                                            <span class="fw-900 d-b mb-0-5"><a href="{{ comment.user.path??'#' }}">{{ comment.user.username?? 'utilisateur supprimé' }}</a></span>
                                             <span class="fw-500 text-muted">{{ comment.createdAt|date|moment }}</span>
                                         </div>
                                     </div>
