@@ -1087,6 +1087,29 @@ margin-bottom: 3rem;
     border-radius: 10px;
     width: 75%;
 }
+
+.big-title {
+    font-weight: 600;
+    font-size: 3.5rem;
+    line-height: 3.5rem;
+}
+
+.top-link {
+    font-weight: 700;
+    font-size: 1.75rem;
+    font-family: 'Titillium Web', sans-serif;
+}
+
+.breadcrumb {
+    margin: 3rem;
+}
+
+.home-buttons {
+    justify-content: center;
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+}
 /* flash */
 .flash {
     max-width: 70%;
@@ -1160,29 +1183,6 @@ margin-bottom: 3rem;
         max-width: 90%;
     }
 
-    h1 {
-        font-size: 4rem;
-    }
-
-    h2,.h2 {
-        font-size: 3rem;
-    }
-    h3,.h3 {
-        font-size: 2.5rem;
-    }
-
-    h4,.h4 {
-        font-size: 2rem;
-    }
-    h5,.h5 {
-        font-size: 1.5rem;
-    }
-
-    p {
-        font-size: 1.25rem;
-        line-height: 2rem;
-    }
-
     .lh-2c5-xs {
 
     }
@@ -1194,7 +1194,20 @@ margin-bottom: 3rem;
         width: 100%;
     }
 
-    .fs-3-xs {
-        font-size: 3rem;
+    .big-title {
+        line-height: 2.5rem;
+        font-size: 2.5rem;
+    }
+
+    .home-buttons {
+
+    }
+
+    .top-link {
+        font-size: 1.25rem;
+    }
+
+    .breadcrumb {
+        margin: 1rem;
     }
 }
