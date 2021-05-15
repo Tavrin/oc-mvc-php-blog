@@ -27,24 +27,24 @@ class User
     private ?bool $status = false;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $uuid;
+    private ?string $uuid = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $email;
+    private ?string $email = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $username;
+    private ?string $username = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $password;
+    private ?string $password = null;
 
     /**
      * @var string|null
@@ -59,7 +59,7 @@ class User
     /**
      * @var string|null
      */
-    private ?string $path;
+    private ?string $path = null;
 
     /**
      * @var array|null
@@ -105,7 +105,7 @@ class User
         $this->id = $id;
     }
 
-    public function getUuid(): string
+    public function getUuid():  ?string
     {
         return $this->uuid;
     }
