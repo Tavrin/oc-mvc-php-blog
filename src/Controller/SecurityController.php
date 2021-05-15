@@ -36,7 +36,7 @@ class SecurityController extends Controller
 
         $form->handle($request);
 
-        if ($form->isValid) {
+        if ($form->isSubmitted && $form->isValid) {
 
             $userManager->newToken($user, 'save');
             $scheme = $this->request->getScheme();

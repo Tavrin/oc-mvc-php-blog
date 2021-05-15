@@ -70,7 +70,7 @@ class UserManager
 
     public function saveUser(User $user, string $confirmPassword): bool
     {
-        $user = $this->setUserData($user);
+        $user = $this->setUserData($user, true);
         $user->setStatus(true);
 
         if (!password_verify($confirmPassword, $user->getPassword())) {
@@ -82,10 +82,13 @@ class UserManager
         return true;
     }
 
-    public function setUserData(User $user): User
+    public function setUserData(User $user, bool $isNew = false): User
     {
-        $user->setSlug(StringUtils::slugify($user->getSlug()));
-        $user->setUuid(Uuid::uuid4()->toString());
+        $user->getSlug() ? $user->setSlug(StringUtils::slugify($user->getSlug())) :  $user->setSlug(StringUtils::slugify($user->getUsername()));
+        if (true === $isNew) {
+            $user->setUuid(Uuid::uuid4()->toString());
+        }
+
         $user->setPath(self::USER_DEFAULT_PATH . $user->getSlug());
         return $user;
     }
@@ -95,6 +98,7 @@ class UserManager
         $user->setToken(Uuid::uuid4()->toString());
 
         if ('save' === $operation) {
+            $user = $this->setUserData($user, true);
             $this->em->save($user);
             $this->em->flush();
         }
