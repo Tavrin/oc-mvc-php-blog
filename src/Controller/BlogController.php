@@ -42,6 +42,8 @@ class BlogController extends Controller
             throw new NotFoundException("pas d'article de blog trouvé", 404);
         }
 
+        $content['description'] = 'Tavrin.io - Accueil du blog, retrouvez ici tous les articles';
+        $content['path'] = '/blog';
         return $this->render('blog/index.html.twig',[
             'content' => $content
         ]);
@@ -63,6 +65,9 @@ class BlogController extends Controller
         $content['post'] = $blogManager->hydratePost($post, $postData);
         $content['comments'] = $commentRepository->findBy('post_id', $post->getId(), 'created_at', 'DESC');
         $content['categories'] = $categoryRepository->findAll();
+        $content['description'] = $content['post']['metaDescription'] ?: 'Tavrin.io - blog : article  ' . $content['post']['title'];
+        $content['title'] = $content['post']['metaTitle'] ?: $content['post']['title'];
+        $content['path'] = $content['post']['path'];
 
         $commentForm->handle($request);
 
@@ -106,6 +111,9 @@ class BlogController extends Controller
         $content['items'] = $adminManager->hydrateEntities($content['items'], $entityData);
         $content['categories'] = $categoryRepository->findAll();
         $content['currentCategory'] =  $categoryId;
+        $content['description'] = $categoryId->getMetadescription() ?: 'Tavrin.io - blog : Catégorie ' . $categoryId->getName();
+        $content['title'] = $categoryId->getMetaTitle() ?: $categoryId->getName();
+        $content['path'] = $categoryId->getPath();
 
         return $this->render('blog/index.html.twig',[
             'content' => $content

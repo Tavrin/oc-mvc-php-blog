@@ -194,5 +194,10 @@
         "route": "profile",
         "path": "/membres/{slug}",
         "controller": "App\\Controller\\UserController::indexAction"
+    },
+    {
+        "route": "mentions",
+        "path": "/mentions-legales",
+        "controller": "App\\Controller\\IndexController::legalAction"
     }
 ]

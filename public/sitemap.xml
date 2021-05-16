@@ -1,0 +1,81 @@
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<url>
+    <loc>https://tavrin.io/</loc>
+    <lastmod>2021-05-16T14:55:31+00:00</lastmod>
+    <priority>1.00</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/blog?page=1</loc>
+    <lastmod>2021-05-16T14:55:31+00:00</lastmod>
+    <priority>0.80</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/login</loc>
+    <lastmod>2021-05-16T14:55:31+00:00</lastmod>
+    <priority>0.80</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/blog/backend-dev?page=1</loc>
+    <priority>0.8</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/blog/frontend-dev?page=1</loc>
+    <priority>0.8</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/blog/game-dev?page=1</loc>
+    <priority>0.8</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/blog/digital-painting?page=1</loc>
+    <priority>0.8</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/blog/culinaire?page=1</loc>
+    <priority>0.8</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/uploads/cv.pdf</loc>
+    <lastmod>2021-05-14T17:46:03+00:00</lastmod>
+    <priority>0.80</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/blog/frontend-dev/comment-poster-un-article-sur-ce-blog</loc>
+    <lastmod>2021-05-16T14:55:31+00:00</lastmod>
+    <priority>0.80</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/blog/culinaire/recette-nouilles-dandan</loc>
+    <lastmod>2021-05-16T14:55:31+00:00</lastmod>
+    <priority>0.80</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/blog/frontend-dev/comment-prevenir-une-attaque-xss</loc>
+    <lastmod>2021-05-16T14:55:31+00:00</lastmod>
+    <priority>0.64</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/blog/game-dev/mon-premier-prototype-sous-unity</loc>
+    <lastmod>2021-05-16T14:55:31+00:00</lastmod>
+    <priority>0.64</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/login/</loc>
+    <lastmod>2021-05-16T14:55:31+00:00</lastmod>
+    <priority>0.64</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/register</loc>
+    <lastmod>2021-05-16T14:55:31+00:00</lastmod>
+    <priority>0.64</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/forgot-password</loc>
+    <lastmod>2021-05-16T14:55:31+00:00</lastmod>
+    <priority>0.64</priority>
+</url>
+<url>
+    <loc>https://tavrin.io/mentions-legales</loc>
+    <priority>0.3</priority>
+</url>
+</urlset>

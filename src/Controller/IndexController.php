@@ -60,4 +60,14 @@ class IndexController extends Controller
             'form' => $form->renderForm()
         ]);
     }
+
+    public function legalAction(): Response
+    {
+        $content['title'] = 'Tavrin.io - Mentions légales';
+        $content['description'] = 'Retrouvez ici les mentions légales du site Tavrin.io';
+        $content['path'] = '/mentions-legales';
+        return $this->render('pages/mentions_legales.html.twig',[
+            'content' => $content
+        ]);
+    }
 }

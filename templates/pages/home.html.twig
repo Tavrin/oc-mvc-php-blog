@@ -22,7 +22,7 @@
             </section>
             <section id="home-articles" class=" m-auto pt-3 w-100">
                 <div class="ta-c">
-                    <h1 class="fw-600">Articles à la une</h1>
+                    <h2 class="fw-600">Articles à la une</h2>
                 </div>
                 <div class="d-f ai-c js-slider" data-type="dotted">
                     <a href="#" role="button"><i class="fas fa-chevron-left fs-3 slider-previous"></i></a>
@@ -49,7 +49,7 @@
                             {% endfor %}
                             <div class="m-auto">
                                 {% for post in content.posts %}
-                                        <span class="featured-dot" data-order="{{ loop.index - 1 }}">{% if loop.first %}<i class="fas fa-circle"></i>{% else %}<i class="far fa-circle">{% endif %}</i></span>
+                                        <span class="featured-dot" data-order="{{ loop.index - 1 }}">{% if loop.first %}<i class="fas fa-circle"></i>{% else %}<i class="far fa-circle"></i>{% endif %}</span>
                                 {% endfor %}
                             </div>
                         {% endif %}
