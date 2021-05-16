@@ -34,7 +34,8 @@ p {
 }
 
 li {
-    line-height: 2.5rem;
+    line-height: 1.7rem;
+    margin-bottom: 1rem;
 }
 
 .button {

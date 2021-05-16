@@ -5,8 +5,10 @@ class ToggleContent {
         this.state = true;
         this.type = null;
         this.options = [];
-        this.addListener(elem);
+        this.toggleClass = 'd-n';
+        this.revertToggle = false;
         this.target = elem;
+        this.addListener(elem);
     }
 
     addListener(elem) {
@@ -14,10 +16,12 @@ class ToggleContent {
             this.options = JSON.parse(elem.dataset.options);
         }
 
-        if (elem.dataset.targetId) {
-            this.target = `#${elem.dataset.targetId}`;
+        if (elem.dataset.targetId && document.querySelector('#' + elem.dataset.targetId) !== null) {
+            this.target = document.querySelector('#' + elem.dataset.targetId);
         }
-
+        if (this.target.dataset.revertToggle && 'true' === this.target.dataset.revertToggle) {
+            this.revertToggle = true;
+        }
         if ('display' === elem.dataset.type) {
             this.type = 'display';
             this.setDisplayEvent(elem);
@@ -26,8 +30,7 @@ class ToggleContent {
 
     setDisplayEvent(elem) {
         window.addEventListener('mouseup', (e) => {
-            let target = document.querySelector('#' + elem.dataset.targetId);
-            if (!target.classList.contains('d-n') && !elem.contains(e.target) && target.id !== 'editorjsChapo' && target.id !== 'editorjsContent') {
+            if (((this.target.classList.contains(this.toggleClass) && true === this.revertToggle) || (!this.target.classList.contains(this.toggleClass) && false === this.revertToggle)) && !elem.contains(e.target) && this.target.id !== 'editorjsChapo' && this.target.id !== 'editorjsContent') {
                 this.displayEventChanges(elem);
             }
         })
@@ -43,11 +46,13 @@ class ToggleContent {
             elem.classList.toggle(this.options['icons'][1]);
         }
 
-        if (elem.dataset.targetId && document.querySelector('#' + elem.dataset.targetId) !== null) {
-            let target = document.querySelector('#' + elem.dataset.targetId);
-            target.classList.toggle('d-n');
+        if (this.target) {
+            if (this.target.dataset.toggleClass) {
+                this.toggleClass = this.target.dataset.toggleClass;
+            }
+            this.target.classList.toggle(this.toggleClass);
         } else {
-            elem.classList.toggle('d-n');
+            elem.classList.toggle(this.toggleClass);
         }
     }
 }

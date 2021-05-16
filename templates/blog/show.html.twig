@@ -21,15 +21,15 @@
         <div class="maw-90 m-auto mt-3 mb-3 d-f fd-c">
             <section id="post" class="w-100 m-auto pt-3 d-f fd-c ai-c">
                 <div class="d-f fd-c mb-3">
-                    <img src="{{ content.post.media.path }}" alt="" class="w-65 as-c">
+                    <img src="{{ content.post.media.path }}" alt=""  id="post-show-main-media">
                 </div>
-                <div class="ta-c pb-3 bb-dg2 w-50">
-                    <h1 class="fw-700 fs-3 mb-1">{{ content.post.title }}</h1>
-                    <div class="d-f ai-c">
+                <div id="post-show-info">
+                    <h1 id="post-show-title">{{ content.post.title }}</h1>
+                    <div id="post-show-author" class="d-f ai-c">
                         <img src="{{ content.post.author.media.path }}" class="br-50 hrem-3 mr-1" alt="">
-                        <div class="w-100">
-                        <span class="float-l">Ecrit par <a href="{{ content.post.author.path }}">{{ authorName }}</a></span>
-                        <span class="float-r">{{ content.post.updatedAt ? 'Mis à jour le ' ~ content.post.updatedAt|date('d/m/Y') : 'Publié le ' ~ content.post.createdAt|date('d/m/Y') }}</span>
+                        <div id="post-show-author-details" class="w-100">
+                        <span>Ecrit par <a href="{{ content.post.author.path }}">{{ authorName }}</a></span>
+                        <span>{{ content.post.updatedAt ? 'Mis à jour le ' ~ content.post.updatedAt|date('d/m/Y') : 'Publié le ' ~ content.post.createdAt|date('d/m/Y') }}</span>
                         </div>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                         </div>
                     {% endif %}
                 </div>
-                <div class="w-50 d-f fd-c ai-c">
+                <div id="post-show-comments">
                     <h3>Commentaires</h3>
                     {% if app.user is defined and app.user is not empty %}
 
@@ -68,7 +68,7 @@
                     {% if content.comments is defined and content.comments is not empty %}
                         {% for comment in content.comments %}
                             {% if comment.hidden == false %}
-                                <div id="{{ comment.slug }}" class="{% if not loop.last %}bb-dg {% endif %}m-1 pt-1 pb-1 w-75 d-f fd-c ai-c">
+                                <div id="{{ comment.slug }}" class="{% if not loop.last %}bb-dg {% endif %}comment-item">
                                     <div class="w-100 d-f mb-1-5">
                                         {% if comment.user is defined and comment.user is not empty %}
                                             <img src="{{ comment.user.media.path }}" class="br-50 hrem-3 mr-1" alt="">

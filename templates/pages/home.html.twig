@@ -3,11 +3,11 @@
 {% block main %}
     <main>
         <div class="maw-70 m-auto mt-3 mb-3 d-f fd-c">
-            <section id="home-presentation" class="d-f jc-c m-auto pt-3 pb-3 mb-3">
+            <section id="home-presentation">
                 <div class="ta-l fb-50">
                     <h1 class="big-title">Bonjour,<br> moi c'est {{ content.user.fullName ?? 'Etienne Doux' }}, bienvenue sur mon blog</h1>
                     <h5 class="mt-0-5">Web backend / frontend / gamedev / design / digital art</h5>
-                    <div class="m-auto ta-c d-f jc-c mt-3">
+                    <div class="home-buttons">
                         <a href="https://tavrin.io/portfolio">
                             <button class="m-0-5 button-bb-wc-2 br-5 fw-600">Portfolio</button>
                         </a>
@@ -29,8 +29,8 @@
                     <div class="d-f fd-r flex-w jc-sb mt-1 mb-3 pb-3 featured-container w-100">
                         {% if content.posts is defined and content.posts is iterable %}
                             {% for post in content.posts %}
-                                <div class="w-100 hrem-35 d-f fd-c m-1-5 p-1 bcg-light-blue bs-1 br-5 pos-r featured-item {% if loop.first %}active{% endif %}" data-order="{{ loop.index - 1 }}">
-                                    <div class="w-100 h-60">
+                                <div class="featured-item {% if loop.first %}active{% endif %}" data-order="{{ loop.index - 1 }}">
+                                    <div class="featured-item-image">
                                         {% include'/partials/inc/listing_media.html.twig' %}
                                     </div>
                                     <p class="pt-1 pb-1 fs-1c3 fw-700">
@@ -41,8 +41,8 @@
                                         <a class="pt-1 pb-1 fs-1c6 fw-900" href="{{ post.path }}">{{ post.title }}</a>
 
                                     </p>
-                                    <div>{{ post.header|parseEditor|raw|length > 255 ? (post.header|parseEditor(true)|striptags|slice(0, 255, true))|raw ~ '...': post.header|parseEditor(true)|raw }}</div>
-                                    <a href="{{ post.path }}" class="mt-1 button-bb-wc-2 p-1 br-5 fw-600 ta-c maw-50 as-c pos-a bot-2r">
+                                    <div class="post-listing-description">{{ post.header|parseEditor|raw|length > 255 ? (post.header|parseEditor(true)|striptags|slice(0, 255, true))|raw ~ '...': post.header|parseEditor(true)|raw }}</div>
+                                    <a href="{{ post.path }}" class="mt-1 button-bb-wc-2 p-1 br-5 fw-600 ta-c maw-50 as-c pos-a listing-button">
                                         Lire la suite
                                     </a>
                                 </div>

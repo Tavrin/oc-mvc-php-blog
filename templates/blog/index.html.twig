@@ -13,7 +13,7 @@
                         {% for post in content.items %}
 
                             <div class="post-listing">
-                                <div class="w-100 h-60">
+                                <div class="featured-item-image">
                                     {% include'/partials/inc/listing_media.html.twig' %}
                                 </div>
                                 <p class="pt-1 pb-1 fs-1c3 fw-700">
@@ -23,8 +23,8 @@
                                     </span>
                                     {{ post.title }}
                                 </p>
-                                <div class="ofw-bw">{{ post.header|parseEditor|raw|length > 255 ? (post.header|parseEditor(true)|striptags|slice(0, 255, true))|raw ~ '...': post.header|parseEditor(true)|raw }}</div>
-                                <a href="{{ post.path }}" class="mt-1 button-bb-wc-2 p-1 br-5 fw-600 ta-c maw-50 as-c pos-a bot-2r">
+                                <div class="ofw-bw lh-1c7">{{ post.header|parseEditor|raw|length > 255 ? (post.header|parseEditor(true)|striptags|slice(0, 255, true))|raw ~ '...': post.header|parseEditor(true)|raw }}</div>
+                                <a href="{{ post.path }}" class="mt-1 button-bb-wc-2 p-1 br-5 fw-600 ta-c maw-50 as-c pos-a listing-button">
                                     Lire la suite
                                 </a>
                             </div>

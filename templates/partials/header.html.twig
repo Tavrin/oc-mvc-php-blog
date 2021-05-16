@@ -1,6 +1,6 @@
 <header class="m-auto maw-70">
     <nav class="">
-        <ul class="pb-1 pt-1 d-f fd-r jc-sb td-n">
+        <ul class="pb-1 ai-c pt-1 d-f fd-r jc-sb td-n">
             <li>
                 <a href="/" class="top-link">Etienne Doux</a>
             </li>
@@ -9,7 +9,7 @@
             </li>
             <li class="fw-700 h3 ff-titi">
                 {% if app.user is defined and app.user is not empty %}
-                    <a href="#" class="fw-700 h3 ff-titi" id="userDropdown"><i class="fas fa-bars"></i></a>
+                    <a href="#" class="fw-700 h3 ff-titi" id="userDropdown"><i class="fas fa-user"></i></a>
                     <ul class="dropdown d-n" id="userDropdownLinks">
                         <li><a href="/membres/{{ app.user.slug }}" class="">Profil</a></li>
                         <li><a href="/user/settings" class="">Paramètres</a></li>
@@ -22,7 +22,8 @@
         </ul>
     </nav>
     <nav class=" bt-g pt-0-5">
-        <ul class=" d-f fd-r jc-sb td-n">
+        <a href="#" class="fw-700 h3 ff-titi js-toggle" data-target-id="categoryDropdownLinks" data-type="display" id="categoryDropdown"><i class="fas fa-bars"></i></a>
+        <ul id="categoryDropdownLinks" class=" d-f fd-r jc-sb td-n" data-toggle-class="active" data-revert-toggle="true">
             {% if content.categories is defined and content.categories is not empty %}
                 {% for category in content.categories %}
                     <li>

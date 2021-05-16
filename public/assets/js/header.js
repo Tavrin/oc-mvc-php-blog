@@ -35,7 +35,7 @@ class HeaderNav {
     }
 
     setBurgerVisuals() {
-        this.burger.children[0].classList.toggle('fa-bars');
+        this.burger.children[0].classList.toggle('fa-user');
         this.burger.children[0].classList.toggle('fa-times');
         this.userLinks.classList.toggle('active');
     }

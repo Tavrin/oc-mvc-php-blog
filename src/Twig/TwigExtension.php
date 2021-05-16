@@ -64,6 +64,9 @@ class TwigExtension extends AbstractExtension
                     $parsedContent .= $this->setList($block['data']);
                     break;
                 case 'delimiter':
+                    if (true === $listing) {
+                        break;
+                    }
                     $parsedContent .= '<hr>';
                     break;
                 case 'code':
@@ -77,7 +80,7 @@ class TwigExtension extends AbstractExtension
                 if (true === $listing) {
                     break;
                 }
-                    $parsedContent .= "<div class='d-f jc-c fd-c mt-1 mb-2 w-75'><img src='{$block['data']['url']}' alt='image'><figcaption class='text-muted pt-0-5'>{$block['data']['caption']}</figcaption></div>";
+                    $parsedContent .= "<div class='post-show-content-media'><img src='{$block['data']['url']}' alt='image'><figcaption class='text-muted pt-0-5'>{$block['data']['caption']}</figcaption></div>";
                     break;
                 default:
                     break;

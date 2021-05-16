@@ -1,15 +1,15 @@
 {% if content.pages is defined and content.pages > 1 %}
     {% if content.actualPage > 1 %}
         {% if content.actualPage - 1 > 1 %}
-            <a href="{{ app.currentPath }}?page={{ 1 }}" class="pr-1"><< <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">1</span> Première page</a>
+            <a href="{{ app.currentPath }}?page={{ 1 }}" class="pr-1"><< <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">1</span> <span class="pagination-text">Première page</span></a>
         {% endif %}
-        <a href="{{ app.currentPath }}?page={{ content.actualPage - 1 }}" class="pr-1">< <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ content.actualPage - 1 }}</span> Précédent</a>
+        <a href="{{ app.currentPath }}?page={{ content.actualPage - 1 }}" class="pr-1">< <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ content.actualPage - 1 }}</span> <span class="pagination-text">Précédent</span></a>
     {% endif %}
     <span class="bcg-light3 pl-1 pr-1 pb-0-5 pt-0-5 br-25 fw-900">{{ content.actualPage }}</span>
     {% if content.actualPage < content.pages %}
-        <a href="{{ app.currentPath }}?page={{ content.actualPage + 1 }}" class="pl-1">Suivant  <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ content.actualPage + 1 }}</span> ></a>
+        <a href="{{ app.currentPath }}?page={{ content.actualPage + 1 }}" class="pl-1"><span class="pagination-text">Suivant</span> <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ content.actualPage + 1 }}</span> ></a>
         {% if content.actualPage + 1 < content.pages %}
-            <a href="{{ app.currentPath }}?page={{ content.pages }}" class="pl-1">Dernière page <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ content.pages }}</span> >></a>
+            <a href="{{ app.currentPath }}?page={{ content.pages }}" class="pl-1"><span class="pagination-text">Dernière page</span> <span class="bcg-light3 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ content.pages }}</span> >></a>
         {% endif %}
     {% endif %}
 {% endif %}

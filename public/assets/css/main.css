@@ -945,11 +945,13 @@ h1 {
 
 /* list */
 .li-dot {
-list-style-type: disc;
+    list-style-type: disc;
+    list-style-position: inside;
 }
 
 .li-num {
     list-style-type: decimal;
+    list-style-position: inside;
 }
 
 
@@ -1003,6 +1005,7 @@ margin-bottom: 3rem;
     padding: .675rem .75rem;
     font-size: 1rem;
     line-height: 1.5;
+    box-sizing: border-box;
     color: #495057;
     background-color: #fff;
     background-clip: padding-box;
@@ -1047,10 +1050,28 @@ margin-bottom: 3rem;
 
 .featured-item {
     display: none;
+    flex-direction: column;
+    position: relative;
+    width: 100rem;
+    height: 35rem;
+    margin: 1.5rem;
+    padding: 1rem;
+    background-color: #edf2ff;
+    box-shadow: 0 2px 9px -2px #b2b2;
+    border-radius: 5px;
+}
+
+.featured-item-image {
+    width: 100%;
+    height: 60%;
 }
 
 .featured-item.active {
     display: flex;
+}
+
+.listing-button {
+    bottom: 2rem;
 }
 
 .ofw-bw {
@@ -1109,6 +1130,75 @@ margin-bottom: 3rem;
     display: flex;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.post-show-content-media {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin: 1rem auto 2rem;
+    width: 75%;
+}
+
+.comment-item {
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+#post-show-info {
+    text-align: center;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid rgb(229, 233, 236);
+    width: 50%;
+}
+
+#post-show-title {
+    font-weight: 700;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+#post-show-author {
+    display: flex;
+    align-items: center;
+}
+
+#post-show-author-details {
+    display: flex;
+    justify-content: space-between;
+}
+
+#post-show-main-media {
+    width: 65%;
+    align-self: center;
+}
+
+#post-show-comments {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    align-items: center;
+}
+
+#home-presentation {
+    display: flex;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    margin-bottom: 3rem;
+}
+
+#categoryDropdown {
+    display: none;
 }
 /* flash */
 .flash {
@@ -1168,11 +1258,16 @@ margin-bottom: 3rem;
         margin-left: auto;
         margin-right: auto;
         width: 95%;
-
+        height: max-content;
     }
 
     .editor-div {
         width: 100%;
+    }
+
+    li {
+        line-height: 1.7rem;
+        margin-bottom: 0.8rem;
     }
 
     .h-125vw-xs {
@@ -1180,7 +1275,7 @@ margin-bottom: 3rem;
     }
 
     .maw-70 {
-        max-width: 90%;
+        max-width: 95%;
     }
 
     .lh-2c5-xs {
@@ -1197,10 +1292,14 @@ margin-bottom: 3rem;
     .big-title {
         line-height: 2.5rem;
         font-size: 2.5rem;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        padding-bottom: 1rem;
     }
 
     .home-buttons {
-
+        flex-direction: column;
     }
 
     .top-link {
@@ -1209,5 +1308,87 @@ margin-bottom: 3rem;
 
     .breadcrumb {
         margin: 1rem;
+    }
+
+    .featured-item {
+        margin: 0.25rem;
+        height: 20rem;
+    }
+
+    .featured-item-image {
+        height: 45%;
+    }
+
+    .listing-button {
+        position: static;
+        margin: 1rem;
+    }
+
+    .post-listing-description {
+        display: none;
+    }
+
+    .social-name {
+        display: none;
+    }
+
+    .pagination-text {
+        display: none;
+    }
+
+    .comment-item {
+        width: 100%;
+    }
+
+    .dropdown {
+        right: 2%;
+    }
+
+    #post-show-info {
+        width: 100%;
+    }
+
+    #post-show-title {
+        font-size: 1.8rem;
+    }
+
+    #post-show-author {
+        margin-right: auto;
+        margin-left: auto;
+        width: 80%;
+    }
+
+    #post-show-author-details {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #post-show-main-media {
+        width: 90%;
+    }
+
+    #post-show-comments {
+        width: 100%;
+    }
+
+    #home-presentation {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        padding-top: 1rem;
+        flex-direction: column-reverse;
+    }
+
+    #categoryDropdownLinks {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #categoryDropdownLinks.active {
+        display: flex;
+    }
+
+    #categoryDropdown {
+        display: initial;
     }
 }
