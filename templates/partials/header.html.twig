@@ -10,7 +10,7 @@
             <li class="fw-700 h3 ff-titi">
                 {% if app.user is defined and app.user is not empty %}
                     <a href="#" class="fw-700 h3 ff-titi" id="userDropdown"><i class="fas fa-user"></i></a>
-                    <ul class="dropdown d-n" id="userDropdownLinks">
+                    <ul class="dropdown header d-n" id="userDropdownLinks">
                         <li><a href="/membres/{{ app.user.slug }}" class="">Profil</a></li>
                         <li><a href="/user/settings" class="">Paramètres</a></li>
                         <li><a href="/logout" class="">Déconnexion</a></li>

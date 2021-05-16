@@ -1152,6 +1152,74 @@ margin-bottom: 3rem;
     flex-direction: column;
 }
 
+.table-titles-mobile {
+    align-items: center;
+    padding-top: 1rem;
+    font-size: .7rem;
+    font-weight: 700;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: #DFE1E7;
+    display: none;
+}
+
+.table-title-item {
+    color: rgb(85, 101, 117);
+    font-size: 1rem;
+    text-transform: uppercase;
+    margin-bottom: .5rem;
+}
+
+.table-info-item {
+    color: rgb(85, 101, 117);
+    font-size: .9rem;
+    margin-bottom: .5rem;
+}
+
+.table-container {
+    border-radius: 10px;
+    align-content: center;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #F1F3F9;
+}
+
+.table-action-button {
+    margin: .5rem;
+    border-radius: 5px;
+    font-weight: 600;
+}
+
+.table-info {
+    align-items: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 5rem;
+}
+
+.admin-media-item {
+    background-color: #DFE1E7;
+    padding: 1rem;
+    border-radius: 10px;
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+#table-page {
+    max-width: 90%;
+    margin: 3rem auto;
+    display: flex;
+    flex-direction: column;
+}
+
 #post-show-info {
     text-align: center;
     padding-bottom: 3rem;
@@ -1340,8 +1408,55 @@ margin-bottom: 3rem;
         width: 100%;
     }
 
-    .dropdown {
+    .dropdown.header{
         right: 2%;
+    }
+
+    .table-titles-desktop {
+        display: none;
+    }
+
+    .table-titles-mobile {
+        display: flex;
+        flex-basis: 25%;
+    }
+
+    .table-row {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .table-info {
+        flex-direction: column;
+        height: initial;
+        align-items: initial;
+        padding: 1rem 0 0.5rem 0.7rem;
+        flex-basis: 45%;
+    }
+
+    .table-title-item {
+        font-size: .7rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .table-info-item {
+        margin-bottom: 2rem;
+    }
+
+    .table-action-button {
+        margin-bottom: 0;
+        margin-top: 0;
+    }
+
+    .codex-editor {
+        padding: 1rem;
+    }
+
+    .admin-media-item {
+        width: 90%;
+        margin-right: auto;
+        margin-left: auto;
     }
 
     #post-show-info {
@@ -1390,5 +1505,22 @@ margin-bottom: 3rem;
 
     #categoryDropdown {
         display: initial;
+    }
+
+    #table-page {
+        max-width: 100%;
+    }
+
+    #configDropdown {
+        display: block;
+        position: relative;
+        left: 2rem;
+        border: none;
+    }
+
+    #configDropdown::before {
+        content: '-';
+        position: absolute;
+        left: -1rem;
     }
 }

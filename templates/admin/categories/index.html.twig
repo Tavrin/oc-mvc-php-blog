@@ -2,7 +2,7 @@
 
 {% block main %}
     <main>
-        <div class="maw-90 m-auto mt-3 mb-3 d-f fd-c">
+        <div id="table-page">
             <section class="w-100 m-auto pt-3">
                 <div class="ta-l">
                     <h1 class="fw-600">Catégories</h1>
@@ -11,32 +11,42 @@
                     <a href="/admin/structure/categories/new" class="m-0-5 button-bb-wc br-5 fw-600">Nouvelle catégorie</a>
                 </div>
                 <div class="d-f fd-r flex-w grid-3 jc-sa mt-1 pb-3">
-                    <div class="bcg-light2 pb-1 br-10 w-100 d-f fd-c ac-c">
-                        <div class="ai-c pt-1 fs-1c3 fw-700 d-f fd-r jc-sa bcg-light3">
-                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-15">Titre</span>
-                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-15">Url</span>
-                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-15">Description</span>
-                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Date de publication</span>
-                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Date de modification</span>
-                            <span class="text-muted fs-1 tt-u mb-0-5 fw-500 fb-10">Operation</span>
+                    <div class="table-container">
+                        <div class="ai-c pt-1 fs-1c3 fw-700 d-f fd-r jc-sa bcg-light3 table-titles-desktop">
+                            <span class="table-title-item fb-15">Titre</span>
+                            <span class="table-title-item fb-15">Url</span>
+                            <span class="table-title-item fb-15">Description</span>
+                            <span class="table-title-item fb-10">Date de publication</span>
+                            <span class="table-title-item fb-10">Date de modification</span>
+                            <span class="table-title-item fb-10">Operation</span>
                         </div>
                         {% for category in content.items %}
-                            <div class="ai-c fs-1c3 fw-700 d-f fd-r jc-sa hrem-5 {% if not loop.last %} bb-dg {% endif %}">
-                                <span class="text-muted fs-1 mb-0-5 fw-500 fb-15">{{ category.name }}</span>
+                        <div class="table-row">
+                            <div class="table-titles-mobile">
+                                <span class="table-title-item fb-15">Titre</span>
+                                <span class="table-title-item fb-15">Url</span>
+                                <span class="table-title-item fb-15">Description</span>
+                                <span class="table-title-item fb-10">Date de publication</span>
+                                <span class="table-title-item fb-10">Date de modification</span>
+                                <span class="table-title-item fb-10">Operation</span>
+                            </div>
+                            <div class="table-info {% if not loop.last %} bb-dg {% endif %}">
+                                <span class="table-info-item fb-15">{{ category.name }}</span>
                                 {% if category.path is defined and category.path is not empty %}
-                                    <span class="text-muted fs-09 mb-0-5 fw-500 fb-15">{{ '/' ~ app.constants.host  ~ category.path }}</span>
+                                    <span class="table-info-item fb-15">{{ '/' ~ app.constants.host  ~ category.path }}</span>
                                 {% endif %}
-                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-15">{{ category.description }}</span>
-                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ category.publishedAt|date("d/m/Y: H:i") }}</span>
-                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">{{ category.updatedAt ? category.updatedAt|date("d/m/Y: H:i") : ''}}</span>
-                                <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">
-                                    <button class="m-0-5 button-bb-wc br-5 fw-600 js-toggle" data-type="display" data-target-id="actionDropdown{{ loop.index }}">Action</button>
+                                <span class="table-info-item fb-15">{{ category.description }}</span>
+                                <span class="table-info-item fb-10">{{ category.publishedAt|date("d/m/Y: H:i") }}</span>
+                                <span class="table-info-item fb-10">{{ category.updatedAt ? category.updatedAt|date("d/m/Y: H:i") : ''}}</span>
+                                <span class="table-info-item fb-10">
+                                    <button class="table-action-button button-bb-wc js-toggle" data-type="display" data-target-id="actionDropdown{{ loop.index }}">Action</button>
                                      <ul class="dropdown d-n" id="actionDropdown{{ loop.index }}">
                                         <li><a href="/admin/structure/categories/{{ category.slug }}/edit" class="">Modifier</a></li>
                                         <li><a href="/admin/structure/categories/{{ category.slug }}/delete" class="">Supprimer</a></li>
                                     </ul>
                                 </span>
                             </div>
+                        </div>
                         {% endfor %}
                     </div>
                     <div>

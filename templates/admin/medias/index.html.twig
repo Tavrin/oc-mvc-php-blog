@@ -12,17 +12,14 @@
                 </div>
                 <div class="d-f fd-r flex-w grid-3 jc-fs mt-1 pb-3">
                     {% for media in content.items %}
-                        <div class="bcg-light3 p-1 br-10 w-15 d-f fd-c ac-c ml-1 mr-1">
+                        <div class="admin-media-item">
                             <span class="fs-1 mb-0-5 fw-700 fb-15">{{ media.name }}</span>
                             <img src="{{ media.path }}" alt="">
-
-                            <span class="text-muted fs-09 mb-0-5 fw-500 fb-10">
-                                <button class="m-0-5 button-bb-wc br-5 fw-600 js-toggle" data-type="display" data-target-id="actionDropdown{{ loop.index }}">Action</button>
+                                <button class="m-0-5 button-bb-wc br-5 fw-600 js-toggle as-c" data-type="display" data-target-id="actionDropdown{{ loop.index }}">Action</button>
                                  <ul class="dropdown d-n" id="actionDropdown{{ loop.index }}">
                                     <li><a href="/admin/structure/medias/{{ content.mediaType }}/{{ media.slug }}/edit" class="">Modifier</a></li>
                                     <li><a href="/admin/structure/medias/{{ content.mediaType }}/{{ media.slug }}/delete" class="">Supprimer</a></li>
                                 </ul>
-                            </span>
                         </div>
                         {% endfor %}
                 </div>
