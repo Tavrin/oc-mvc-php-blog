@@ -10,6 +10,10 @@ utils.closeTarget = (e, target) => {
     return target.classList.add('d-n');
 }
 
+utils.getHost = () => {
+    return data.host;
+}
+
 utils.slugify = text =>
     text
         .toString()

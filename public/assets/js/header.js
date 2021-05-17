@@ -24,8 +24,10 @@ class HeaderNav {
     toggleBurger() {
         if (this.burger) {
             window.addEventListener('mouseup', (e) => {
-                if (this.userLinks.classList.contains('active') && !this.burger.contains(e.target)) {
-                    this.setBurgerVisuals();
+                if (typeof e.origin === "undefined" || e.origin === utils.getHost()) {
+                    if (this.userLinks.classList.contains('active') && !this.burger.contains(e.target)) {
+                        this.setBurgerVisuals();
+                    }
                 }
             })
             this.burger.addEventListener('click', () => {

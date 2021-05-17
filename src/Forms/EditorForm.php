@@ -43,7 +43,7 @@ class EditorForm extends Form
             ->addSelectInput('category', $options['selection'], ['class' => 'form-control w-75', 'placeholder' => 'choisissez une catégorie', 'label' => 'catégorie :', 'targetField' => 'id', 'selected' => $category])
             ->addDateTimeInput('createdAt', ['class' => 'form-control', 'placeholder' => "Date de publication", 'value' => 'edit' === $options['type']? $entity->getCreatedAt()->format("Y-m-d\TH:i:s") : null])
             ->addDateTimeInput('updatedAt', ['class' => 'form-control', 'placeholder' => "Date de modification", 'value' => 'edit' === $options['type']? $entityUpdated : null])
-            ->addSelectInput('status', $Selection, ['class' => 'form-control w-75', 'placeholder' => 'Publié', 'label' => 'Statut :', 'targetField' => 'status', 'selected' => $selected])
+            ->addSelectInput('status', $Selection, ['class' => ' w-75 form-control', 'placeholder' => 'Publié', 'label' => 'Statut :', 'targetField' => 'status', 'selected' => $selected])
             ->addSelectInput('featured', $Selection, ['class' => 'form-control w-75', 'placeholder' => 'En vedette', 'label' => 'En vedette :', 'targetField' => 'featured', 'selected' => $selectedFeatured])
             ->addHiddenInput('mediaHiddenInput', ['entity' => false, 'class' => 'js-binder', 'required' => false,'dataAttributes' => ['type' => 'image', 'from' => 'modal', 'target' => 'previewImage']])
             ->addButton('mediaLibrary', ['class' => 'js-modal button-bb-wc m-1', 'value' => 'Galerie média', 'type' => 'button', 'dataAttributes' => ['target-modal' => 'mediaModal']])

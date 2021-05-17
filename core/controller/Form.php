@@ -21,6 +21,7 @@ use function array_key_exists;
 
 class Form
 {
+    private const DOUBLE_INDENT = '        ';
     protected Session $session;
 
     protected string $method = 'POST';
@@ -330,32 +331,13 @@ class Form
         $render = "<form action='{$this->action}' enctype='{$globalOptions['enctype']}' id='{$this->name}' method='{$this->method}' class='{$this->css}'>" . PHP_EOL;
         $render .= "    <input type=\"hidden\"  name=\"csrf\" value=\"{$token}\">" . PHP_EOL;
 
-        /** Render each field */
         foreach ($this->data as $input) {
-            if ('hidden' === $input['type']) {
-                $render .= '        ' . $input['render'] . PHP_EOL;
-            } else {
-                $render .= "    <div class='{$globalOptions['wrapperClass']} {$input['wrapperClass']}'>" . PHP_EOL;
-                if ('button' !== $input['type']) {
-                    if (isset($input['inputBeforeLabel']) && true === $input['inputBeforeLabel']) {$render .=    '        ' . $input['render'] . PHP_EOL;}
-                    $render .=    "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL;
-                }
-                if (!isset($input['inputBeforeLabel']) || (isset($input['inputBeforeLabel']) && false === $input['inputBeforeLabel'])) {
-                    $render .=    '        ' . $input['render'] . '</div>'. PHP_EOL;
-                } else {
-                    $render .=    '        </div>'. PHP_EOL;
-                }
-            }
+            $render .= $this->renderInput($input, $globalOptions);
         }
 
         $render .= "    <input type=\"hidden\"  name=\"formName\" value=\"{$this->name}\">" . PHP_EOL;
 
-        /** Submit button */
-        if (isset($this->submit) && $this->options['submit']) {
-            $render .= "    <input type=\"submit\"  class=\"{$this->submit['class']}\" value=\"{$this->submit['value']}\">" . PHP_EOL;
-        } elseif ($this->options['submit']) {
-            $render .= '    <input type="submit" class="" value="Submit">' . PHP_EOL;
-        }
+        $render .= $this->renderFormButton();
         $render .= "</form>";
         $form['render'] = $render;
         $form['data']['fields'] = $this->data;
@@ -365,6 +347,38 @@ class Form
         $form['data']['fields']['csrf'] = ['name' => 'csrf', 'value' => $token, 'type' => 'hidden'];
         $form['name'] = $this->name;
         return $form;
+    }
+
+    protected function renderFormButton(): string
+    {
+        if (isset($this->submit) && $this->options['submit']) {
+            return "    <input type=\"submit\"  class=\"{$this->submit['class']}\" value=\"{$this->submit['value']}\">" . PHP_EOL;
+        } elseif ($this->options['submit']) {
+            return '    <input type="submit" class="" value="Submit">' . PHP_EOL;
+        }
+
+        return '';
+    }
+
+    protected function renderInput($input, $globalOptions): string
+    {
+        $render = '';
+        if ('hidden' === $input['type']) {
+            $render .= self::DOUBLE_INDENT . $input['render'] . PHP_EOL;
+        } else {
+            $render .= "    <div class='{$globalOptions['wrapperClass']} {$input['wrapperClass']}'>" . PHP_EOL;
+            if ('button' !== $input['type']) {
+                if (isset($input['inputBeforeLabel']) && true === $input['inputBeforeLabel']) {$render .=    self::DOUBLE_INDENT . $input['render'] . PHP_EOL;}
+                $render .=    "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL;
+            }
+            if (!isset($input['inputBeforeLabel']) || (isset($input['inputBeforeLabel']) && false === $input['inputBeforeLabel'])) {
+                $render .=    self::DOUBLE_INDENT . $input['render'] . '</div>'. PHP_EOL;
+            } else {
+                $render .=    '        </div>'. PHP_EOL;
+            }
+        }
+
+        return $render;
     }
 
     /**
@@ -474,11 +488,7 @@ class Form
      */
     private function setDataOptions($name, $options, $type): array
     {
-        if (isset($options['required']) && false === $options['required']) {
-            $fieldData['required'] = false;
-        } else {
-            $fieldData['required'] = true;
-        }
+        $fieldData['required'] = $this->setRequiredField($options);
 
         $fieldData['result'] = '';
 
@@ -505,6 +515,15 @@ class Form
         $fieldData['id'] = $options['id'];
 
         return $fieldData;
+    }
+
+    protected function setRequiredField(array $options): bool
+    {
+        if (isset($options['required']) && false === $options['required']) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

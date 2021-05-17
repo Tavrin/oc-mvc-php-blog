@@ -33,7 +33,7 @@ export default class MediaModal {
 
     addModalData() {
         let galleryView = this.wrapper.querySelector('#gallery-view-editor');
-        this.ajaxCall('http://localhost:8001/api/medias/image').then(data => {
+        this.ajaxCall('/api/medias/image').then(data => {
             if (this.wrapper.querySelector('#ajaxStatus')) {
                 this.wrapper.querySelector('#ajaxStatus').style.display = 'none';
             }
@@ -79,6 +79,7 @@ export default class MediaModal {
                 return data.response;
             })
             .catch(function (error) {
+                console.log(error);
             });
     }
 }

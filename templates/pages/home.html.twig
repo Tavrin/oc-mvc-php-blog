@@ -5,7 +5,7 @@
         <div class="maw-70 m-auto mt-3 mb-3 d-f fd-c">
             <section id="home-presentation">
                 <div class="ta-l fb-50">
-                    <h1 class="big-title">Bonjour,<br> moi c'est {{ content.user.fullName ?? 'Etienne Doux' }}, bienvenue sur mon blog</h1>
+                    <h1 class="big-title">Bonjour,<br> moi c'est {{ content.user.fullName|default('Etienne Doux') }}, bienvenue sur mon blog</h1>
                     <h5 class="mt-0-5">Web backend / frontend / gamedev / design / digital art</h5>
                     <div class="home-buttons">
                         <a href="https://tavrin.io/portfolio">

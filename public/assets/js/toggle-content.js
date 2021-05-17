@@ -30,8 +30,10 @@ class ToggleContent {
 
     setDisplayEvent(elem) {
         window.addEventListener('mouseup', (e) => {
-            if (((this.target.classList.contains(this.toggleClass) && true === this.revertToggle) || (!this.target.classList.contains(this.toggleClass) && false === this.revertToggle)) && !elem.contains(e.target) && this.target.id !== 'editorjsChapo' && this.target.id !== 'editorjsContent') {
-                this.displayEventChanges(elem);
+            if (typeof e.origin === "undefined" || e.origin === utils.getHost()) {
+                if (((this.target.classList.contains(this.toggleClass) && true === this.revertToggle) || (!this.target.classList.contains(this.toggleClass) && false === this.revertToggle)) && !elem.contains(e.target) && this.target.id !== 'editorjsChapo' && this.target.id !== 'editorjsContent') {
+                    this.displayEventChanges(elem);
+                }
             }
         })
         elem.addEventListener('click', () => {

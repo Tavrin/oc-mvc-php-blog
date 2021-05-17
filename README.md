@@ -61,7 +61,7 @@ then use this :
 1. In the **/db** you will find a database file (db.sql)
 2. Go to your PHPMyAdmin interface
 3. Go to the Import tab
-4. Choose the sql file and import it
+4. Choose the sql file and import it, make sure the character set is utf-8
 
 You will need to create an .env.local file in the project's root folder, you will have to add the database connection information as well as the email credentials if needed. You can use the provided .env file which contains fake information as a model.
 

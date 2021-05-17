@@ -5,7 +5,6 @@ import './filler.js';
 import './modal.js';
 import './formRender.js';
 import './slider.js';
-import MediaPicker from "./editor-media-picker/mediaPicker.js";
 
 if (typeof EditorJS !== 'undefined') {
     import ('./editor.js');

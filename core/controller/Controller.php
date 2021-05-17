@@ -97,6 +97,7 @@ class Controller
 
         if ($this->request) {
             $parameters['constants']['host'] = $this->request->getHost();
+            $parameters['constants']['scheme'] = $this->request->getScheme();
         }
 
         if ($this->session->has('user')) {

@@ -15,6 +15,9 @@ class Slider {
         if (elem.dataset.type && elem.dataset.type === 'dotted') {
             this.dots = elem.querySelectorAll('.featured-dot');
         }
+    }
+
+    init() {
         this.addEvents();
         this.setOrder();
     }
@@ -63,5 +66,6 @@ class Slider {
 }
 
 document.querySelectorAll('.js-slider').forEach((element) => {
-    new Slider(element);
+    let slider = new Slider(element);
+    slider.init();
 })
