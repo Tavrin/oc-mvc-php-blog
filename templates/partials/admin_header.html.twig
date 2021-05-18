@@ -1,0 +1,32 @@
+<header class="m-auto maw-70">
+    <nav class="pt-2">
+        <a href="#" class="fw-700 h3 ff-titi js-toggle" data-target-id="categoryDropdownLinks" data-type="display" id="categoryDropdown"><i class="fas fa-bars"></i></a>
+        <ul id="categoryDropdownLinks" class=" d-f fd-r jc-sb td-n" data-toggle-class="active" data-revert-toggle="true">
+            <li>
+                <a href="/admin">Tableau de bord</a>
+            </li>
+            <li>
+                <a href="/admin/posts">Articles</a>
+            </li>
+            <li>
+                <a href="/admin/structure">Structure</a>
+            </li>
+            <li>
+                <a href="/admin/users">Utilisateurs</a>
+            </li>
+            <li>
+                <a href="/admin/comments">Commentaires</a>
+            </li>
+            <li>
+                <a href="#" class="js-toggle" data-type="display" data-target-id="configDropdown">Configuration</a>
+                <ul class="dropdown d-n" id="configDropdown">
+                    <li><a href="/admin/configuration/messages" class="">Messages</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="/">Retour au site ></a>
+            </li>
+        </ul>
+    </nav>
+    {% include 'partials/inc/breadcrumb.html.twig' %}
+</header>

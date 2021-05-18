@@ -1,0 +1,31 @@
+,
+{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "url": "{{ content.currentPath }}",
+    "name": "{{ content.title }}",
+    "inLanguage": "fr-FR",
+    "isPartOf":
+    {
+        "@type": "WebSite",
+        "url": "{{ app.constants.host }}",
+        "about": "{{  app.userconstants.site_title }}",
+        "inLanguage": "fr-FR",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "{{ app.constants.host }}recherche/?q={q}"
+            },
+            "query-input": {
+                "@type": "PropertyValueSpecification",
+                "valueRequired": true,
+                "valueName": "q"
+            }
+        }
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "{{ 'Tavrin' }}"
+    }
+}

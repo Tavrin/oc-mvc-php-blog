@@ -25,9 +25,9 @@ class SecurityListener
         $dispatcher->addListener($listenerData, $eventName);
     }
 
-    public function onRequest()
+    public function onRequest(RequestEvent $event)
     {
-        $this->security->setCSRFToken();
-        $this->security->verifyLoggedUser();
+        $kernel = $event->getKernel();
+        $this->security->verifyLoggedUser($kernel);
     }
 }

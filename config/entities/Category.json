@@ -14,12 +14,50 @@
                 "fieldName" : "name",
                 "type": "string"
             },
+        "metaTitle" :
+        {
+            "fieldName" : "meta_title",
+            "type": "string"
+        },
+        "metaDescription" :
+        {
+            "fieldName" : "meta_description",
+            "type": "string"
+        },
+        "path" :
+        {
+            "fieldName" : "path",
+            "type": "string"
+        },
+        "slug" :
+        {
+            "fieldName" : "slug",
+            "type": "string"
+        },
+        "uuid" :
+        {
+            "fieldName" : "uuid",
+            "type": "string"
+        },
+        "status":
+        {
+            "fieldName": "status",
+            "type": "bool",
+            "nullable": false
+        },
+        "media":
+        {
+            "fieldName": "media_id",
+            "type": "association",
+            "associatedEntity": "media",
+            "repository": "App\\Repository\\MediaRepository"
+        },
         "description" :
             {
                 "fieldName" : "description",
                 "type": "text"
             },
-        "publishedAt" :
+        "createdAt" :
             {
                 "fieldName" : "created_at",
                 "type": "datetime"

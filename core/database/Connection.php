@@ -5,6 +5,8 @@ namespace Core\database;
 
 use Core\Kernel;
 use PDO;
+use PDOException;
+use RuntimeException;
 
 class Connection extends PDO
 {
@@ -19,7 +21,7 @@ class Connection extends PDO
 
         try {
            return parent::__construct($dsn, (string) $user, (string) $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw $e;
         }
     }
@@ -27,25 +29,20 @@ class Connection extends PDO
     public function query($statement)
     {
         try {
-            $statement = parent::query($statement);
-            return $statement;
-        } catch (\RuntimeException $e) {
+            return parent::query($statement);
+        } catch (RuntimeException $e) {
             return $e;
         }
     }
 
     public function prepare($query, $options = array())
     {
-        $statement = parent::prepare($query, $options);
-
-        return $statement;
+        return parent::prepare($query, $options);
     }
 
     public function exec($statement)
     {
-        $result = parent::exec($statement);
-
-        return $result;
+        return parent::exec($statement);
     }
 
     public function delete($table, $conditions)

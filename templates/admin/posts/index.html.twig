@@ -1,0 +1,63 @@
+{% extends 'layout/admin_index_base.html.twig' %}
+
+
+{% block main %}
+    <main>
+        <div id="table-page">
+            <section class="w-100 m-auto pt-3">
+                <div class="ta-l">
+                    <h1 class="fw-600">Articles</h1>
+                </div>
+                <div class="ta-r">
+                    <a href="/admin/posts/new" class="m-0-5 button-bb-wc br-5 fw-600">Nouvel article</a>
+                </div>
+                <div class="d-f fd-r flex-w grid-3 jc-sa mt-1 pb-3">
+                    <div class="table-container">
+                        <div class="ai-c pt-1 fs-1c3 fw-700 d-f fd-r jc-sa bcg-light3 table-titles-desktop">
+                            <span class="table-title-item fb-15">Titre</span>
+                            <span class="table-title-item fb-15">Url</span>
+                            <span class="table-title-item fb-10">Auteur</span>
+                            <span class="table-title-item fb-10">Date de publication</span>
+                            <span class="table-title-item fb-10">Date de modification</span>
+                            <span class="table-title-item fb-10">Operation</span>
+                        </div>
+                        {% for post in content.items %}
+                        <div class="table-row">
+                            <div class="ai-c pt-1 fs-1c3 fw-700 d-f fd-c jc-sa bcg-light3 table-titles-mobile">
+                                <span class="fb-15 table-title-item">Titre</span>
+                                <span class="fb-15 table-title-item">Url</span>
+                                <span class="fb-10 table-title-item">Auteur</span>
+                                <span class="fb-10 table-title-item">Date de publication</span>
+                                <span class="fb-10 table-title-item">Date de modification</span>
+                                <span class="fb-10 table-title-item">Operation</span>
+                            </div>
+                            <div class="{% if not loop.last %} bb-dg {% endif %} table-info">
+                                <span class="fb-15 table-info-item">{{ post.title }}</span>
+                                {% if post.path is defined and post.path is not empty %}
+                                    <span class="fb-15 table-info-item">{{ '/' ~ app.constants.host ~ post.path }}</span>
+                                {% else %}
+                                    <span class="fb-15 table-info-item">{{ app.constants.host ~ '/'~ post.category.path ~ '/' ~post.slug }}</span>
+                                {% endif %}
+                                <span class="fb-10 table-info-item">{{ post.author.username }}</span>
+                                <span class="fb-10 table-info-item">{{ post.createdAt|date("d/m/Y: H:i") }}</span>
+                                <span class="fb-10 table-info-item">{{ post.updatedAt is empty ? "" : post.updatedAt|date("d/m/Y: H:i")  }}</span>
+                                <span class="fb-10 table-info-item">
+                                    <button class="button-bb-wc js-toggle table-action-button" data-type="display" id="actionButton{{ loop.index }}" data-target-id="actionDropdown{{ loop.index }}">Action</button>
+                                     <ul class="dropdown d-n" id="actionDropdown{{ loop.index }}">
+                                        <li><a href="/admin/posts/{{ post.slug }}/edit" class="">Modifier</a></li>
+                                        <li><a href="/admin/posts/{{ post.slug }}/delete" class="">Supprimer</a></li>
+                                        <li><a href="{{ post.path }}" class="">Voir</a></li>
+                                    </ul>
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div>
+                    {% include '/partials/inc/pagination.html.twig' %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+{% endblock %}

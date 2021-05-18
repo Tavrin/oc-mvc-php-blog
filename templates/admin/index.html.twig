@@ -1,1 +1,39 @@
-<h1>Bienvenue sur le panneau d'administration,  {{ user.username }}.</h1>
+{% extends 'layout/admin_index_base.html.twig' %}
+
+{% block main %}
+    <main style="min-height: 90vh">
+        <div class="maw-80 m-auto mt-3 mb-3 d-f fd-c">
+            <section class="w-100 m-auto pt-3">
+                <div class="ta-c">
+                    <h1 class="fw-600">Tableau de bord</h1>
+                </div>
+                <div class="d-f fd-r flex-w grid-3 jc-sa mt-1 pb-3">
+                    <div class="bcg-light2 p-1 br-10 w-25 w-100-xs d-f fd-c ac-c">
+                        <p class="pb-1 fs-1c3 fw-700">
+                            <span class="d-b text-muted fs-1 tt-u mb-0-5 fw-500">Articles <span class="bcg-light3 ml-0-5 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ content.posts.count ?? '?' }}</span> <a href="/admin/posts/new" class="float-r"><i class="fs-1c3 fas fa-plus-circle"></i></a></span>
+                        </p>
+                        <a href="/admin/posts" class="m-0-5 button-bb-wc br-5 fw-600 ta-c maw-50 as-c">
+                            Gérer les articles
+                        </a>
+                    </div>
+                    <div class="bcg-light2 p-1 br-10 w-25 w-100-xs d-f fd-c ac-c">
+                        <p class="pb-1 fs-1c3 fw-700">
+                            <span class="d-b text-muted fs-1 tt-u mb-0-5 fw-500">Utilisateurs <span class="bcg-light3 ml-0-5 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ content.users.count ?? '?' }}</span> <a href="/admin/users/new" class="float-r"><i class="fs-1c3 fas fa-plus-circle"></i></a></span>
+                        </p>
+                        <a href="/admin/users" class="m-0-5 button-bb-wc br-5 fw-600 ta-c maw-50 as-c">
+                            Gérer les utilisateurs
+                        </a>
+                    </div>
+                    <div class="bcg-light2 p-1 br-10 w-25 w-100-xs d-f fd-c ac-c">
+                        <p class="pb-1 fs-1c3 fw-700">
+                            <span class="d-b text-muted fs-1 tt-u mb-0-5 fw-500">Commentaires <span class="bcg-light3 ml-0-5 pl-0-5 pr-0-5 pb-O25 pt-025 br-25">{{ content.comments.count ?? '?' }}</span></span>
+                        </p>
+                        <a href="/admin/comments" class="m-0-5 button-bb-wc br-5 fw-600 ta-c maw-50 as-c">
+                            Gérer les commentaires
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+{% endblock %}

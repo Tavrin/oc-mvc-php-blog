@@ -7,21 +7,25 @@ namespace App\Manager;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Core\controller\Form;
-use Core\database\DatabaseResolver;
 use Core\database\EntityManager;
 use Core\http\Request;
+use Core\http\Session;
 use Core\security\Security;
+use Core\utils\StringUtils;
 use Ramsey\Uuid\Uuid;
 
 class UserManager
 {
+    public const USER_DEFAULT_PATH = '/membres/';
     private ?EntityManager $em;
     private Security $security;
+    private ?UserRepository $userRepository;
 
-    public function __construct(EntityManager $entityManager = null)
+    public function __construct(EntityManager $entityManager = null, UserRepository $userRepository = null)
     {
-        $this->em = $entityManager ?? DatabaseResolver::instantiateManager();
+        $this->em = $entityManager;
         $this->security = new Security();
+        $this->userRepository = $userRepository;
     }
     public function updateStatus(User $user, bool $status)
     {
@@ -55,9 +59,7 @@ class UserManager
             return false;
         }
 
-        $userRepository = new UserRepository($this->em);
-
-        $user = $userRepository->findOneBy($query, $request->getQuery($query));
+        $user = $this->userRepository->findOneBy($query, $request->getQuery($query));
 
         if (!isset($user)) {
             return false;
@@ -66,12 +68,37 @@ class UserManager
         return $user;
     }
 
+    public function saveUser(User $user, string $confirmPassword): bool
+    {
+        $user = $this->setUserData($user, true);
+        $user->setStatus(true);
+
+        if (!password_verify($confirmPassword, $user->getPassword())) {
+            return false;
+        }
+
+        $this->em->save($user);
+        $this->em->flush();
+        return true;
+    }
+
+    public function setUserData(User $user, bool $isNew = false): User
+    {
+        $user->getSlug() ? $user->setSlug(StringUtils::slugify($user->getSlug())) :  $user->setSlug(StringUtils::slugify($user->getUsername()));
+        if (true === $isNew) {
+            $user->setUuid(Uuid::uuid4()->toString());
+        }
+
+        $user->setPath(self::USER_DEFAULT_PATH . $user->getSlug());
+        return $user;
+    }
+
     public function newToken(User $user, string $operation)
     {
-        $token = Uuid::uuid4()->toString();
-        $user->setToken($token);
+        $user->setToken(Uuid::uuid4()->toString());
 
         if ('save' === $operation) {
+            $user = $this->setUserData($user, true);
             $this->em->save($user);
             $this->em->flush();
         }
@@ -85,9 +112,8 @@ class UserManager
 
     public function getUserBy(User $userTemplate, string $criteria)
     {
-        $userRepo = new UserRepository($this->em);
         $userMethod = 'get' . ucfirst($criteria);
-        $user = $userRepo->findOneBy($criteria, $userTemplate->$userMethod());
+        $user = $this->userRepository->findOneBy($criteria, $userTemplate->$userMethod());
 
         if (!isset($user)) {
             return false;
@@ -97,14 +123,21 @@ class UserManager
     }
     public function verifyUserLogin(User $userTemplate)
     {
-        $userRepo = new UserRepository($this->em);
-        $user = $userRepo->findOneBy('email', $userTemplate->getEmail());
+        $user = $this->userRepository->findOneBy('email', $userTemplate->getEmail());
 
         if (!isset($user) || !$user->getStatus() || !password_verify( $userTemplate->getPassword(), $user->getPassword())) {
             return false;
         }
 
         return $user;
+    }
+
+    public function setLastConnexion(User $user)
+    {
+        $now = new \DateTime();
+        $user->setLastConnexion(\DateTime::createFromFormat('d-m-Y H:i:s', $now->format('d-m-Y H:i:s')));
+        $this->em->update($user);
+        $this->em->flush();
     }
 
     public function updatePasswordWithConfirm(Form $userForm): bool
@@ -133,7 +166,6 @@ class UserManager
     {
         $password = $userTemplate->getPassword();
         $passwordConfirm = $userForm->getData('passwordConfirm');
-
         if (!password_verify($passwordConfirm, $password)) {
             return false;
         }
@@ -143,5 +175,16 @@ class UserManager
         $this->em->flush();
 
         return true;
+    }
+
+    public function updateUser(User $modifiedUser, Session $session): bool
+    {
+        $modifiedUser = $this->setUserData($modifiedUser);
+        $currentUser = $session->get('user');
+        $this->em->update($modifiedUser);
+        if ($modifiedUser->getId() === $currentUser->getId()) {
+            $session->set('user', $modifiedUser);
+        }
+        return $this->em->flush();
     }
 }

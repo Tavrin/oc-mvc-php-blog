@@ -4,6 +4,9 @@
 namespace App\Entity;
 
 
+use Core\utils\StringUtils;
+use DateTime;
+
 class Category
 {
     /**
@@ -12,28 +15,63 @@ class Category
     private int $id;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $name;
+    private ?string $name = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $path = null;
 
     /**
      * @var string
      */
-    private string $description;
+    private string $slug;
 
     /**
-     * @var \DateTime
+     * @var string
      */
-    private \DateTime $publishedAt;
+    private string $uuid;
 
     /**
-     * @var \DateTime
+     * @var Media|null
      */
-    private \DateTime $updatedAt;
+    private ?Media $media = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $description = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $metaTitle;
+    /**
+     * @var string|null
+     */
+    private ?string $metaDescription;
+
+    /**
+     * @var bool
+     */
+    private ?bool $status = true;
+
+    /**
+     * @var DateTime
+     */
+    private DateTime $createdAt;
+
+    /**
+     * @var DateTime|null
+     */
+    private ?DateTime $updatedAt = null;
 
     public function __construct()
     {
-        $this->publishedAt = new \DateTime();
+        $this->createdAt = new DateTime();
+        $this->status = false;
     }
 
     public function getId(): ?int
@@ -66,22 +104,96 @@ class Category
         $this->description = $description;
     }
 
-    public function getPublishedAt(): \DateTime
+    public function getMetaTitle(): ?string
     {
-        return $this->publishedAt;
+        return $this->metaTitle;
     }
 
-    public function setPublishedAt(\DateTime $publishedAt)
+    public function setMetaTitle(?string $metaTitle)
     {
-        $this->publishedAt = $publishedAt;
+        $this->metaTitle = $metaTitle;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getMetaDescription(): ?string
     {
+        return $this->metaDescription;
+    }
+
+    public function setMetaDescription(?string $metaDescription)
+    {
+        $this->metaDescription = $metaDescription;
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(string $path)
+    {
+        $this->path = $path;
+    }
+
+    public function getUuid(): string
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(string $uuid)
+    {
+        $this->uuid = $uuid;
+    }
+
+    public function getStatus(): ?bool
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?bool $status)
+    {
+        $this->status = $status;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug)
+    {
+        $this->slug = $slug;
+    }
+
+    public function setMedia(?Media $media)
+    {
+        $this->media = $media;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function getCreatedAt(): DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(DateTime $publishedAt)
+    {
+        $this->createdAt = $publishedAt;
+    }
+
+    public function getUpdatedAt(): ?DateTime
+    {
+        if (!$this->updatedAt) {
+            return null;
+        }
+
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTime $updatedAt)
+    public function setUpdatedAt(?DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }

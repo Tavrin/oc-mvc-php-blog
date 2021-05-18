@@ -39,16 +39,16 @@
               "fieldName" : "meta_description",
               "type": "string"
             },
-        "listingText" :
-            {
-              "fieldName" : "listing_text",
-              "type": "string"
-            },
         "slug" :
             {
               "fieldName" : "slug",
               "type": "string"
             },
+        "path" :
+        {
+            "fieldName" : "path",
+            "type": "string"
+        },
         "author" :
             {
               "fieldName" : "user_id",
@@ -63,7 +63,7 @@
               "associatedEntity": "category",
               "repository": "App\\Repository\\CategoryRepository"
             },
-        "publishedAt" :
+        "createdAt" :
             {
               "fieldName" : "created_at",
               "type": "datetime"
@@ -77,7 +77,19 @@
             {
               "fieldName": "status",
               "type": "boolean"
-            }
+            },
+        "featured" :
+            {
+                "fieldName": "featured",
+                "type": "boolean"
+            },
+        "media" :
+        {
+            "fieldName" : "media_id",
+            "type": "association",
+            "associatedEntity": "media",
+            "repository": "App\\Repository\\MediaRepository"
+        }
     },
     "childrenEntities" :
     {

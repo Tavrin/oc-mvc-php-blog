@@ -74,10 +74,10 @@ class EntityManager
             }
 
             $parsedData = JsonParser::parseFile($currentFile);
-            $entityData[$parsedData['table']] = $parsedData;
+            $entityData[$parsedData['name']] = $parsedData;
         }
 
-        return $entityData;
+        return array_combine(array_map('strtolower', array_keys($entityData)), $entityData);
     }
 
     public function getChildrenEntities(object $entity, array $entityData = null): ?array
@@ -162,9 +162,9 @@ class EntityManager
     }
 
     /**
-     * @return void
+     * @return bool
      */
-    public function flush()
+    public function flush(): bool
     {
         $connection = $this->getConnection();
 
@@ -173,6 +173,8 @@ class EntityManager
             $stmt->execute($statement['execute']);
             unset($this->preparedStatements[$key]);
         }
+
+        return true;
     }
 
     public function getStatements(): ?array
@@ -217,17 +219,18 @@ class EntityManager
                 continue;
             }
 
-            if (EntityEnums::TYPE_BOOL === $metadata[EntityEnums::FIELD_TYPE] && EntityEnums::TYPE_BOOL === gettype($boolValue = $entity->$currentGetMethod())) {
+            if ((EntityEnums::TYPE_BOOLEAN === $metadata[EntityEnums::FIELD_TYPE] || EntityEnums::TYPE_BOOL === $metadata[EntityEnums::FIELD_TYPE] ) && EntityEnums::TYPE_BOOLEAN === gettype($boolValue = $entity->$currentGetMethod())) {
                 true === $boolValue ? $insertedData[":{$currentField}"] = 1 : $insertedData[":{$currentField}"] = 0;
                 continue;
             }
 
             if (EntityEnums::TYPE_ASSOCIATION === $metadata[EntityEnums::FIELD_TYPE]) {
-                $insertedData[":{$currentField}"] = $entity->$currentGetMethod()->getId();
+                $associatedEntity = $entity->$currentGetMethod();
+                isset($associatedEntity) ? $insertedData[":{$currentField}"] = $associatedEntity->getId() : $insertedData[":{$currentField}"] = null;
                 continue;
             }
 
-            $data = $entity->$currentGetMethod()?:null;
+            $data = $entity->$currentGetMethod()?? null;
             $insertedData[":{$currentField}"] = $data;
         }
 
@@ -260,6 +263,7 @@ class EntityManager
 
     private function prepareDelete(array $entityData, object $entity): array
     {
+        /** @noinspection SqlResolve */
         $statement['prepare'] = 'DELETE FROM ' . $entityData[EntityEnums::TABLE_NAME] . ' WHERE id = :id';
         $statement['execute'] = [':id'=>$entity->getId()];
         return $statement;

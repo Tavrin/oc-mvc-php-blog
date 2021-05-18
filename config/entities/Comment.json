@@ -19,6 +19,11 @@
               "fieldName" : "status",
               "type": "int"
             },
+        "hidden" :
+            {
+                "fieldName" : "hidden",
+                "type": "bool"
+            },
         "post" :
             {
               "fieldName" : "post_id",
@@ -33,7 +38,17 @@
               "associatedEntity": "user",
               "repository": "App\\Repository\\UserRepository"
             },
-        "publishedAt" :
+        "slug" :
+            {
+                "fieldName" : "slug",
+                "type": "string"
+            },
+        "path" :
+            {
+                "fieldName" : "path",
+                "type": "string"
+            },
+        "createdAt" :
             {
               "fieldName" : "created_at",
               "type": "datetime"

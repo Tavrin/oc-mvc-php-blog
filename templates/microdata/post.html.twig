@@ -1,0 +1,67 @@
+,{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "name": "{{ content.post.title }}",
+    "headline": "{{ content.post.title|length > 110 ? content.post.title|slice(0, 107) ~ '...' : content.post.title }}",
+    "url": "{{ content.post.path }}",
+    "datePublished": "{{ content.post.createdAt|date("Y-m-d h:i")  }}",
+    "dateModified": "{{ (content.updatedAt ?? content.post.createdAt)|date("Y-m-d h:i")  }}",
+    "description": "{{ content.post.header }}",
+    "mainEntityOfPage": "true",
+    "author":
+    {% if content.post.author is defined and content.post.author.username is defined %}
+        {
+        "@type": "Person",
+        "name" : "{{ content.post.author.username }}"
+        {% if content.post.author.path is defined and content.post.author.path is not empty %}
+            , "url": "{{ content.post.author.path }}"
+        {% endif %}
+    {% endif %}
+    },
+    {% if content.post.category is defined and content.post.category  is not empty %}
+        "articleSection": "{{ content.post.category.name }}",
+{% endif %}
+    "isPartOf":
+    {
+        "@type": "WebPage",
+        "url": "{{ content.post.path }}",
+        "name": "{{ content.title }}",
+        "datePublished": "{{ content.post.createdAt|date("Y-m-d h:i")  }}",
+        "dateModified": "{{ (content.updatedAt ?? content.post.createdAt)|date("Y-m-d h:i")  }}",
+        "isPartOf":
+        {
+            "@type": "WebSite",
+            "url": "{{ app.constants.host }}",
+            "about": "{{  app.userconstants.site_title }}",
+            "inLanguage": "fr-FR",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "{{ app.constants.host }}recherche/?q={q}"
+                },
+                "query-input": {
+                    "@type": "PropertyValueSpecification",
+                    "valueRequired": true,
+                    "valueName": "q"
+                }
+            }
+        }
+    },
+    "inLanguage":
+        {
+            "@type": "Language",
+            "name": "french",
+            "alternateName": "fr"
+        },
+{% if content.post.media is defined and content.post.media.path is defined %}
+    "image": {
+        "@type": "imageObject",
+        "url": "{{ content.post.media.path }}"
+    },
+{% endif %}
+    "publisher": {
+    "@type": "Organization",
+    "name": "{{ 'Tavrin' }}"
+    }
+}

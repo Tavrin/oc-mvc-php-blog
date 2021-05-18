@@ -4,30 +4,40 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Forms\ChangePasswordForm;
 use App\Manager\UserManager;
+use App\Repository\CategoryRepository;
+use App\Repository\UserRepository;
+use Core\controller\Controller;
 use Core\http\Request;
 use Core\http\Response;
 
-class UserController extends \Core\controller\Controller
+class UserController extends Controller
 {
-    public function indexAction()
+    public function indexAction(string $slug): Response
     {
-        return $this->render('user/index.html.twig');
+        $userRepository = new UserRepository($this->getManager());
+        $user = $userRepository->findOneBy('slug', $slug);
+        $categoryRepository = new CategoryRepository($this->getManager());
+        $content['categories'] = $categoryRepository->findAll();
+        return $this->render('user/index.html.twig', [
+            'user' => $user,
+            'content' => $content
+        ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function settingsAction(Request $request): Response
     {
         $user = new User();
         $userManager = new UserManager($this->getManager());
-        $passwordForm = $this->createForm($user);
-        $passwordForm->addPasswordInput('oldPassword', ['entity' => false, 'required' => true, 'class' => 'form-control', 'placeholder' => 'Mot de passe actuel']);
-        $passwordForm->addPasswordInput('newPassword', ['required' => true, 'class' => 'form-control', 'placeholder' => 'Nouveau mot de passe', 'fieldName' => 'password', 'hash' => true]);
-        $passwordForm->addPasswordInput('newPasswordConfirm', ['entity' => false, 'required' => true, 'class' => 'form-control', 'label' => 'Confirmation','placeholder' => 'Confirmation de nouveau mot de passe']);
-        $passwordForm->setSubmitValue('accepter', ['class' => 'button-bb-wc']);
+        $passwordForm = new ChangePasswordForm($request, $user, $this->session, []);
 
         $passwordForm->handle($request);
 
-        if ($passwordForm->isValid) {
+        if ($passwordForm->isSubmitted && $passwordForm->isValid) {
             if ($userManager->updatePasswordWithConfirm($passwordForm)) {
                 $this->redirect('/user/settings', ['type' => 'success', 'message' => 'Modification réussie']);
             }
@@ -35,8 +45,12 @@ class UserController extends \Core\controller\Controller
             $this->redirect('/user/settings', ['type' => 'danger', 'message' => "La modification n'a pas pu aboutir"]);
         }
 
+        $categoryRepository = new CategoryRepository($this->getManager());
+        $content['categories'] = $categoryRepository->findAll();
+
         return $this->render('user/settings.html.twig', [
-            'form' => $passwordForm->renderForm()
+            'form' => $passwordForm->renderForm(),
+            'content' => $content
         ]);
     }
 }

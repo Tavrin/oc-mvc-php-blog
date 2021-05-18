@@ -1,0 +1,31 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block head %}
+    {{ parent() }}
+    {% include 'partials/inc/editor-import.html.twig' %}
+{% endblock %}
+
+{% block header %}
+    {% include 'partials/admin_header.html.twig' %}
+    {% include 'partials/inc/flash.html.twig' %}
+{% endblock %}
+
+
+{% block main %}
+{% include 'partials/inc/media_modal.html.twig' %}
+<main class="">
+    <div class="maw-70 m-auto mt-3 mb-3 d-f fd-c">
+        <section class="d-f jc-c m-auto pt-3 pb-3 mb-3">
+            <div class="ta-l">
+                <h1 class="fw-600 fs-3-5 lh-3c5">{{ content.title|default('Nouvelle catégorie') }}</h1>
+            </div>
+        </section>
+        <section class="d-f fd-c ai-c">
+            <div class="ta-r as-fs pb-2">
+                <a href="/admin/structure/categories" class="m-0-5 button-bb-wc br-5 fw-600">< Revenir aux catégories</a>
+            </div>
+            {{ form.render|raw }}
+        </section>
+    </div>
+</main>
+{% endblock %}

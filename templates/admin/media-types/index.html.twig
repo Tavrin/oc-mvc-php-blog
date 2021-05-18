@@ -1,0 +1,42 @@
+{% extends 'layout/admin_index_base.html.twig' %}
+
+{% block main %}
+    <main>
+        <div class="maw-90 m-auto mt-3 mb-3 d-f fd-c">
+            <section class="w-100 m-auto pt-3">
+                <div class="ta-l">
+                    <h1 class="fw-600">Média Types</h1>
+                </div>
+                <div class="ta-r">
+                    <a href="/admin/structure/medias/new" class="m-0-5 button-bb-wc br-5 fw-600">Nouveau type de média</a>
+                </div>
+                <div class="d-f fd-r flex-w jc-sa mt-1 pb-3">
+                    {% if content.items is defined and content.items is not empty %}
+                        {% for item in content.items %}
+                            <div class="bcg-light2 mb-0-5 p-1 br-10 w-100">
+                                <a class="w-100  d-f fd-r ai-c jc-sb" href="/admin/structure/medias/{{ item.slug }}">
+                                <div>
+                                   <h3>{{ item.name }}</h3>
+                               </div>
+                                <i class="fas fa-arrow-alt-circle-right fs-3"></i>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="maw-70 m-auto mt-3 mb-3 pt-3 d-f fd-c">
+                            <section class="d-f jc-c m-auto pt-3 pb-3 mb-3">
+                                <div class="ta-c">
+                                    <h1 class="fw-600 fs-3-5 lh-3c5">Aucun Type de média existant</h1>
+                                    <a href="/admin/structure/medias/new">
+                                        <button class="m-0-5 button-bb-wc br-5 fw-600">Créer un nouveau Media type</button>
+                                    </a>
+                                </div>
+                            </section>
+                        </div>
+                    {% endif %}
+                </div>
+
+            </section>
+        </div>
+    </main>
+{% endblock %}

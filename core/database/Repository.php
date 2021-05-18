@@ -7,11 +7,13 @@ namespace Core\database;
 abstract class Repository
 {
 
-    protected EntityManager $entityManager;
+    protected ?EntityManager $entityManager = null;
 
     protected string $entityName;
 
     protected ?array $entityData;
+
+    protected const SELECT_ALL = 'SELECT * FROM ';
 
     public function __construct(?EntityManager $entityManager, string $entityName)
     {
@@ -26,23 +28,45 @@ abstract class Repository
         $this->entityName = $entityName;
     }
 
-    public function findBy(string $row, string $criteria, array $order = null, int $limit = null): array
+    /**
+     * @throws \Exception
+     */
+    public function findBy(string $row, string $criteria, string $column = null, string $order = null, int $limit = null, int $offset = 0): array
     {
-        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData[EntityEnums::TABLE_NAME] . ' WHERE ' . $row . ' = :criteria');
+        $statement = self::SELECT_ALL . $this->entityData[EntityEnums::TABLE_NAME] . ' WHERE ' . $row . ' = :criteria';
+
+        $statement = $this->setOptionalStatements($statement, $column, $order, $limit, $offset);
+
+        $query = $this->entityManager->getConnection()->prepare($statement);
         $query->execute([':criteria'=>$criteria]);
         $results = $query->fetchAll();
         return $this->hydrateEntity($results);
     }
 
+    private function setOptionalStatements(string $statement, string $column = null, string $order = null, int $limit = null, int $offset = 0): string
+    {
+        if (isset($column, $order)) {
+            $statement .= ' ORDER BY ' . $column. ' ' . $order;
+        }
+        if (isset($limit)) {
+            $statement .= ' LIMIT ' . $offset . ',' . $limit;
+        }
+
+        return $statement;
+    }
+
     public function findOneBy(string $row, string $criteria)
     {
-        $result = $this->findBy($row, $criteria, null,1);
+        $result = $this->findBy($row, $criteria, null, null,1);
         if (empty($result)) {
             return null;
         }
         return $result[0];
     }
 
+    /**
+     * @throws \Exception
+     */
     public function hydrateEntity(array $results): array
     {
         $entities = [];
@@ -51,44 +75,76 @@ abstract class Repository
             $entities[$entityKey]->setId($result[EntityEnums::ID_FIELD_NAME]) ;
 
             foreach ($this->entityData[EntityEnums::FIELDS_CATEGORY] as $key => $field) {
-                $insertData = $result[$field[EntityEnums::FIELD_NAME]];
                 $method = "set" . ucfirst($key);
-
-                if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_DATE) {
-                    $fieldData = new \DateTime($insertData);
-                    $entities[$entityKey]->$method($fieldData);
-                    continue;
-                }
-
-                if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_ASSOCIATION) {
-                    $repository = $field[EntityEnums::ENTITY_REPOSITORY];
-                    $repository = new $repository($this->entityManager);
-                    $associatedEntity = $repository->findBy(EntityEnums::ID_FIELD_NAME, $insertData);
-                    $entities[$entityKey]->$method($associatedEntity[0]);
-                    continue;
-                }
-
-                if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_JSON) {
-                    $decodedData = json_decode($insertData);
-                    $entities[$entityKey]->$method($decodedData);
-                    continue;
-                }
-
-                $entities[$entityKey]->$method($insertData);
-
-
+                $property = $this->setProperty($result, $field);
+                $entities[$entityKey]->$method($property);
             }
         }
 
         return $entities;
     }
 
-    public function findAll($orderBy = null): array
+    private function setProperty($result, $field)
     {
-        $query = $this->entityManager->getConnection()->prepare('SELECT * FROM ' . $this->entityData[EntityEnums::TABLE_NAME]);
+        if (!isset($result[$field[EntityEnums::FIELD_NAME]])) {
+            return null;
+        }
+
+        $insertData = $result[$field[EntityEnums::FIELD_NAME]];
+
+        if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_DATE) {
+            $insertData = new \DateTime($insertData);
+        }
+
+        if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_ASSOCIATION) {
+            $insertData = $this->setAssociation($field, $insertData);
+        }
+
+        if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_JSON) {
+            $insertData = json_decode($insertData);
+        }
+
+        if ($field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_BOOLEAN || $field[EntityEnums::FIELD_TYPE] === EntityEnums::TYPE_BOOL) {
+            1 == $insertData ? $insertData = true : $insertData =  false;
+        }
+
+        return $insertData;
+    }
+
+    private function setAssociation($field, $insertData)
+    {
+        $repository = $field[EntityEnums::ENTITY_REPOSITORY];
+        $repository = new $repository($this->entityManager);
+        $associatedEntity = $repository->findBy(EntityEnums::ID_FIELD_NAME, $insertData);
+        if (isset($associatedEntity) && !empty($associatedEntity)) {
+            return $associatedEntity[0];
+        } else {
+            return null;
+        }
+    }
+
+    public function findAll(string $column = null, string $order = null, int $limit = null, int $offset = 0): array
+    {
+        $statement = self::SELECT_ALL . $this->entityData[EntityEnums::TABLE_NAME];
+        $statement = $this->setOptionalStatements($statement, $column, $order, $limit, $offset);
+
+        $query = $this->entityManager->getConnection()->prepare($statement);
         $query->execute();
         $results = $query->fetchAll();
         return $this->hydrateEntity($results);
+    }
+
+    public function count(string $row = null, string $criteria = null): array
+    {
+        $statement = 'SELECT count(*) FROM ' . $this->entityData[EntityEnums::TABLE_NAME];
+
+        if (isset($row) && isset($criteria)) {
+            $statement .= ' WHERE ' . $row . '= :criteria';
+        }
+
+        $query = $this->entityManager->getConnection()->prepare($statement);
+        $query->execute([':criteria'=>$criteria]);
+        return $query->fetchAll()[0];
     }
 
     /**

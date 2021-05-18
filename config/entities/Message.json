@@ -1,0 +1,41 @@
+{
+    "name": "message",
+    "repository": "App\\Repository\\MessageRepository",
+    "entity": "App\\Entity\\Message",
+    "table": "message",
+    "id": {
+        "type": "integer"
+    },
+    "fields": {
+        "fullName": {
+            "fieldName": "full_name",
+            "type": "string",
+            "nullable": false
+        },
+        "email": {
+            "fieldName": "email",
+            "type": "string",
+            "nullable": false
+        },
+        "content": {
+            "fieldName": "content",
+            "type": "string",
+            "nullable": false
+        },
+        "createdAt": {
+            "fieldName": "created_at",
+            "type": "datetime",
+            "nullable": false
+        },
+        "slug": {
+            "fieldName": "slug",
+            "type": "string",
+            "nullable": false
+        },
+        "uuid": {
+            "fieldName": "uuid",
+            "type": "string",
+            "nullable": false
+        }
+    }
+}

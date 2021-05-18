@@ -1,0 +1,50 @@
+{% extends 'layout/admin_index_base.html.twig' %}
+
+{% block main %}
+    <main>
+        <div id="table-page">
+            <section class="w-100 m-auto pt-3">
+                <div class="ta-l">
+                    <h1 class="fw-600">Messages de contact</h1>
+                </div>
+                <div class="d-f fd-r flex-w grid-3 jc-sa mt-1 pb-3">
+                    <div class="table-container">
+                        <div class="ai-c pt-1 fs-1c3 fw-700 d-f fd-r jc-sa bcg-light3 table-titles-desktop">
+                            <span class="table-title-item fb-15">Nom de l'auteur</span>
+                            <span class="table-title-item fb-15">Email de l'auteur</span>
+                            <span class="table-title-item fb-25">Message</span>
+                            <span class="table-title-item fb-10">Date de création</span>
+                            <span class="table-title-item fb-10">Operation</span>
+                        </div>
+                        {% for message in content.items %}
+                        <div class="table-row">
+                            <div class="ai-c pt-1 fs-1c3 fw-700 d-f fd-c jc-sa bcg-light3 table-titles-mobile">
+                                <span class="table-title-item fb-15">Nom de l'auteur</span>
+                                <span class="table-title-item fb-15">Email de l'auteur</span>
+                                <span class="table-title-item fb-25">Message</span>
+                                <span class="table-title-item fb-10">Date de création</span>
+                                <span class="table-title-item fb-10">Operation</span>
+                            </div>
+                            <div class="table-info {% if not loop.last %} bb-dg {% endif %}">
+                                <span class="table-info-item fb-15">{{ message.fullName }}</span>
+                                <span class="table-info-item fb-15">{{ message.email }}</span>
+                                <span class="table-info-item fb-25">{{ message.content }}</span>
+                                <span class="table-info-item fb-10">{{ message.createdAt|date("d/m/Y: H:i") }}</span>
+                                <span class="table-info-item fb-10">
+                                    <button class="m-0-5 button-bb-wc br-5 fw-600 js-toggle" data-type="display" data-target-id="actionDropdown{{ loop.index }}">Action</button>
+                                     <ul class="dropdown d-n" id="actionDropdown{{ loop.index }}">
+                                        <li><a href="/admin/configuration/messages/{{ message.id }}/delete" class="">Supprimer</a></li>
+                                    </ul>
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {% include '/partials/inc/pagination.html.twig' %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+{% endblock %}

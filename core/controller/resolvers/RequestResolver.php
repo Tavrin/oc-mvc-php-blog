@@ -13,7 +13,7 @@ class RequestResolver
         return Request::class === $argument['type'];
     }
 
-    public function setValue(Request $request, $argument)
+    public function setValue(Request $request, $argument): Request
     {
         return $request;
     }

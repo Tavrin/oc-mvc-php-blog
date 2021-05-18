@@ -3,6 +3,8 @@
 
 namespace App\Entity;
 
+use DateTime;
+
 class Post
 {
     /**
@@ -13,71 +15,81 @@ class Post
     /**
      * @var string|null
      */
-    private ?string $title;
+    private ?string $title = null;
 
     /**
      * @var string|null
      */
-    private ?string $header;
+    private ?string $header = null;
 
     /**
      * @var string|null
      */
-    private ?string $content;
+    private ?string $content = null;
 
     /**
      * @var array|null
      */
-    private ?array $readmore;
+    private ?array $readmore = [];
 
     /**
      * @var string|null
      */
-    private ?string $metaTitle;
+    private ?string $metaTitle = null;
 
     /**
      * @var string|null
      */
-    private ?string $metaDescription;
+    private ?string $metaDescription = null;
 
     /**
      * @var string|null
      */
-    private ?string $listingText;
+    private ?string $slug = null;
 
     /**
      * @var string|null
      */
-    private ?string $slug;
+    private ?string $path = null;
 
     /**
-     * @var User
+     * @var Media|null
      */
-    private User $author;
+    private ?Media $media = null;
+
+    /**
+     * @var User|null
+     */
+    private ?User $author = null;
 
     /**
      * @var Category|null
      */
-    private ?Category $category;
+    private ?Category $category = null;
 
     /**
-     * @var \DateTime
+     * @var DateTime|null
      */
-    private \DateTime $publishedAt;
+    private ?DateTime $createdAt = null;
 
     /**
-     * @var \DateTime|null
+     * @var DateTime|null
      */
-    private ?\DateTime $updatedAt;
+    private ?DateTime $updatedAt = null;
 
     /**
      * @var bool
      */
     private ?bool $status;
 
+    /**
+     * @var bool
+     */
+    private ?bool $featured = null;
+
     public function __construct()
     {
-        $this->publishedAt = new \DateTime();
+        $this->status = false;
     }
 
     public function getId(): ?int
@@ -150,16 +162,6 @@ class Post
         $this->metaDescription = $metaDescription;
     }
 
-    public function getListingText(): ?string
-    {
-        return $this->listingText;
-    }
-
-    public function setListingText(?string $listingText)
-    {
-        $this->listingText = $listingText;
-    }
-
     public function getSlug(): ?string
     {
         return $this->slug;
@@ -168,6 +170,16 @@ class Post
     public function setSlug(string $slug)
     {
         $this->slug = $slug;
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(string $path)
+    {
+        $this->path = $path;
     }
 
     public function getAuthor(): ?User
@@ -185,27 +197,37 @@ class Post
         return $this->category;
     }
 
-    public function setCategory(Category $category)
+    public function setCategory(?Category $category)
     {
         $this->category = $category;
     }
 
-    public function getPublishedAt(): \DateTime
+    public function setMedia(?Media $media)
     {
-        return $this->publishedAt;
+        $this->media = $media;
     }
 
-    public function setPublishedAt(\DateTime $publishedAt)
+    public function getMedia(): ?Media
     {
-        $this->publishedAt = $publishedAt;
+        return $this->media;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getCreatedAt(): ?DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTime $publishedAt)
+    {
+        $this->createdAt = $publishedAt;
+    }
+
+    public function getUpdatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTime $updatedAt)
+    public function setUpdatedAt(?DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }
@@ -215,8 +237,18 @@ class Post
         return $this->status;
     }
 
-    public function setStatus(bool $status)
+    public function setStatus(?bool $status)
     {
         $this->status = $status;
+    }
+
+    public function getFeatured(): ?bool
+    {
+        return $this->featured;
+    }
+
+    public function setFeatured(?bool $featured)
+    {
+        $this->featured = $featured;
     }
 }

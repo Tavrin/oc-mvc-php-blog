@@ -14,12 +14,7 @@ class User
     /**
      * @var string|null
      */
-    private ?string $firstName = null;
-
-    /**
-     * @var string|null
-     */
-    private ?string $lastName = null;
+    private ?string $fullName = null;
 
     /**
      * @var string|null
@@ -32,42 +27,71 @@ class User
     private ?bool $status = false;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $email;
-
-    /**
-     * @var string
-     */
-    private string $username;
-
-    /**
-     * @var string
-     */
-    private string $password;
+    private ?string $uuid = null;
 
     /**
      * @var string|null
      */
-    private ?string $token;
+    private ?string $email = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $username = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $password = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $token = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $slug = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $path = null;
 
     /**
      * @var array|null
      */
     private ?array $roles = null;
+
     /**
-     * @var \DateTime
+     * @var Media|null
      */
-    private \DateTime $publishedAt;
+    private ?Media $media = null;
+
+    /**
+     * @var \DateTime|null
+     */
+    private ?\DateTime $createdAt = null;
 
     /**
      * @var \DateTime|null
      */
     private ?\DateTime $updatedAt = null;
 
+    /**
+     * @var \DateTime|null
+     */
+    private ?\DateTime $lastConnexion = null;
+
     public function __construct()
     {
-        $this->publishedAt = new \DateTime();
+        if (!$this->getCreatedAt()) {
+            $this->createdAt = new \DateTime();
+        }
+
         $this->roles[] = 'ROLE_USER';
     }
 
@@ -81,24 +105,24 @@ class User
         $this->id = $id;
     }
 
-    public function getFirstName(): ?string
+    public function getUuid():  ?string
     {
-        return $this->firstName;
+        return $this->uuid;
     }
 
-    public function setFirstName(?string $firstName)
+    public function setUuid(string $uuid)
     {
-        $this->firstName = $firstName;
+        $this->uuid = $uuid;
     }
 
-    public function getLastName(): ?string
+    public function getFullName(): ?string
     {
-        return $this->lastName;
+        return $this->fullName;
     }
 
-    public function setLastName(?string $lastName)
+    public function setFullName(?string $fullName)
     {
-        $this->lastName = $lastName;
+        $this->fullName = $fullName;
     }
 
     public function getPresentation(): ?string
@@ -165,7 +189,7 @@ class User
     {
         $roles = $this->roles;
 
-        if (empty($roles)) {
+        if (!in_array('ROLE_USER',$roles, true)) {
             $roles[] = 'ROLE_USER';
         }
 
@@ -177,14 +201,44 @@ class User
         $this->roles = $roles;
     }
 
-    public function getPublishedAt(): ?\DateTime
+    public function getSlug(): ?string
     {
-        return $this->publishedAt;
+        return $this->slug;
     }
 
-    public function setPublishedAt(\DateTime $publishedAt)
+    public function setSlug(string $slug)
     {
-        $this->publishedAt = $publishedAt;
+        $this->slug = $slug;
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(string $path)
+    {
+        $this->path = $path;
+    }
+
+    public function setMedia(?Media $media)
+    {
+        $this->media = $media;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
     }
 
     public function getUpdatedAt(): ?\DateTime
@@ -195,5 +249,20 @@ class User
     public function setUpdatedAt(?\DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    public function getLastConnexion(): ?\DateTime
+    {
+        return $this->lastConnexion;
+    }
+
+    public function setLastConnexion(?\DateTime $lastConnexion)
+    {
+        $this->lastConnexion = $lastConnexion;
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->getRoles());
     }
 }

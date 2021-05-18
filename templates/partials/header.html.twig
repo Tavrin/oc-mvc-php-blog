@@ -1,46 +1,55 @@
-<header class="m-auto mw-70">
+<header class="m-auto maw-70">
     <nav class="">
-        <ul class="pb-1 pt-1 d-f fd-r jc-sb td-n">
+        <ul class="pb-1 ai-c pt-1 d-f fd-r jc-sb td-n">
             <li>
-                <a href="/" class="fw-700 h3 ff-titi">Etienne Doux</a>
+                <a href="/" class="top-link">Etienne Doux</a>
             </li>
             <li class="fw-700 h3 ff-titi">
-                <a href="/blog" class="fw-700 h3 ff-titi">Blog</a>
+                <a href="/blog" class="top-link">Blog</a>
             </li>
             <li class="fw-700 h3 ff-titi">
-                {% if user is defined and user is not empty %}
-                    <a href="#" class="fw-700 h3 ff-titi" id="userDropdown"><i class="fas fa-bars"></i></a>
-                    <ul class="dropdown" id="userDropdownLinks">
-                        <li><a href="/user/profile" class="">Profil</a></li>
+                {% if app.user is defined and app.user is not empty %}
+                    <a href="#" class="fw-700 h3 ff-titi" id="userDropdown"><i class="fas fa-user"></i></a>
+                    <ul class="dropdown header d-n" id="userDropdownLinks">
+                        <li><a href="/membres/{{ app.user.slug }}" class="">Profil</a></li>
                         <li><a href="/user/settings" class="">Paramètres</a></li>
                         <li><a href="/logout" class="">Déconnexion</a></li>
                     </ul>
                 {% else %}
-                    <a href="/login" class="fw-700 h3 ff-titi"><i class="fas fa-sign-in-alt"></i></a>
+                    <a href="/login" class="fw-700 h3 ff-titi d-f ai-c"><span class="fs-08 pr-0-5">Connexion</span> <i class="fas fa-sign-in-alt"></i></a>
                 {% endif %}
             </li>
         </ul>
     </nav>
     <nav class=" bt-g pt-0-5">
-        <ul class=" d-f fd-r jc-sb td-n">
+        <a href="#" class="fw-700 h3 ff-titi js-toggle" data-target-id="categoryDropdownLinks" data-type="display" id="categoryDropdown"><i class="fas fa-bars"></i></a>
+        <ul id="categoryDropdownLinks" class=" d-f fd-r jc-sb td-n" data-toggle-class="active" data-revert-toggle="true">
+            {% if content.categories is defined and content.categories is not empty %}
+                {% for category in content.categories %}
+                    <li>
+                        <a href="{{ category.path }}">{{ category.name }}</a>
+                    </li>
+                {% endfor %}
+            {% else %}
             <li>
-                Backend Dev
+                <a href="/blog/backend-dev">Backend Dev</a>
             </li>
             <li>
-                Frontend Dev
+                <a href="/blog/frontend-dev">Frontend Dev</a>
             </li>
             <li>
-                Game Dev
+                <a href="#">Game Dev</a>
             </li>
             <li>
-                Web Design
+                <a href="#">Web Design</a>
             </li>
             <li>
-                Game Design
+                <a href="#">Game Design</a>
             </li>
             <li>
-                Digital Painting
+                <a href="#">Digital Painting</a>
             </li>
+            {% endif %}
         </ul>
     </nav>
     {% include 'partials/inc/breadcrumb.html.twig' %}

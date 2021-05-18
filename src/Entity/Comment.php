@@ -5,6 +5,7 @@ namespace App\Entity;
 
 
 use App\Enums\CommentStatus;
+use DateTime;
 
 class Comment
 {
@@ -14,14 +15,29 @@ class Comment
     private int $id;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $content;
+    private ?string $content = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private int $status;
+    private ?int $status = null;
+
+    /**
+     * @var bool|null
+     */
+    private ?bool $hidden = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $slug = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $path = null;
 
     /**
      * @var Post
@@ -29,23 +45,24 @@ class Comment
     private Post $post;
 
     /**
-     * @var User
+     * @var User|null
      */
-    private User $user;
+    private ?User $user;
 
     /**
-     * @var \DateTime
+     * @var DateTime|null
      */
-    private \DateTime $publishedAt;
+    private ?DateTime $createdAt = null;
 
     /**
-     * @var \DateTime
+     * @var DateTime|null
      */
-    private \DateTime $updatedAt;
+    private ?DateTime $updatedAt = null;
 
     public function __construct()
     {
-        $this->publishedAt = new \DateTime();
+        $this->createdAt = new DateTime();
+        $this->hidden = false;
     }
 
     public function getId(): ?int
@@ -58,12 +75,12 @@ class Comment
         $this->id = $id;
     }
 
-    public function getContent(): string
+    public function getContent(): ?string
     {
         return $this->content;
     }
 
-    public function setContent(string $content)
+    public function setContent(?string $content)
     {
         $this->content = $content;
     }
@@ -73,7 +90,7 @@ class Comment
         return $this->user;
     }
 
-    public function setUser(User $user)
+    public function setUser(?User $user)
     {
         $this->user = $user;
     }
@@ -88,22 +105,42 @@ class Comment
         $this->post = $post;
     }
 
-    public function getPublishedAt(): \DateTime
+    public function getSlug(): ?string
     {
-        return $this->publishedAt;
+        return $this->slug;
     }
 
-    public function setPublishedAt(\DateTime $publishedAt)
+    public function setSlug(?string $slug)
     {
-        $this->publishedAt = $publishedAt;
+        $this->slug = $slug;
     }
 
-    public function getUpdatedAt(): \DateTime
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(?string $path)
+    {
+        $this->path = $path;
+    }
+
+    public function getCreatedAt(): ?DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getUpdatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTime $updatedAt)
+    public function setUpdatedAt(?DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }
@@ -116,5 +153,15 @@ class Comment
     public function setStatus(int $status)
     {
         $this->status = $status;
+    }
+
+    public function getHidden(): ?bool
+    {
+        return $this->hidden;
+    }
+
+    public function setHidden(bool $hidden)
+    {
+        $this->hidden = $hidden;
     }
 }

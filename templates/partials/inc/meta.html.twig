@@ -3,4 +3,9 @@
 {% else %}
     {% set title = "Mon blog - Etienne Doux" %}
 {% endif %}
+
+<meta name="description" content="{{ content.description ?? 'Tavrin.io - Le site du développeur web fullstack Etienne Doux, retrouvez ici mon blog traitant de différents sujets technique et de design ainsi que mes liens vers d\'autres projets'}}">
+
 <meta title="{{ title }}">
+<title>{{ title }}</title>
+<link rel="canonical" href="https://{{ app.constants.host }}{{ content.path ?? '/' }}">

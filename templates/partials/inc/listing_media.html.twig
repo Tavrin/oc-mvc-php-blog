@@ -1,0 +1,9 @@
+{% if post.media is defined and post.media is not empty %}
+    {% set mediaPath = post.media.path %}
+{% elseif post.category.media is defined and post.category.media is not empty %}
+    {% set mediaPath = post.category.media.path %}
+{% else %}
+    {% set mediaPath = 'http://via.placeholder.com/376x220' %}
+{% endif %}
+
+    <img src="{{ mediaPath }}" alt="" class="w-100 h-100 of-cov br-10">

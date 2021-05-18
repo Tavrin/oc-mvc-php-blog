@@ -6,6 +6,7 @@ namespace Core\commands;
 
 use Core\database\EntityEnums;
 use Core\database\EntityManager;
+use DateTime;
 
 class CreateEntityCommand extends Command
 {
@@ -56,10 +57,10 @@ class CreateEntityCommand extends Command
         $newEntity['name'] = $line;
         $newEntity['repository'] = 'App\\Repository\\' . ucfirst($newEntity['name']) . 'Repository';
         $newEntity['entity'] = 'App\\Entity\\' . ucfirst($newEntity['name']);
-
         echo 'Entity Database Table : ';
         $line = $this->getInput();
         $newEntity['table'] = $line;
+        $newEntity['id']['type'] = 'integer';
 
         echo PHP_EOL . 'Entity fields, type \'' . self::BREAK_KEYWORD . '\' when all the fields are added : ' . PHP_EOL;
 
@@ -198,7 +199,7 @@ class ' . ucfirst($newData['name']) . 'Repository extends Repository
      /**
      * @var int
      */
-     private $id;
+     private int $id;
 
 ';
 
@@ -208,7 +209,9 @@ class ' . ucfirst($newData['name']) . 'Repository extends Repository
         '    /**' . PHP_EOL .
      '    * @var ' . $type['$phpDoctype'] . PHP_EOL .
      '    */' . PHP_EOL .
-     '    private ' . $type['type'] . ' $' . $fieldName . ';' . $doubleLine;
+     '    private ' . $type['type'] . ' $' . $fieldName;
+            true === $field['nullable'] ? $data .= ' = null' : $data .= '';
+            $data .= ';' . $doubleLine;
         }
 
         $data .= '    public function getId(): ?int
@@ -246,7 +249,7 @@ class ' . ucfirst($newData['name']) . 'Repository extends Repository
         }
     }
 
-    private function getEntityTypes(array $field)
+    private function getEntityTypes(array $field): array
     {
         if ('association' === $field['type']) {
             $type = ucfirst($field['associatedEntity']);
@@ -269,7 +272,7 @@ class ' . ucfirst($newData['name']) . 'Repository extends Repository
     private function createMigrationFile(array $newData)
     {
         $doubleLine = PHP_EOL . PHP_EOL;
-        $timestamp = new \DateTime();
+        $timestamp = new DateTime();
         $timestamp = $timestamp->getTimestamp();
         $migrationTitle = 'Version' . $timestamp;
 

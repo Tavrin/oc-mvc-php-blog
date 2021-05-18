@@ -27,12 +27,15 @@ class ControllerResolver
      * @param string $controllerPath
      * @param Request|null $request
      * @param EntityManager|null $entityManager
+     * @param array $options
      * @return array
      */
     public static function createController(string $controllerPath, Request $request = null,EntityManager $entityManager = null):array
     {
         [$class, $method] = explode('::', $controllerPath, 2);
+
         $class = new $class($request, $entityManager);
+
 
         return $controller = [$class, $method];
     }

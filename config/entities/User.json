@@ -9,14 +9,9 @@
     },
     "fields" :
     {
-        "firstName" :
+        "fullName" :
             {
-              "fieldName" : "first_name",
-              "type": "string"
-            },
-        "lastName" :
-            {
-              "fieldName" : "last_name",
+              "fieldName" : "full_name",
               "type": "string"
             },
         "presentation" :
@@ -49,12 +44,35 @@
                 "fieldName" : "token",
                 "type": "string"
             },
+        "media" :
+            {
+                "fieldName" : "media_id",
+                "type": "association",
+                "associatedEntity": "media",
+                "repository": "App\\Repository\\MediaRepository"
+            },
+        "slug" :
+            {
+                "fieldName" : "slug",
+                "type": "string"
+            },
+        "path" :
+            {
+                "fieldName" : "path",
+                "type": "string"
+            },
+        "uuid":
+        {
+            "fieldName": "uuid",
+            "type": "string",
+            "nullable": false
+        },
         "roles" :
             {
               "fieldName" : "roles",
               "type": "json"
             },
-        "publishedAt" :
+        "createdAt" :
             {
               "fieldName" : "created_at",
               "type": "datetime"
@@ -63,6 +81,11 @@
             {
               "fieldName" : "updated_at",
               "type": "datetime"
-            }
+            },
+        "lastConnexion" :
+        {
+            "fieldName" : "last_connexion",
+            "type": "datetime"
+        }
     }
 }
