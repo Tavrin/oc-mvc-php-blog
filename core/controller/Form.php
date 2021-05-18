@@ -588,7 +588,7 @@ class Form
             return;
         }
 
-        if (false === $this->validateAndHydrateEntity($fieldName, $fieldData, $requestField)) {
+        if (false === $this->validateAndHydrateEntity($fieldData, $requestField)) {
             $this->errors[$fieldName]= ['error' => new FormHandleException($fieldData['type'], $fieldName, "Field ${fieldName} is not a valid entity property"), 'status' => true, 'result' => $requestField];
             return;
         }
@@ -760,7 +760,7 @@ class Form
      * @return bool
      * @throws Exception
      */
-    private function validateAndHydrateEntity(string $fieldName, array $fieldData, string $requestField): bool
+    private function validateAndHydrateEntity(array $fieldData, string $requestField): bool
     {
         $entityName = strtolower(ClassUtils::getClassNameFromObject($fieldData['entity']));
         if (!isset($this->allEntityData[$entityName]['fields'][$fieldData['fieldName']])) {

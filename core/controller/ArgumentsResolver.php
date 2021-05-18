@@ -23,7 +23,7 @@ class ArgumentsResolver
 
         foreach ($arguments as $argument) {
             foreach ($this->argumentResolvers as $resolver) {
-                if (!$resolver->checkValue($request, $argument)) {
+                if (!$resolver->checkValue($argument, $request)) {
                     continue;
                 }
 

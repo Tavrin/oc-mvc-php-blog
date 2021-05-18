@@ -44,7 +44,6 @@ class CreateEntityCommand extends Command
 
     private function getNewEntityData(array $entityData): array
     {
-
         $newEntity = [];
         echo 'Entity name : ';
         $line = $this->getInput();
@@ -102,13 +101,7 @@ class CreateEntityCommand extends Command
                     break;
                 }
 
-                if (!isset($entityData[$line])) {
-                    echo 'Associated Entity doesn\'t exist, exciting' . PHP_EOL;
-                    exit();
-                }
-                $newEntity['fields'][$currentField['name']]['associatedEntity'] = $line;
-                $newEntity['fields'][$currentField['name']]['repository'] = $entityData[$line]['repository'];
-                $newEntity['fields'][$currentField['name']]['entity'] = $entityData[$line]['entity'];
+                $newEntity['fields'][$currentField['name']] = $this->setAssociationData($entityData, $line);
                 $newEntity['hasAssociations'] = true;
             }
 
@@ -130,6 +123,20 @@ class CreateEntityCommand extends Command
         }
 
         return $newEntity;
+    }
+
+    private function setAssociationData(array $entityData, $line): array
+    {
+        if (!isset($entityData[$line])) {
+            echo 'Associated Entity doesn\'t exist, exciting' . PHP_EOL;
+            exit();
+        }
+
+        return [
+            'associatedEntity' => $line,
+            'repository' => $entityData[$line]['repository'],
+            'entity' => $entityData[$line]['entity']
+        ];
     }
 
     private function createRepoFile(array $newData)
@@ -207,7 +214,7 @@ class ' . ucfirst($newData['name']) . 'Repository extends Repository
             $type = $this->getEntityTypes($field);
             $data .=
         '    /**' . PHP_EOL .
-     '    * @var ' . $type['$phpDoctype'] . PHP_EOL .
+     '    * @var ' . $type['phpDoctype'] . PHP_EOL .
      '    */' . PHP_EOL .
      '    private ' . $type['type'] . ' $' . $fieldName;
             true === $field['nullable'] ? $data .= ' = null' : $data .= '';
@@ -258,10 +265,10 @@ class ' . ucfirst($newData['name']) . 'Repository extends Repository
         }
 
         if (true === $field['nullable']) {
-            $types['$phpDoctype'] = $type . '|null';
+            $types['phpDoctype'] = $type . '|null';
             $type = '?' . $type;
         } else {
-            $types['$phpDoctype'] = $type;
+            $types['phpDoctype'] = $type;
         }
 
         $types['type'] = $type;

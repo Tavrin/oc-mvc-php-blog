@@ -8,7 +8,7 @@ use Core\http\Request;
 
 class RequestAttributeResolver
 {
-    public function checkValue(Request $request, $argument): bool
+    public function checkValue($argument, Request $request): bool
     {
         return $request->hasAttribute($argument['name']);
     }

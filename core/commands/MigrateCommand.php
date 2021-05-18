@@ -21,7 +21,7 @@ class MigrateCommand extends Command
 
     public function execute()
     {
-        if ($this->options['latest']['value'] == true) {
+        if ($this->options['latest']['value']) {
             $this->executeLatest();
         }
     }
@@ -32,6 +32,10 @@ class MigrateCommand extends Command
         $newestFile = $files[0];
 
         $class = rtrim($newestFile, '.php');
+        if (!$class) {
+            echo 'Il n\'y a pas de fichiers de migration'.PHP_EOL;
+            exit();
+        }
 
         $class = 'Migrations\\' . $class;
 

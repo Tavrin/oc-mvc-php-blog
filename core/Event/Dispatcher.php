@@ -10,9 +10,9 @@ class Dispatcher
 
     public function dispatch(object $event, string $eventName = null)
     {
-        $listeners = $this->getListeners($eventName);
+        $listenersList = $this->getListeners($eventName);
 
-        foreach ($listeners as $listener) {
+        foreach ($listenersList as $listener) {
             $className = $listener[0];
             $methodeName = $listener[1];
             $className->$methodeName($event, $eventName);

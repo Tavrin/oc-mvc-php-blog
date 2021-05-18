@@ -37,6 +37,6 @@ class ControllerResolver
         $class = new $class($request, $entityManager);
 
 
-        return $controller = [$class, $method];
+        return [$class, $method];
     }
 }

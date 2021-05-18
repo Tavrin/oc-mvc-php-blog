@@ -38,11 +38,6 @@ class BlogController extends Controller
         ]);
     }
 
-    public function showAction()
-    {
-
-    }
-
     /**
      * @throws \Exception
      */

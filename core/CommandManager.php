@@ -29,9 +29,9 @@ class CommandManager
 
     private function addCommands(): void
     {
-        $commandList = JsonParser::parseFile(dirname(__DIR__). '/config/commands.json');
+        $commands = JsonParser::parseFile(dirname(__DIR__). '/config/commands.json');
 
-        foreach ($commandList as $command) {
+        foreach ($commands as $command) {
             $this->commandList[$command['name']] = new $command['class'];
         }
     }

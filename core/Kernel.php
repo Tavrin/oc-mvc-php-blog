@@ -76,11 +76,6 @@ class Kernel
 
     }
 
-    private function setDatabase()
-    {
-
-    }
-
     public function setDispatcher()
     {
         $this->dispatcher = new Dispatcher();
@@ -115,7 +110,6 @@ class Kernel
 
         $arguments = $this->argumentResolver->getArguments($request, $controller);
 
-       /* $this->argumentResolver->getArguments($request, $controller); */
         $response = $controller(...$arguments);
 
         if (!$response instanceof Response) {

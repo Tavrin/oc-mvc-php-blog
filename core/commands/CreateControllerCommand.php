@@ -60,36 +60,22 @@ class CreateControllerCommand extends Command
         echo 'Controller name : ';
         $line = $this->getInput();
 
-        if (file_exists($controllerPath = $controllerPath . ucfirst($line) . '.php')) {
-            echo 'Controller already exists, aborting' . PHP_EOL;
-            exit();
-        }
+        $controllerPath = $this->verifyControllerExistence($controllerPath, $line);
 
         $newController['name'] = $line;
         $newController['filepath'] = $controllerPath;
+        $newController['arguments'] = [];
+
         !empty($subfolder) ? $newController['namespace'] = self::CONTROLLER_BASE_NAMESPACE . '\\' . $subfolder : $newController['namespace'] = self::CONTROLLER_BASE_NAMESPACE;
         echo PHP_EOL . 'Adding arguments, press enter or type ' . self::BREAK_KEYWORD . 'when finished : ' . PHP_EOL;
 
         while (true) {
-            $currentArg=[];
-            echo 'Argument variable name : ';
-            $line = $this->getInput();
-            if (empty($line)) {
+            if (false === $currentArg = $this->addControllerArgument()) {
                 break;
             }
 
-            '$' == substr($line, 0, 1) ? $currentArg['name'] = $line : $currentArg['name'] = '$' . $line;
-            $newController['arguments'][$currentArg['name']] = null;
+            $newController['arguments'][$currentArg['name']] = $currentArg['type'];
 
-            echo 'Argument type : ';
-            $currentArg[$line] = $line = $this->getInput(true);
-            if (empty($line)) {
-                break;
-            }
-
-            $newController['arguments'][$currentArg['name']]['type'] = $line;
-
-            echo '-------------------------------------' . PHP_EOL;
         }
 
         echo PHP_EOL;
@@ -120,13 +106,46 @@ class CreateControllerCommand extends Command
         return $newController;
     }
 
+    private function verifyControllerExistence($controllerPath, $line)
+    {
+        if (file_exists($controllerPath = $controllerPath . ucfirst($line) . '.php')) {
+            echo 'Controller already exists, aborting' . PHP_EOL;
+            exit();
+        }
+
+        return $controllerPath;
+    }
+
+    private function addControllerArgument()
+    {
+        $currentArg= [];
+        echo 'Argument variable name : ';
+        $line = $this->getInput();
+        if (empty($line)) {
+            return false;
+        }
+
+        '$' == substr($line, 0, 1) ? $currentArg['name'] = $line : $currentArg['name'] = '$' . $line;
+
+        echo 'Argument type : ';
+        $line = $this->getInput(true);
+        if (empty($line)) {
+            return false;
+        }
+
+        $currentArg['type'] = $line;
+
+        echo '-------------------------------------' . PHP_EOL;
+        return $currentArg;
+    }
+
     private function setController(array $controllerData)
     {
         $doubleLine = PHP_EOL . PHP_EOL;
         $arguments = '';
         if (!empty($controllerData['arguments'])) {
             foreach ($controllerData['arguments'] as $name => $argument) {
-                $arguments .= $argument['type'] . ' ' . $name . ', ';
+                $arguments .= $argument . ' ' . $name . ', ';
             }
         }
 

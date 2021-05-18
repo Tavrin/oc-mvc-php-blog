@@ -48,7 +48,6 @@ class Router
 
                 if (preg_match('/{(.*?)}/', $testedRouteItem, $match)) {
                     $params[$match[1]] = $explodedUrl;
-                    continue;
                 } elseif ($explodedUrl !== $testedRouteItem) {
                     continue 2;
                 }
@@ -81,6 +80,6 @@ class Router
     {
         $pathInfo = rawurldecode($pathInfo) ?: '/';
 
-        return $trimmedPathinfo = rtrim($pathInfo, '/') ?: '/';
+        return rtrim($pathInfo, '/') ?: '/';
     }
 }
