@@ -1377,7 +1377,7 @@ margin-bottom: 3rem;
 
     .featured-item {
         margin: 0.25rem;
-        height: 20rem;
+        height: max-content;
     }
 
     .featured-item-image {

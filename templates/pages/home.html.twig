@@ -31,7 +31,9 @@
                             {% for post in content.posts %}
                                 <div class="featured-item {% if loop.first %}active{% endif %}" data-order="{{ loop.index - 1 }}">
                                     <div class="featured-item-image">
-                                        {% include'/partials/inc/listing_media.html.twig' %}
+                                        <a href="{{ post.path }}">
+                                            {% include'/partials/inc/listing_media.html.twig' %}
+                                        </a>
                                     </div>
                                     <p class="pt-1 pb-1 fs-1c3 fw-700">
                                         <span class="d-b fs-07 tt-u mb-0-5 fw-500">

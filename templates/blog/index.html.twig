@@ -14,16 +14,20 @@
 
                             <div class="post-listing">
                                 <div class="featured-item-image">
+                                    <a href="{{ post.path }}">
                                     {% include'/partials/inc/listing_media.html.twig' %}
+                                    </a>
                                 </div>
                                 <p class="pt-1 pb-1 fs-1c3 fw-700">
                                     <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">
                                         <a href="{{ post.category.path }}">{{ post.category.name }}</a>
                                         <span class="float-r"> {{ post.createdAt|date("d-m-Y") }}</span>
                                     </span>
+                                    <a href="{{ post.path }}">
                                     {{ post.title }}
+                                    </a>
                                 </p>
-                                <div class="ofw-bw lh-1c7">{{ post.header|parseEditor|raw|length > 255 ? (post.header|parseEditor(true)|striptags|slice(0, 255, true))|raw ~ '...': post.header|parseEditor(true)|raw }}</div>
+                                <div class="ofw-bw lh-1c7">{{ post.header|parseEditor|raw|length > 225 ? (post.header|parseEditor(true)|striptags|slice(0, 225, true))|raw ~ '...': post.header|parseEditor(true)|raw }}</div>
                                 <a href="{{ post.path }}" class="mt-1 button-bb-wc-2 p-1 br-5 fw-600 ta-c maw-50 as-c pos-a listing-button">
                                     Lire la suite
                                 </a>
