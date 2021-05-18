@@ -17,12 +17,27 @@ class Comment
     /**
      * @var string|null
      */
-    private ?string $content;
+    private ?string $content = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private int $status;
+    private ?int $status = null;
+
+    /**
+     * @var bool|null
+     */
+    private ?bool $hidden = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $slug = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $path = null;
 
     /**
      * @var Post
@@ -30,23 +45,24 @@ class Comment
     private Post $post;
 
     /**
-     * @var User
+     * @var User|null
      */
-    private User $user;
+    private ?User $user;
 
     /**
      * @var DateTime|null
      */
-    private ?DateTime $publishedAt;
+    private ?DateTime $createdAt = null;
 
     /**
      * @var DateTime|null
      */
-    private ?DateTime $updatedAt;
+    private ?DateTime $updatedAt = null;
 
     public function __construct()
     {
-        $this->publishedAt = new DateTime();
+        $this->createdAt = new DateTime();
+        $this->hidden = false;
     }
 
     public function getId(): ?int
@@ -74,7 +90,7 @@ class Comment
         return $this->user;
     }
 
-    public function setUser(User $user)
+    public function setUser(?User $user)
     {
         $this->user = $user;
     }
@@ -89,14 +105,34 @@ class Comment
         $this->post = $post;
     }
 
-    public function getPublishedAt(): ?DateTime
+    public function getSlug(): ?string
     {
-        return $this->publishedAt;
+        return $this->slug;
     }
 
-    public function setPublishedAt(?DateTime $publishedAt)
+    public function setSlug(?string $slug)
     {
-        $this->publishedAt = $publishedAt;
+        $this->slug = $slug;
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(?string $path)
+    {
+        $this->path = $path;
+    }
+
+    public function getCreatedAt(): ?DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
     }
 
     public function getUpdatedAt(): ?DateTime
@@ -117,5 +153,15 @@ class Comment
     public function setStatus(int $status)
     {
         $this->status = $status;
+    }
+
+    public function getHidden(): ?bool
+    {
+        return $this->hidden;
+    }
+
+    public function setHidden(bool $hidden)
+    {
+        $this->hidden = $hidden;
     }
 }

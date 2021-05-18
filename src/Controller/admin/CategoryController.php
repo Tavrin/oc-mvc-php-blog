@@ -22,13 +22,7 @@ class CategoryController extends Controller
         $categoryData = $this->getManager()->getEntityData('category');
         $categoryRepository = new CategoryRepository($this->getManager());
 
-        if (false === $query = $adminManager->initializeAndValidatePageQuery($request)) {
-            $this->redirect($request->getPathInfo() . '?page=1');
-        }
-
-        $content = $paginator->paginate($categoryRepository, $query, 8, 'created_at', 'DESC');
-
-        if ($content['actualPage'] > $content['pages']) {
+        if (false === $content = $adminManager->managePagination($request, $categoryRepository, $paginator)) {
             $this->redirect($request->getPathInfo() . '?page=1');
         }
 
@@ -112,5 +106,18 @@ class CategoryController extends Controller
             'form' => $categoryForm->renderForm(),
             'content' => $content ?? null
         ]);
+    }
+
+    public function deleteAction(Request $request, $slug)
+    {
+        $redirectPath = $request->getServer('HTTP_REFERER') ?? '/';
+        $em = $this->getManager();
+        $categoryRepository = new CategoryRepository();
+        $message = $categoryRepository->findOneBy('slug', $slug);
+
+        $em->remove($message);
+        $em->flush();
+
+        $this->redirect($redirectPath, ['type' => 'success', 'message' => 'Suppression réussie']);
     }
 }

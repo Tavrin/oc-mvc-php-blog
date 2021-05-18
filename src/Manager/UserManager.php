@@ -9,6 +9,7 @@ use App\Repository\UserRepository;
 use Core\controller\Form;
 use Core\database\EntityManager;
 use Core\http\Request;
+use Core\http\Session;
 use Core\security\Security;
 use Core\utils\StringUtils;
 use Ramsey\Uuid\Uuid;
@@ -67,14 +68,12 @@ class UserManager
         return $user;
     }
 
-    public function saveUser(object $user, string $confirmPassword): bool
+    public function saveUser(User $user, string $confirmPassword): bool
     {
-        $user->setSlug(StringUtils::slugify($user->getSlug()));
-        $user->setUuid(Uuid::uuid4()->toString());
-        $user->setPath(self::USER_DEFAULT_PATH . $user->getSlug());
+        $user = $this->setUserData($user, true);
         $user->setStatus(true);
 
-        if (!password_verify($confirmPassword, $user->getPassword()) || $user->hasRole('ROLE_ADMIN')) {
+        if (!password_verify($confirmPassword, $user->getPassword())) {
             return false;
         }
 
@@ -83,11 +82,23 @@ class UserManager
         return true;
     }
 
+    public function setUserData(User $user, bool $isNew = false): User
+    {
+        $user->getSlug() ? $user->setSlug(StringUtils::slugify($user->getSlug())) :  $user->setSlug(StringUtils::slugify($user->getUsername()));
+        if (true === $isNew) {
+            $user->setUuid(Uuid::uuid4()->toString());
+        }
+
+        $user->setPath(self::USER_DEFAULT_PATH . $user->getSlug());
+        return $user;
+    }
+
     public function newToken(User $user, string $operation)
     {
         $user->setToken(Uuid::uuid4()->toString());
 
         if ('save' === $operation) {
+            $user = $this->setUserData($user, true);
             $this->em->save($user);
             $this->em->flush();
         }
@@ -164,5 +175,16 @@ class UserManager
         $this->em->flush();
 
         return true;
+    }
+
+    public function updateUser(User $modifiedUser, Session $session): bool
+    {
+        $modifiedUser = $this->setUserData($modifiedUser);
+        $currentUser = $session->get('user');
+        $this->em->update($modifiedUser);
+        if ($modifiedUser->getId() === $currentUser->getId()) {
+            $session->set('user', $modifiedUser);
+        }
+        return $this->em->flush();
     }
 }

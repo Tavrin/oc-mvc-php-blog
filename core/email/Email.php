@@ -189,6 +189,12 @@ class Email
         }
     }
 
+    /**
+     * @throws Exception
+     * @throws \Twig\Error\SyntaxError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\LoaderError
+     */
     public function setRender($template, $parameters = [])
     {
         $this->setContent($this->twig->render($template, $parameters));

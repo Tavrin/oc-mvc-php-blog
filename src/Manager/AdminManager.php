@@ -4,8 +4,11 @@
 namespace App\Manager;
 
 
+use App\Email\ContactEmail;
+use App\Entity\Message;
 use App\Repository\CategoryRepository;
 use App\Repository\CommentRepository;
+use App\Repository\MessageRepository;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
 use Core\database\DatabaseResolver;
@@ -36,6 +39,20 @@ class AdminManager
 
         $content['comments']['items'] = $commentRepository->findAll();
         $content['comments']['count'] = count($content['comments']['items']);
+
+        return $content;
+    }
+
+    public function managePagination($request, $repository, $paginator, $limit = 5, $column = 'created_at', $order = 'DESC', $row = null, $criteria = null )
+    {
+        if (false === $query = $this->initializeAndValidatePageQuery($request)) {
+            return false;
+        }
+
+        $content = $paginator->paginate($repository, $query, $limit, $column, $order, $row, $criteria);
+        if ($content['actualPage'] > $content['pages'] && $content['pages'] > 0) {
+            return false;
+        }
 
         return $content;
     }
@@ -144,6 +161,25 @@ class AdminManager
         return $this->em->flush();
     }
 
+    public function updateEntityStatus(object $entityRepository, string $criteria, string $row, bool $hidden = false): bool
+    {
+        if (!$entity = $entityRepository->findOneBy($row, $criteria)) {
+            throw new NotFoundException();
+        }
+
+        $entity->setStatus(!$entity->getStatus());
+
+        if (true === $hidden) {
+            if ($entity->getStatus() || 1 === $entity->getStatus()) {
+                $entity->setHidden(false);
+            } elseif (!$entity->getStatus() || 0 === $entity->getStatus()) {
+                $entity->setHidden(true);
+            }
+        }
+
+        return $this->updateEntity($entity);
+    }
+
     public function findByCriteria(object $entityRepository,string $row, string $criteria, string $column = 'id', string $order = 'DESC')
     {
         return $entityRepository->findBy($row, $criteria, $column, $order);
@@ -153,5 +189,23 @@ class AdminManager
     {
         return $entityRepository->findOneBy($row, $criteria);
 
+    }
+
+    /**
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
+    public function handleContactMessage(Message $message, ContactEmail $contactEmail)
+    {
+        $message->setUuid(Uuid::uuid4()->toString());
+        $message->setSlug('message-'.$message->getUuid());
+        $message->setCreatedAt(new \DateTime())
+        ;
+        $this->em->save($message);
+        if ($this->em->flush()) {
+            $contactEmail->send();
+            return true;
+        }
+
+        return false;
     }
 }

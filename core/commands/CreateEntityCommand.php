@@ -209,7 +209,9 @@ class ' . ucfirst($newData['name']) . 'Repository extends Repository
         '    /**' . PHP_EOL .
      '    * @var ' . $type['$phpDoctype'] . PHP_EOL .
      '    */' . PHP_EOL .
-     '    private ' . $type['type'] . ' $' . $fieldName . ';' . $doubleLine;
+     '    private ' . $type['type'] . ' $' . $fieldName;
+            true === $field['nullable'] ? $data .= ' = null' : $data .= '';
+            $data .= ';' . $doubleLine;
         }
 
         $data .= '    public function getId(): ?int
@@ -257,7 +259,7 @@ class ' . ucfirst($newData['name']) . 'Repository extends Repository
 
         if (true === $field['nullable']) {
             $types['$phpDoctype'] = $type . '|null';
-            $type = '?' . $type . ' = null';
+            $type = '?' . $type;
         } else {
             $types['$phpDoctype'] = $type;
         }

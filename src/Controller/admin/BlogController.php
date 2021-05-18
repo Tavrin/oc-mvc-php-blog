@@ -27,14 +27,11 @@ class BlogController extends Controller
         $adminManager = new AdminManager($em);
         $entityData = $em->getEntityData('post');
         $paginator = new Paginator();
-        if (false === $query = $adminManager->initializeAndValidatePageQuery($request)) {
+
+        if (false === $content = $adminManager->managePagination($request, $postRepository, $paginator)) {
             $this->redirect($request->getPathInfo() . '?page=1');
         }
 
-        $content = $paginator->paginate($postRepository, $query, 5,'created_at', 'DESC');
-        if ($content['actualPage'] > $content['pages']) {
-            $this->redirect($request->getPathInfo() . '?page=1');
-        }
         $content['items'] = $adminManager->hydrateEntities($content['items'], $entityData);
         return $this->render('admin/posts/index.html.twig', [
             'content' => $content
@@ -79,8 +76,12 @@ class BlogController extends Controller
 
             $media = $editorForm->getData('mediaHiddenInput');
             if (isset($media)) {
-                $mediaRepository = new MediaRepository($em);
-                $post->setMedia($adminManager->findOneByCriteria($mediaRepository, 'path', $media));
+                if ('none' === $media) {
+                    $post->setMedia(null);
+                } else {
+                    $mediaRepository = new MediaRepository($em);
+                    $post->setMedia($adminManager->findOneByCriteria($mediaRepository, 'path', $media));
+                }
             }
 
             if ($blogManager->savePost($post, $this->getUser()) instanceof Post) {

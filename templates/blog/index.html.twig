@@ -6,43 +6,40 @@
         <div class="maw-90 m-auto mt-3 mb-3 d-f fd-c">
             <section id="home-articles" class="w-100 m-auto pt-3">
                 <div class="ta-l">
-                    <h1 class="fw-600">Tous les articles</h1>
+                    <h1 class="fw-600">{{ content.currentCategory.name ?? 'Tous les articles'}}</h1>
                 </div>
-                <div class="d-f fd-r flex-w grid-7 jc-fs mt-1 pb-3 pl-2">
+                <div class="post-listing-grid grid-7">
                     {% if content.items is defined and content.items is not empty %}
                         {% for post in content.items %}
-                            {% if post.media is defined and post.media is not empty %}
-                                {% set mediaPath = post.media.path %}
-                            {% elseif post.category.media is defined and post.category.media is not empty %}
-                                {% set mediaPath = post.category.media.path %}
-                            {% else %}
-                                {% set mediaPath = 'http://via.placeholder.com/376x220' %}
-                            {% endif %}
 
-                            <div class="w-28 hrem-35 d-f fd-c m-1-5 mb-3 p-1 bcg-white bs-1 br-5">
-                                <div class="w-100 h-60">
-                                    <img src="{{ mediaPath }}" alt="" class="w-100 h-100 of-cov br-10">
+                            <div class="post-listing">
+                                <div class="featured-item-image">
+                                    <a href="{{ post.path }}">
+                                    {% include'/partials/inc/listing_media.html.twig' %}
+                                    </a>
                                 </div>
                                 <p class="pt-1 pb-1 fs-1c3 fw-700">
                                     <span class="d-b text-muted fs-07 tt-u mb-0-5 fw-500">
                                         <a href="{{ post.category.path }}">{{ post.category.name }}</a>
                                         <span class="float-r"> {{ post.createdAt|date("d-m-Y") }}</span>
                                     </span>
+                                    <a href="{{ post.path }}">
                                     {{ post.title }}
+                                    </a>
                                 </p>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam scelerisque sem a elit suscipit dapibus. Nam sollicitudin neque nunc, nec varius risus iaculis eget. In a luctus sem, hendrerit lacinia metus...</p>
-                                <a href="/admin/users" class="mt-1 button-bb-wc-2 p-1 br-5 fw-600 ta-c maw-50 as-c">
+                                <div class="ofw-bw lh-1c7">{{ post.header|parseEditor|raw|length > 225 ? (post.header|parseEditor(true)|striptags|slice(0, 225, true))|raw ~ '...': post.header|parseEditor(true)|raw }}</div>
+                                <a href="{{ post.path }}" class="mt-1 button-bb-wc-2 p-1 br-5 fw-600 ta-c maw-50 as-c pos-a listing-button">
                                     Lire la suite
                                 </a>
                             </div>
                         {% endfor %}
                     {% else %}
                         <div class="maw-70 m-auto mt-3 mb-3 pt-3 d-f fd-c">
-                            <section id="home-presentation" class="d-f jc-c m-auto pt-3 pb-3 mb-3">
+                            <section class="d-f jc-c m-auto pt-3 pb-3 mb-3">
                                 <div class="ta-l">
-                                    <h1 class="fw-600 fs-3-5 lh-3c5">Le blog ne contient aucun article</h1>
+                                    <h2 class="fw-600 fs-3-5 lh-3c5">Aucun article</h2>
                                     <a href="/">
-                                        <button class="m-0-5 button-bb-wc br-5 fw-600">Retour à la page d'accueil</button>
+                                        <button class="m-0-5 button-bb-wc-2 br-5 fw-600">Retour à la page d'accueil</button>
                                     </a>
                                 </div>
                             </section>

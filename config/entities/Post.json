@@ -78,6 +78,11 @@
               "fieldName": "status",
               "type": "boolean"
             },
+        "featured" :
+            {
+                "fieldName": "featured",
+                "type": "boolean"
+            },
         "media" :
         {
             "fieldName" : "media_id",

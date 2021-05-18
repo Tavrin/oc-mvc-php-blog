@@ -81,6 +81,7 @@ class FormEnums
         'type' => 'datetime-local',
         'attributes' => [
             'dataAttributes',
+            'readonly',
             'max',
             'min',
             'style',
@@ -100,6 +101,18 @@ class FormEnums
             'style',
             'step',
             'value',
+            'id',
+            'class',
+        ]
+    ];
+
+    public const CHECKBOX = [
+        'type' => 'checkbox',
+        'attributes' => [
+            'dataAttributes',
+            'style',
+            'value',
+            'checked',
             'id',
             'class',
         ]
@@ -158,6 +171,7 @@ class FormEnums
         'autofocus',
         'checked',
         'disabled',
+        'checked'
     ];
 
     public const WHITELISTS = [

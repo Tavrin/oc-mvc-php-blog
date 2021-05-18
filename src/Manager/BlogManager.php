@@ -3,7 +3,9 @@
 
 namespace App\Manager;
 
+use App\Entity\Comment;
 use App\Entity\Post;
+use App\Entity\User;
 use App\Repository\CategoryRepository;
 use App\Repository\PostRepository;
 use Core\database\DatabaseResolver;
@@ -63,6 +65,42 @@ class BlogManager
         return $this->em->flush();
     }
 
+    public function hydratePost(Post $post, array $entityData): array
+    {
+        $entityArray = [];
+        foreach ($entityData['fields'] as $fieldName => $field) {
+            $method = 'get' . ucfirst($fieldName);
+            $entityArray[$fieldName] = $post->$method();
+        }
+
+        if ($entityArray['createdAt']) {
+            $entityArray['createdAt'] = $entityArray['createdAt'] ->format("Y-m-d\TH:i:s");
+        }
+        if ($entityArray['updatedAt']) {
+            $entityArray['updatedAt'] = $entityArray['updatedAt'] ->format("Y-m-d\TH:i:s");
+        }
+
+        if ($entityArray['content']) {
+            $entityArray['summary'] = $this->createSummary($entityArray['content']);
+        }
+
+        return $entityArray;
+    }
+
+    public function createSummary($content): array
+    {
+        $summary = [];
+        $content = json_decode($content, true);
+        foreach ($content['blocks'] as $key => $block) {
+            if ('header' === $block['type'] && 2 === $block['data']['level']) {
+                $summary[$key]['link'] = "#".StringUtils::slugify($block['data']['text']);
+                $summary[$key]['name'] = $block['data']['text'];
+            }
+        }
+
+        return $summary;
+    }
+
     public function validateEditor($form): bool
     {
         $header = json_decode($form->getData('header'), true);
@@ -86,5 +124,24 @@ class BlogManager
         }
 
         return $content;
+    }
+
+    public function saveComment(Comment $comment, Post $post, User $user): bool
+    {
+        if (!in_array('ROLE_USER', $user->getRoles())) {
+            throw new ForbiddenException('Action non autorisée', 403);
+        }
+
+        $randomId = substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyz'), 1, 10);
+        $comment->setSlug(StringUtils::slugify('comment-' . $randomId));
+        $comment->setPath($post->getPath().'#'.$comment->getSlug());
+        $comment->setStatus(false);
+        $comment->setHidden(false);
+        $comment->setUser($user);
+        $comment->setPost($post);
+        $comment->setCreatedAt(new \DateTime());
+
+        $this->em->save($comment);
+        return $this->em->flush();
     }
 }

@@ -48,7 +48,7 @@ class UserController extends Controller
         $em = $this->getManager();
         $adminManager = new AdminManager($em);
         $userManager = new UserManager($em);
-        $userForm = new UserEditorForm($request,$user, $this->session, ['name' => 'newUser', 'type' => 'new', 'wrapperClass' => 'mb-1']);
+        $userForm = new UserEditorForm($request,$user, $this->session, ['name' => 'newUser', 'type' => 'new', 'wrapperClass' => 'mb-1', 'isAdmin' => false]);
         $userForm->handle($request);
 
         if ($userForm->isSubmitted && $userForm->isValid) {
@@ -58,6 +58,8 @@ class UserController extends Controller
                 $user->setMedia($adminManager->findOneByCriteria($mediaRepository, 'path', $media));
             }
 
+            $isAdmin = $userForm->getData('role');
+            'true' === $isAdmin ? $user->setRoles(['ROLE_ADMIN']) : $user->setRoles([]);
             $confirmPassword = $userForm->getData('passwordConfirm');
             if (true === $userManager->saveUser($user, $confirmPassword)) {
                 $this->redirect('/admin/users?page=1', ['type' => 'success', 'message' => "Utilisateur ajouté avec succès"]);
@@ -82,13 +84,15 @@ class UserController extends Controller
     {
         $em = $this->getManager();
         $adminManager = new AdminManager($em);
+        $userManager = new UserManager($em);
 
         if (!$user = $adminManager->findOneByCriteria(new UserRepository($em), 'slug', $slug)) {
             throw new NotFoundException('The user doesn\'t exist');
         }
 
         $userName = $user->getUsername();
-        $userForm = new UserEditorForm($request,$user, $this->session, ['name' => 'newCategory', 'type' => 'edit', 'wrapperClass' => 'mb-1']);
+        $isAdmin = $user->hasRole('ROLE_ADMIN');
+        $userForm = new UserEditorForm($request,$user, $this->session, ['name' => 'newCategory', 'type' => 'edit', 'wrapperClass' => 'mb-1', 'isAdmin' => $isAdmin]);
         $userForm->handle($request);
 
         if ($userForm->isSubmitted && $userForm->isValid) {
@@ -97,8 +101,11 @@ class UserController extends Controller
                 $mediaRepository = new MediaRepository($em);
                 $user->setMedia($adminManager->findOneByCriteria($mediaRepository, 'path', $media));
             }
-            if (true === $adminManager->updateEntity($user)) {
-                $this->redirect('/admin/users', ['type' => 'success', 'message' => "Utilisateur {$userName} modifiée avec succès"]);
+
+            $isAdmin = $userForm->getData('role');
+            'true' === $isAdmin ? $user->setRoles(['ROLE_ADMIN']) : $user->setRoles([]);
+            if (true === $userManager->updateUser($user, $this->session)) {
+                $this->redirect('/admin/users?page=1', ['type' => 'success', 'message' => "Utilisateur {$userName} modifié avec succès"]);
             } else {
                 $this->redirect('/admin/users/' . $slug . '/edit', ['type' => 'danger', 'message' => "L'utilisateur n'a pas pu être modifié"]);
             }

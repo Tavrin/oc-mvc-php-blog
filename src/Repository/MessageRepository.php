@@ -5,10 +5,10 @@ namespace App\Repository;
 use Core\database\EntityManager;
 use Core\database\Repository;
 
-class CategoryMediaRepository extends Repository
+class MessageRepository extends Repository
 {
     public function __construct(?EntityManager $entityManager = null)
     {
-        parent::__construct($entityManager, 'categoryMedia');
+        parent::__construct($entityManager, 'message');
     }
 }

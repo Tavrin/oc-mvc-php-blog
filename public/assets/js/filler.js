@@ -22,15 +22,27 @@ class Filler {
 
     fillEmptyImage(elem) {
         let item = document.createElement('img');
+        let button = document.createElement('button');
+        button.textContent = 'Supprimer l\'image';
+        button.type = 'button';
+        button.classList.add('button-bb-wc','mt-0-5');
         item.id = this.id;
         item.alt= "Image preview";
         item.src = this.src;
         item.classList = (this.class);
         if ('http://:0/' === item.src) {
             item.classList.add('d-n');
+            elem.classList.add('d-n');
         }
 
         elem.appendChild(item);
+        elem.appendChild(button);
+
+        button.addEventListener('click', () => {
+            let mediaHiddenInput = document.querySelector('#mediaHiddenInput');
+            elem.classList.add('d-n');
+            mediaHiddenInput.value = 'none';
+        })
     }
 }
 

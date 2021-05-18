@@ -82,10 +82,14 @@ class Post
      */
     private ?bool $status;
 
+    /**
+     * @var bool
+     */
+    private ?bool $featured = null;
+
     public function __construct()
     {
         $this->status = false;
-        $this->createdAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -236,5 +240,15 @@ class Post
     public function setStatus(?bool $status)
     {
         $this->status = $status;
+    }
+
+    public function getFeatured(): ?bool
+    {
+        return $this->featured;
+    }
+
+    public function setFeatured(?bool $featured)
+    {
+        $this->featured = $featured;
     }
 }

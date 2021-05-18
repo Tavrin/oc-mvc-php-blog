@@ -3,6 +3,8 @@
 
 namespace Core\controller;
 
+use App\Entity\User;
+use App\Twig\TwigExtension;
 use Core\database\EntityManager;
 use Core\http\Request;
 use Core\http\Session;
@@ -18,7 +20,7 @@ class Controller
     protected const CONFIG_DIR = ROOT_DIR . '/config/';
     protected Environment $twig;
 
-    private ?EntityManager $entityManager;
+    protected ?EntityManager $entityManager;
 
     protected Session $session;
 
@@ -52,6 +54,8 @@ class Controller
                 'debug' => false
             ]);
         }
+        $this->twig->addExtension(new TwigExtension());
+
     }
     protected function render(string $template = null, array $parameters = [], Response $response = null): Response
     {
@@ -63,13 +67,10 @@ class Controller
             $response = new Response();
         }
         $parameters['flash'] = $this->session->getAllFlash();
-        if ($this->session->has('user')) {
-            $parameters['user'] = $this->session->get('user');
-        }
 
-        $parameters['app'] = $this->getConstants();
-        $parameters['app']['path'] = $this->request->getAttribute('breadcrumb');
-        $parameters['app']['currentPath'] = $this->request->getPathInfo();
+
+        $parameters['app'] = $this->getAppParameters();
+
         $this->setControllerContent($template, $parameters);
 
         $response->setContent($this->renderContent);
@@ -87,18 +88,26 @@ class Controller
         return $this->renderContent;
     }
 
-    public function getConstants(): array
+    public function getAppParameters(): array
     {
-        $constants = [];
+        $parameters = [];
         if ($configConstants = JsonParser::parseFile(self::CONFIG_DIR . '/constants.json')) {
-            $constants['userConstants'] = $configConstants;
+            $parameters['userConstants'] = $configConstants;
         }
 
         if ($this->request) {
-            $constants['constants']['host'] = $this->request->getHost();
+            $parameters['constants']['host'] = $this->request->getHost();
+            $parameters['constants']['scheme'] = $this->request->getScheme();
         }
 
-        return $constants;
+        if ($this->session->has('user')) {
+            $parameters['user'] = $this->session->get('user');
+        }
+
+        $parameters['breadcrumb'] = $this->request->getAttribute('breadcrumb');
+        $parameters['currentPath'] = $this->request->getPathInfo();
+
+        return $parameters;
     }
 
     public function sendJson(array $data, int $status = 200): Response
@@ -118,13 +127,7 @@ class Controller
         }
     }
 
-    protected function get404()
-    {
-        header("location:/error");
-        exit();
-    }
-
-    protected function getUser()
+    protected function getUser(): ?User
     {
         return $this->security->getUser();
     }
@@ -152,8 +155,8 @@ class Controller
         return new Form($this->request, $entity, $this->session, $options);
     }
 
-    protected function flashMessage(string $key, string $message)
+    protected function flashMessage(string $type, string $message)
     {
-        $this->session->addFlash($key, $message);
+        $this->session->addFlash($type, $message);
     }
 }

@@ -135,7 +135,12 @@ class Modal {
     }
 
     modalButtonGetMedias(e) {
+        this.target.classList.toggle('d-n');
         let inputTarget = document.querySelector('#mediaHiddenInput');
+        let divShow = document.querySelector('#mediaShow');
+        if (divShow.classList.contains('d-n')) {
+            divShow.classList.remove('d-n');
+        }
         inputTarget.value = e.dataset.path;
         let event = new Event('change');
         inputTarget.dispatchEvent(event);

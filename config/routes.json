@@ -10,6 +10,11 @@
         "controller": "App\\Controller\\BlogController::indexAction"
     },
     {
+        "route": "blog_show",
+        "path": "/blog/{category}/{slug}",
+        "controller": "App\\Controller\\BlogController::showAction"
+    },
+    {
         "route": "blog_category",
         "path": "/blog/{category}",
         "controller": "App\\Controller\\BlogController::categoryAction"
@@ -45,6 +50,16 @@
         "controller": "App\\Controller\\admin\\IndexController::structureAction"
     },
     {
+        "route": "admin_messages",
+        "path": "/admin/configuration/messages",
+        "controller": "App\\Controller\\admin\\ConfigController::messageIndexAction"
+    },
+    {
+        "route": "delete_message",
+        "path": "/admin/configuration/messages/{id}/delete",
+        "controller": "App\\Controller\\admin\\ConfigController::messageDeleteAction"
+    },
+    {
         "route": "admin_categories",
         "path": "/admin/structure/categories",
         "controller": "App\\Controller\\admin\\CategoryController::indexAction"
@@ -58,6 +73,11 @@
         "route": "edit_category",
         "path": "/admin/structure/categories/{slug}/edit",
         "controller": "App\\Controller\\admin\\CategoryController::editAction"
+    },
+    {
+        "route": "delete_category",
+        "path": "/admin/structure/categories/{slug}/delete",
+        "controller": "App\\Controller\\admin\\CategoryController::deleteAction"
     },
     {
         "route": "admin_users",
@@ -78,6 +98,16 @@
         "route": "delete_user",
         "path": "/admin/users/{slug}/delete",
         "controller": "App\\Controller\\admin\\UserController::deleteAction"
+    },
+    {
+        "route": "admin_comments",
+        "path": "/admin/comments",
+        "controller": "App\\Controller\\admin\\CommentController::indexAction"
+    },
+    {
+        "route": "comment_status",
+        "path": "/admin/comments/{slug}/updatestatus",
+        "controller": "App\\Controller\\admin\\CommentController::statusAction"
     },
     {
         "route": "admin_mediaTypes",
@@ -162,7 +192,12 @@
     },
     {
         "route": "profile",
-        "path": "/user/profile",
+        "path": "/membres/{slug}",
         "controller": "App\\Controller\\UserController::indexAction"
+    },
+    {
+        "route": "mentions",
+        "path": "/mentions-legales",
+        "controller": "App\\Controller\\IndexController::legalAction"
     }
 ]

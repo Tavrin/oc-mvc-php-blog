@@ -28,6 +28,9 @@ abstract class Repository
         $this->entityName = $entityName;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function findBy(string $row, string $criteria, string $column = null, string $order = null, int $limit = null, int $offset = 0): array
     {
         $statement = self::SELECT_ALL . $this->entityData[EntityEnums::TABLE_NAME] . ' WHERE ' . $row . ' = :criteria';

@@ -28,12 +28,12 @@ class MediaController extends Controller
         $adminManager = new AdminManager($em);
         $mediaData = $em->getEntityData('media');
         $mediaType = $adminManager->findOneByCriteria(new MediaTypeRepository($em), 'slug', $type);
-        if (false === $query = $adminManager->initializeAndValidatePageQuery($request)) {
-            $this->redirect($request->getPathInfo() . '?page=1');
-        }
 
-        $content = $paginator->paginate($mediaRepository, $query, 16,'created_at', 'DESC', $mediaData['fields']['type']['fieldName'], $mediaType->getId());
-        if ($content['actualPage'] > $content['pages']) {
+
+        if (!$mediaType) {
+            $this->redirect('/admin/structure/medias?page=1', ['type' => 'danger', 'message' => 'ce type de média n\'existe pas']);
+        }
+        if (false === $content = $adminManager->managePagination($request, $mediaRepository, $paginator, 16, 'created_at', 'DESC', $mediaData['fields']['type']['fieldName'], $mediaType->getId() )) {
             $this->redirect($request->getPathInfo() . '?page=1');
         }
 
@@ -126,7 +126,15 @@ class MediaController extends Controller
         $redirectPath = $request->getServer('HTTP_REFERER') ?? '/';
         $adminManager = new AdminManager($this->getManager());
         $mediaRepository = new MediaRepository($this->getManager());
-        $adminManager->deleteEntity($mediaRepository, $slug, 'slug');
+
+        if (!$media = $mediaRepository->findOneBy('slug', $slug)) {
+            throw new NotFoundException();
+        }
+
+        $oldFile = new PublicFile($media->getPath());
+        $oldFile->delete();
+        $this->getManager()->remove($media);
+        $this->getManager()->flush();
 
         $this->redirect($redirectPath, ['type' => 'success', 'message' => 'Suppression réussie']);
     }

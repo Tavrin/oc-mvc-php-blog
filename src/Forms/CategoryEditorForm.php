@@ -26,7 +26,7 @@ class CategoryEditorForm extends \Core\controller\Form
             ->addHiddenInput('mediaHiddenInput', ['entity' => false, 'class' => 'js-binder', 'value' => 'edit' === $options['type']? $media : '', 'dataAttributes' => ['type' => 'image', 'from' => 'modal', 'target' => 'previewImage']])
             ->addButton('mediaLibrary', ['class' => 'js-modal button-bb-wc m-1', 'value' => 'Galerie média', 'type' => 'button', 'dataAttributes' => ['target-modal' => 'mediaModal']])
             ->addDiv('mediaShow', ['class' => 'hrem-6 js-filler', 'dataAttributes' => ['type' => 'image', 'id' => 'previewImage', 'class' => 'mh-100 mw-100', 'src' => 'edit' === $options['type']? $media : ''], 'wrapperClass' => 'mt-1', 'label' => 'Prévisualisation de l\'image'])
-            ->addTextareaInput('description',['class' => 'form-control', 'placeholder' => "Description de la catégorie", 'value' => 'edit' === $options['type']? $entity->getDescription() : '', 'label' => 'Description', 'rows' => 5])
+            ->addTextareaInput('description',['class' => 'form-control', 'required' => false,'placeholder' => "Description de la catégorie", 'value' => 'edit' === $options['type']? $entity->getDescription() : '', 'label' => 'Description', 'rows' => 5])
             ->setSubmitValue('accepter', ['class' => 'button-bb-wc mt-1 ta-c']);
     }
 }

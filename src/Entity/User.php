@@ -14,12 +14,7 @@ class User
     /**
      * @var string|null
      */
-    private ?string $firstName = null;
-
-    /**
-     * @var string|null
-     */
-    private ?string $lastName = null;
+    private ?string $fullName = null;
 
     /**
      * @var string|null
@@ -32,24 +27,24 @@ class User
     private ?bool $status = false;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $uuid;
+    private ?string $uuid = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $email;
+    private ?string $email = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $username;
+    private ?string $username = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $password;
+    private ?string $password = null;
 
     /**
      * @var string|null
@@ -59,12 +54,12 @@ class User
     /**
      * @var string|null
      */
-    private ?string $slug;
+    private ?string $slug = null;
 
     /**
      * @var string|null
      */
-    private ?string $path;
+    private ?string $path = null;
 
     /**
      * @var array|null
@@ -110,7 +105,7 @@ class User
         $this->id = $id;
     }
 
-    public function getUuid(): string
+    public function getUuid():  ?string
     {
         return $this->uuid;
     }
@@ -120,24 +115,14 @@ class User
         $this->uuid = $uuid;
     }
 
-    public function getFirstName(): ?string
+    public function getFullName(): ?string
     {
-        return $this->firstName;
+        return $this->fullName;
     }
 
-    public function setFirstName(?string $firstName)
+    public function setFullName(?string $fullName)
     {
-        $this->firstName = $firstName;
-    }
-
-    public function getLastName(): ?string
-    {
-        return $this->lastName;
-    }
-
-    public function setLastName(?string $lastName)
-    {
-        $this->lastName = $lastName;
+        $this->fullName = $fullName;
     }
 
     public function getPresentation(): ?string
@@ -204,7 +189,7 @@ class User
     {
         $roles = $this->roles;
 
-        if (empty($roles)) {
+        if (!in_array('ROLE_USER',$roles, true)) {
             $roles[] = 'ROLE_USER';
         }
 

@@ -1,0 +1,34 @@
+{% if '/' == app.currentPath %}
+
+{
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "url": "{{ app.constants.host }}",
+    "about": "{{ content.title }}",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ app.constants.host }}recherche/?q={q}",
+        "query-input": {
+        "@type": "PropertyValueSpecification",
+        "valueRequired": true,
+        "valueName": "q"
+        }
+    }
+},
+{% endif %}
+{
+    "@context": "http://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {% for breadcrumb in app.breadcrumb %}
+        {
+        "@type": "ListItem",
+        "position": {{ loop.index}},
+        "item": {
+        "@id": "{{ app.constants.host ~ breadcrumb.path }}",
+        "name": "{{ breadcrumb.name }}"
+        }
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]
+}

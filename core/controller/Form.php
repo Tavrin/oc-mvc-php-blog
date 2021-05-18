@@ -21,6 +21,7 @@ use function array_key_exists;
 
 class Form
 {
+    private const DOUBLE_INDENT = '        ';
     protected Session $session;
 
     protected string $method = 'POST';
@@ -33,7 +34,7 @@ class Form
 
     protected string $css = '';
 
-    protected object $entity;
+    protected ?object $entity = null;
 
     protected array $allEntityData = [];
 
@@ -63,7 +64,7 @@ class Form
             $this->method = $options['method'];
         }
 
-        isset($options['name']) ? $this->name = $options['name'] : false;
+        isset($options['name']) ? $this->name = $options['name'] : $this->name = 'defaultForm';
         (isset($options['submit']) && !$options['submit']) ? $this->options['submit'] = false : $this->options['submit'] = true;
         isset($options['wrapperClass']) ? $this->options['wrapperClass'] = $options['wrapperClass'] : $this->options['wrapperClass'] = '';
         isset($options['errorClass']) ? $this->options['errorClass'] = $options['errorClass'] : $this->options['errorClass'] = null;
@@ -189,10 +190,10 @@ class Form
             $selected = '';
             if (is_array($item) && isset($item['id'])) {
                 if (isset($options['selected']) && $options['selected'] === $item['id']) {
-                    $selected = 'selected="' . $item['id'] . '"';
+                    $selected = 'selected';
                 } elseif ($this->session->has('formData') && $formData = $this->session->get('formData')) {
                     if (array_key_exists($name, $formData['data']) && $this->name === $formData['formName']) {
-                        $selected = 'selected="' . $formData['data'][$name]. '"';
+                        $selected = 'selected';
                     }
                 }
 
@@ -214,6 +215,19 @@ class Form
         $this->setData(FormEnums::HIDDEN, $name, $options);
 
          return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     * @return $this
+     */
+    public function addCheckbox(string $name, array $options = []): Form
+    {
+        $options['type'] = 'checkbox';
+        $this->setData(FormEnums::CHECKBOX, $name, $options);
+
+        return $this;
     }
 
     /**
@@ -317,25 +331,13 @@ class Form
         $render = "<form action='{$this->action}' enctype='{$globalOptions['enctype']}' id='{$this->name}' method='{$this->method}' class='{$this->css}'>" . PHP_EOL;
         $render .= "    <input type=\"hidden\"  name=\"csrf\" value=\"{$token}\">" . PHP_EOL;
 
-        /** Render each field */
         foreach ($this->data as $input) {
-            if ('hidden' === $input['type']) {
-                $render .= '        ' . $input['render'] . PHP_EOL;
-            } else {
-                $render .= "    <div class='{$globalOptions['wrapperClass']} {$input['wrapperClass']}'>" . PHP_EOL;
-                if ('button' !== $input['type']) {$render .=    "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL;}
-                $render .=    '        ' . $input['render'] . '</div>'. PHP_EOL;
-            }
+            $render .= $this->renderInput($input, $globalOptions);
         }
 
         $render .= "    <input type=\"hidden\"  name=\"formName\" value=\"{$this->name}\">" . PHP_EOL;
 
-        /** Submit button */
-        if (isset($this->submit) && $this->options['submit']) {
-            $render .= "    <input type=\"submit\"  class=\"{$this->submit['class']}\" value=\"{$this->submit['value']}\">" . PHP_EOL;
-        } elseif ($this->options['submit']) {
-            $render .= '    <input type="submit" class="" value="Submit">' . PHP_EOL;
-        }
+        $render .= $this->renderFormButton();
         $render .= "</form>";
         $form['render'] = $render;
         $form['data']['fields'] = $this->data;
@@ -345,6 +347,38 @@ class Form
         $form['data']['fields']['csrf'] = ['name' => 'csrf', 'value' => $token, 'type' => 'hidden'];
         $form['name'] = $this->name;
         return $form;
+    }
+
+    protected function renderFormButton(): string
+    {
+        if (isset($this->submit) && $this->options['submit']) {
+            return "    <input type=\"submit\"  class=\"{$this->submit['class']}\" value=\"{$this->submit['value']}\">" . PHP_EOL;
+        } elseif ($this->options['submit']) {
+            return '    <input type="submit" class="" value="Submit">' . PHP_EOL;
+        }
+
+        return '';
+    }
+
+    protected function renderInput($input, $globalOptions): string
+    {
+        $render = '';
+        if ('hidden' === $input['type']) {
+            $render .= self::DOUBLE_INDENT . $input['render'] . PHP_EOL;
+        } else {
+            $render .= "    <div class='{$globalOptions['wrapperClass']} {$input['wrapperClass']}'>" . PHP_EOL;
+            if ('button' !== $input['type']) {
+                if (isset($input['inputBeforeLabel']) && true === $input['inputBeforeLabel']) {$render .=    self::DOUBLE_INDENT . $input['render'] . PHP_EOL;}
+                $render .=    "        <label for='{$input['id']}'>{$input['label']}</label>" . PHP_EOL;
+            }
+            if (!isset($input['inputBeforeLabel']) || (isset($input['inputBeforeLabel']) && false === $input['inputBeforeLabel'])) {
+                $render .=    self::DOUBLE_INDENT . $input['render'] . '</div>'. PHP_EOL;
+            } else {
+                $render .=    '        </div>'. PHP_EOL;
+            }
+        }
+
+        return $render;
     }
 
     /**
@@ -378,10 +412,10 @@ class Form
 
         if ('textarea' === $type['type'] || 'button' === $type['type'] || 'div' === $type['type']) {
             if(isset($options['value'])) {
-                $input .= PHP_EOL . $options['value'];
+                $input .= $options['value'];
             }
 
-            $input .= PHP_EOL . "</{$type['type']}>";
+            $input .= "</{$type['type']}>";
         }
 
         $fieldData = $this->setDataOptions($name, $options, $type);
@@ -454,11 +488,7 @@ class Form
      */
     private function setDataOptions($name, $options, $type): array
     {
-        if (isset($options['required']) && false === $options['required']) {
-            $fieldData['required'] = false;
-        } else {
-            $fieldData['required'] = true;
-        }
+        $fieldData['required'] = $this->setRequiredField($options);
 
         $fieldData['result'] = '';
 
@@ -466,23 +496,34 @@ class Form
             $fieldData['whitelist'] = $options['whitelist'];
         }
 
+        isset($options['inputBeforeLabel']) ? $fieldData['inputBeforeLabel'] = $options['inputBeforeLabel'] : $fieldData['inputBeforeLabel'] = false;
         isset($options['error']) ? $fieldData['error'] = $options['error'] : $fieldData['error'] = null;
         isset($options['sanitize']) ? $fieldData['sanitize'] = $options['sanitize'] : $fieldData['sanitize'] = true;
-        isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : false;
+        isset($options['hash']) ? $fieldData['hash'] = $options['hash'] : $fieldData['hash'] = null;
         isset($options['entity']) ? $fieldData['entity'] = $options['entity'] : $fieldData['entity'] = $this->entity;
         isset($options['value']) ? $fieldData['value'] = $options['value'] : $fieldData['value'] = null;
+        isset($options['modifyIfEmpty']) ? $fieldData['modifyIfEmpty'] = $options['modifyIfEmpty'] : $fieldData['modifyIfEmpty'] = null;
         isset($options['class']) ? $fieldData['class'] = explode(' ', $options['class']) : $fieldData['class'] = null;
-        isset($options['targetField']) ? $fieldData['targetField'] = $options['targetField'] : false;
+        isset($options['targetField']) ? $fieldData['targetField'] = $options['targetField'] : $fieldData['targetField'] = null;
         isset($options['fieldName']) ? $fieldData['fieldName'] = $options['fieldName'] : $fieldData['fieldName'] = $name;
-        isset($options['type']) ? $fieldData['type'] = $options['type'] : false;
+        isset($options['type']) ? $fieldData['type'] = $options['type'] : $fieldData['type'] = null;
         isset($options['placeholder']) ? $fieldData['placeholder'] = $options['placeholder'] : $fieldData['placeholder'] = $name;
         isset($options['label']) ? $fieldData['label'] = $options['label'] : $fieldData['label'] = $fieldData['placeholder'];
         isset($options['wrapperClass']) ? $fieldData['wrapperClass'] = $options['wrapperClass'] : $fieldData['wrapperClass'] = '';
         isset($options['dataAttributes']) ? $fieldData['dataAttributes'] = $options['dataAttributes'] : $fieldData['dataAttributes'] = null;
-        isset($options['property']) ? $fieldData['property'] = $options['property'] : false;
+        isset($options['property']) ? $fieldData['property'] = $options['property'] : $fieldData['property'] = null;
         $fieldData['id'] = $options['id'];
 
         return $fieldData;
+    }
+
+    protected function setRequiredField(array $options): bool
+    {
+        if (isset($options['required']) && false === $options['required']) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -533,6 +574,9 @@ class Form
             $this->isValid = true;
     }
 
+    /**
+     * @throws Exception
+     */
     private function checkField($fieldName, $fieldData, $currentRequest)
     {
         if (false === $requestField = $this->validateAndSanitizeRequest($fieldData, $fieldName, $currentRequest)) {
@@ -602,7 +646,7 @@ class Form
             $fileError = $this->validateFileWhitelist($newFileData, $fieldData);
         }
 
-        if (($newFileData['type'] !== $currentField['type'] || mb_strlen($newFileData['name'] > 250) || 0 === $newFileData['size']) && !isset($fileError)) {
+        if (($newFileData['type'] !== $currentField['type'] || mb_strlen($newFileData['name']) > 250 || 0 === $newFileData['size']) && !isset($fileError)) {
             $fileError = new FormHandleException('file', $newFileData['name'], "File [${$newFileData['name']}] encountered en error");
         }
 
@@ -702,7 +746,7 @@ class Form
             return false;
         }
 
-        if (isset($fieldData['type']) && 'password' === $fieldData['type'] && isset($fieldData['hash']) && true === $fieldData['hash']) {
+        if (isset($fieldData['type']) && 'password' === $fieldData['type'] && isset($fieldData['hash']) && true === $fieldData['hash'] && !empty($requestField)) {
             $requestField = password_hash($requestField, PASSWORD_DEFAULT);
         }
 
@@ -748,6 +792,11 @@ class Form
         }
 
         $entityMethod = 'set' . ucfirst($fieldData['fieldName']);
+
+        if (isset($fieldData['modifyIfEmpty']) && false === $fieldData['modifyIfEmpty'] && empty($requestField)) {
+            return true;
+        }
+
         $fieldData['entity']->$entityMethod($associatedEntity ?? $newTypeData);
         return true;
     }
